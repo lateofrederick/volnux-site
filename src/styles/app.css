@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  #app:not(.mesh-active) {
+    @apply relative min-h-screen bg-vn-black font-sans text-base leading-relaxed text-vn-text antialiased;
+  }
+
+  #app:not(.mesh-active)::before {
+    @apply pointer-events-none fixed inset-0 z-0;
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.015) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  #app.mesh-active {
+    @apply relative min-h-screen bg-mesh-black font-sans text-base leading-relaxed text-mesh-text antialiased;
+  }
+
+  #app.mesh-active::after {
+    @apply pointer-events-none fixed inset-0 z-[1];
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.04) 2px,
+      rgba(0, 0, 0, 0.04) 4px
+    );
+    content: '';
+  }
+}
+
+@layer components {
+  .vn-section {
+    @apply relative py-24 lg:py-28;
+  }
+
+  .vn-container {
+    @apply relative z-[1] mx-auto w-full max-w-[1120px] px-6 sm:px-8;
+  }
+
+  .vn-section-tag {
+    @apply mb-4 inline-block rounded-sm border border-vn-accent/20 bg-vn-accent/5 px-3 py-1 font-mono text-[0.75rem] font-medium uppercase tracking-[0.12em] text-vn-accent;
+  }
+
+  .vn-section-title {
+    @apply mb-5 font-display text-[clamp(2rem,4vw,3rem)] font-extrabold tracking-[-0.03em] text-vn-white;
+  }
+
+  .vn-section-sub {
+    @apply max-w-xl text-lg leading-relaxed text-vn-muted lg:max-w-[36rem];
+  }
+
+  .vn-code-block {
+    @apply relative overflow-x-auto rounded-lg border border-vn-border bg-vn-surface px-5 py-5 font-mono text-[0.8125rem] leading-relaxed sm:px-6 sm:py-6 sm:text-sm md:text-[0.95rem] md:leading-loose lg:px-8 lg:py-8 lg:text-base;
+  }
+
+  .vn-code-block::before {
+    @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 rounded-t-lg bg-gradient-to-r from-vn-accent to-vn-accent2 content-[''];
+  }
+
+  /* Hero code panel — matches index.html .code-block sizing */
+  .vn-hero-code-block {
+    @apply relative overflow-x-auto rounded-lg border border-vn-border bg-vn-surface px-8 py-6 font-mono text-[0.95rem] leading-[1.8];
+  }
+
+  .vn-hero-code-block::before {
+    @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 rounded-t-lg bg-gradient-to-r from-vn-accent to-vn-accent2 content-[''];
+  }
+
+  .vn-code-label {
+    @apply mb-3 font-mono text-[0.75rem] font-medium uppercase tracking-[0.08em] text-vn-muted;
+  }
+
+  .vn-btn-primary {
+    @apply inline-flex items-center gap-2 rounded px-8 py-3.5 font-display text-[0.95rem] font-semibold text-vn-black transition;
+    @apply bg-vn-accent hover:-translate-y-px hover:bg-[#33eaff] hover:shadow-[0_8px_32px_rgba(0,229,255,0.25)];
+  }
+
+  .vn-btn-outline {
+    @apply inline-flex items-center gap-2 rounded border border-vn-border2 px-8 py-3.5 font-display text-[0.95rem] font-semibold text-vn-text transition;
+    @apply hover:border-vn-accent hover:text-vn-accent;
+  }
+
+  .vn-btn-ghost {
+    @apply inline-flex items-center gap-2 rounded border border-vn-accent2 px-7 py-3 font-display font-semibold text-vn-accent2 transition hover:bg-vn-accent2/10;
+  }
+
+  .vn-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-vn-border2 to-transparent;
+  }
+
+  /* Mesh marketing page */
+  .mesh-container {
+    @apply relative z-[2] mx-auto w-full max-w-[1140px] px-6 sm:px-10;
+  }
+
+  .mesh-section {
+    @apply relative z-[2] py-24 lg:py-32;
+  }
+
+  .mesh-topology {
+    @apply relative overflow-hidden rounded-lg border border-mesh-border bg-[rgba(11,14,20,0.92)] p-6 sm:p-8;
+  }
+
+  .mesh-topology::before {
+    @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-vn-accent via-vn-accent2 to-vn-accent3 content-[''];
+  }
+
+  .mesh-code-panel {
+    @apply relative overflow-hidden rounded-lg border border-mesh-border bg-[rgba(5,7,9,0.95)] font-mono text-[0.82rem] leading-loose sm:text-sm;
+  }
+
+  .mesh-code-panel::before {
+    @apply pointer-events-none absolute inset-x-0 top-0 z-[1] h-0.5 bg-gradient-to-r from-vn-accent to-vn-accent2 content-[''];
+  }
+
+  .mesh-btn-outline {
+    @apply inline-flex items-center gap-2 rounded-[3px] border border-mesh-border2 px-8 py-3.5 font-display text-[0.875rem] font-semibold text-mesh-text transition;
+    @apply hover:border-vn-accent/40 hover:bg-vn-accent/5 hover:text-vn-accent;
+  }
+}
