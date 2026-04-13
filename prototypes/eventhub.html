@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventHub — Volnux Event Registry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #0d0f14;
+  --ink2:     #181b22;
+  --ink3:     #21252f;
+  --rule:     #272c38;
+  --rule2:    #343b4a;
+  --fog:      #4a5268;
+  --fog2:     #6b7590;
+  --silver:   #c8d0e0;
+  --white:    #f0f4fc;
+  --cyan:     #00e5ff;
+  --purple:   #7b61ff;
+  --green:    #00ff94;
+  --amber:    #ffb830;
+  --red:      #ff5252;
+  --pink:     #ff6eb4;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--silver);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── Dot-grid background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.z1 { position: relative; z-index: 1; }
+
+/* ── Typography ── */
+.serif  { font-family: 'Instrument Serif', serif; }
+.mono   { font-family: 'DM Mono', monospace; }
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 56px;
+  background: rgba(13,15,20,0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  padding: 0 1.5rem;
+  border-right: 1px solid var(--rule);
+  text-decoration: none;
+}
+
+.nav-logo-mark {
+  width: 26px; height: 26px;
+  margin-right: 0.6rem;
+}
+
+.nav-volnux {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: -0.01em;
+}
+.nav-volnux span { color: var(--cyan); }
+
+.nav-sep {
+  height: 16px;
+  width: 1px;
+  background: var(--rule2);
+  margin: 0 0.75rem;
+}
+
+.nav-product {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--fog2);
+  letter-spacing: 0.04em;
+}
+.nav-product strong {
+  color: var(--amber);
+  font-weight: 500;
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.25rem;
+  font-size: 0.82rem;
+  color: var(--fog2);
+  text-decoration: none;
+  border-left: 1px solid var(--rule);
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+.nav-link--cta {
+  color: var(--ink);
+  background: var(--amber);
+  font-weight: 500;
+  font-family: 'DM Mono', monospace;
+}
+.nav-link--cta:hover { background: #ffc84a; color: var(--ink); }
+
+/* ── Hero ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 7rem 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(8rem, 20vw, 18rem);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.03);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  padding-bottom: 4rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--amber);
+  border: 1px solid rgba(255,184,48,0.25);
+  background: rgba(255,184,48,0.06);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.75rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.badge-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: blink 2.5s ease infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--fog2);
+  max-width: 580px;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.35s both;
+}
+
+.hero-search {
+  display: flex;
+  gap: 0;
+  max-width: 580px;
+  border: 1px solid var(--rule2);
+  border-radius: 4px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.45s both;
+  background: var(--ink2);
+}
+
+.hero-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0.85rem 1.25rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--white);
+  caret-color: var(--amber);
+}
+
+.hero-search input::placeholder { color: var(--fog); }
+
+.hero-search button {
+  background: var(--amber);
+  border: none;
+  padding: 0 1.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.hero-search button:hover { background: #ffc84a; }
+
+.hero-stats {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--rule);
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.55s both;
+}
+
+.hero-stat-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.2rem;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.hero-stat-value span { color: var(--amber); }
+
+.hero-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fog);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Category strip ── */
+#categories {
+  border-bottom: 1px solid var(--rule);
+  background: var(--ink2);
+  position: sticky;
+  top: 56px;
+  z-index: 100;
+}
+
+.cat-scroll {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cat-scroll::-webkit-scrollbar { display: none; }
+
+.cat-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cat-btn:hover { color: var(--white); }
+
+.cat-btn.active {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+}
+
+.cat-count {
+  font-size: 0.65rem;
+  background: var(--rule2);
+  color: var(--fog2);
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+}
+
+.cat-btn.active .cat-count {
+  background: rgba(255,184,48,0.15);
+  color: var(--amber);
+}
+
+/* ── Main layout ── */
+#registry {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 6rem;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 3rem;
+}
+
+/* ── Sidebar ── */
+.sidebar { position: sticky; top: 112px; height: fit-content; }
+
+.sidebar-section { margin-bottom: 2rem; }
+
+.sidebar-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fog);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  font-size: 0.82rem;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.filter-option:hover { color: var(--white); }
+.filter-option.active { color: var(--white); }
+
+.filter-option input[type="checkbox"] {
+  appearance: none;
+  width: 14px; height: 14px;
+  border: 1px solid var(--rule2);
+  border-radius: 2px;
+  background: var(--ink2);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.filter-option input[type="checkbox"]:checked {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+.filter-option input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 1px;
+  width: 6px; height: 9px;
+  border: 2px solid var(--ink);
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.filter-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-badge {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  border: 1px solid;
+}
+
+/* ── Registry grid ── */
+.registry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.registry-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog);
+}
+
+.registry-count strong { color: var(--white); }
+
+.sort-select {
+  background: var(--ink2);
+  border: 1px solid var(--rule2);
+  border-radius: 3px;
+  padding: 0.4rem 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog2);
+  cursor: pointer;
+  outline: none;
+}
+.sort-select:focus { border-color: var(--amber); }
+
+/* ── Event cards ── */
+.events-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.event-card {
+  background: var(--ink2);
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.25rem;
+  align-items: start;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+.event-card:hover { background: var(--ink3); }
+
+.event-icon {
+  width: 40px; height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.event-icon--cyan   { background: rgba(0,229,255,0.1);  border: 1px solid rgba(0,229,255,0.2);  color: var(--cyan);   }
+.event-icon--purple { background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.2); color: var(--purple); }
+.event-icon--green  { background: rgba(0,255,148,0.1);  border: 1px solid rgba(0,255,148,0.2);  color: var(--green);  }
+.event-icon--amber  { background: rgba(255,184,48,0.1); border: 1px solid rgba(255,184,48,0.2); color: var(--amber);  }
+.event-icon--red    { background: rgba(255,82,82,0.1);  border: 1px solid rgba(255,82,82,0.2);  color: var(--red);    }
+.event-icon--pink   { background: rgba(255,110,180,0.1);border: 1px solid rgba(255,110,180,0.2);color: var(--pink);   }
+
+.event-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+
+.event-name span {
+  font-weight: 300;
+  color: var(--fog2);
+  margin-left: 0.25rem;
+}
+
+.event-desc {
+  font-size: 0.82rem;
+  color: var(--fog2);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule2);
+  color: var(--fog);
+}
+
+.tag--cyan   { border-color: rgba(0,229,255,0.25);  color: rgba(0,229,255,0.7);   background: rgba(0,229,255,0.05);   }
+.tag--purple { border-color: rgba(123,97,255,0.25); color: rgba(123,97,255,0.8);  background: rgba(123,97,255,0.05);  }
+.tag--green  { border-color: rgba(0,255,148,0.25);  color: rgba(0,255,148,0.7);   background: rgba(0,255,148,0.05);   }
+.tag--amber  { border-color: rgba(255,184,48,0.25); color: rgba(255,184,48,0.8);  background: rgba(255,184,48,0.05);  }
+
+.event-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.event-source {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 2px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.source--pypi   { color: var(--cyan);   border-color: rgba(0,229,255,0.3);  background: rgba(0,229,255,0.05);   }
+.source--git    { color: var(--purple); border-color: rgba(123,97,255,0.3); background: rgba(123,97,255,0.05);  }
+.source--hub    { color: var(--amber);  border-color: rgba(255,184,48,0.3); background: rgba(255,184,48,0.05);  }
+.source--local  { color: var(--green);  border-color: rgba(0,255,148,0.3);  background: rgba(0,255,148,0.05);   }
+
+.event-version {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fog);
+}
+
+.event-downloads {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fog);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.event-downloads::before {
+  content: '↓';
+  color: var(--green);
+  font-size: 0.7rem;
+}
+
+.event-verified {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.event-verified::before {
+  content: '✓';
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 2.5rem;
+}
+
+.page-btn {
+  width: 34px; height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink2);
+  border: 1px solid var(--rule2);
+  border-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.page-btn:hover { border-color: var(--amber); color: var(--amber); }
+.page-btn.active { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+
+/* ── Publish CTA ── */
+#publish {
+  background: var(--ink2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+#publish::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--amber), var(--purple), var(--cyan));
+}
+
+.publish-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.publish-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  color: var(--white);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.publish-title em { font-style: italic; color: var(--amber); }
+
+.publish-desc {
+  font-size: 0.9rem;
+  color: var(--fog2);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.publish-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.publish-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.step-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  width: 24px; height: 24px;
+  border: 1px solid var(--rule2);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fog);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.publish-step p {
+  font-size: 0.85rem;
+  color: var(--fog2);
+}
+
+.publish-step strong {
+  color: var(--white);
+  display: block;
+  margin-bottom: 0.1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.publish-code {
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.code-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--ink2);
+}
+
+.code-dot-r { width:8px;height:8px;border-radius:50%;background:#ff5f57; }
+.code-dot-y { width:8px;height:8px;border-radius:50%;background:#ffbd2e; }
+.code-dot-g { width:8px;height:8px;border-radius:50%;background:#28c840; }
+
+.code-filename {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fog);
+}
+
+.code-body {
+  padding: 1.25rem 1.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 2;
+}
+
+.c-kw  { color: var(--purple); }
+.c-fn  { color: var(--cyan); }
+.c-str { color: var(--amber); }
+.c-cm  { color: var(--fog); font-style: italic; }
+.c-nd  { color: var(--white); }
+.c-dec { color: var(--green); }
+
+/* ── How it works ── */
+#how {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2.5rem;
+}
+
+.how-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+.eyebrow::before, .eyebrow::after {
+  content: '';
+  width: 30px; height: 1px;
+  background: rgba(255,184,48,0.4);
+}
+
+.how-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  color: var(--white);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.how-card {
+  background: var(--ink2);
+  padding: 2.25rem;
+}
+
+.how-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 3rem;
+  color: rgba(255,184,48,0.12);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.how-card h3 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.how-card p {
+  font-size: 0.85rem;
+  color: var(--fog2);
+  line-height: 1.7;
+}
+
+.how-pointy {
+  margin-top: 1rem;
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog2);
+  line-height: 1.8;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--rule);
+  background: var(--ink2);
+  padding: 3rem 0;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.footer-inner p {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--fog);
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--fog);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--amber); }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.on { opacity: 1; transform: translateY(0); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  #registry { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .publish-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .how-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+  .event-card { grid-template-columns: auto 1fr; }
+  .event-meta { display: none; }
+  nav .nav-link:not(.nav-link--cta) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="z1">
+  <a href="index.html" class="nav-brand">
+    <!-- Volnux mini icon -->
+    <svg class="nav-logo-mark" viewBox="0 0 26 26" fill="none">
+      <circle cx="13" cy="13" r="13" fill="#0d0f14"/>
+      <path d="M 13 13 L 13 2  A 11 11 0 0 1 21.5 16.5 Z" fill="#00c8e0"/>
+      <path d="M 13 13 L 21.5 16.5 A 11 11 0 0 1 4.5 16.5 Z" fill="#6b4fff"/>
+      <path d="M 13 13 L 4.5 16.5 A 11 11 0 0 1 13 2   Z" fill="#00e87a"/>
+      <path d="M 10 3.5 C 9 6 8.8 9 9.2 13 A 3.8 3.8 0 0 0 13 16.8 A 3.8 3.8 0 0 0 16.8 13 C 17.2 9 17 6 16 3.5 C 15.5 2.8 10.5 2.8 10 3.5 Z" fill="#0d0f14"/>
+      <path d="M 4 15 C 6 12.5 9 11 12.8 10.2 A 3.8 3.8 0 0 0 11.3 8 A 3.8 3.8 0 0 0 9.2 7.2 C 6 8 4 10 3 12.5 C 2.7 13.2 2.8 15.5 4 15 Z" fill="#0d0f14"/>
+      <path d="M 22 15 C 20 12.5 17 11 13.2 10.2 A 3.8 3.8 0 0 0 14.7 8 A 3.8 3.8 0 0 0 16.8 7.2 C 20 8 22 10 23 12.5 C 23.3 13.2 23.2 15.5 22 15 Z" fill="#0d0f14"/>
+      <circle cx="13" cy="13" r="2.5" fill="#0d0f14"/>
+      <circle cx="13" cy="13" r="1.2" fill="#00e5ff"/>
+    </svg>
+    <span class="nav-volnux">vol<span>nux</span></span>
+  </a>
+  <div style="display:flex;align-items:center;padding:0 1.5rem;height:100%;border-right:1px solid var(--rule);">
+    <span class="nav-sep" style="margin:0;"></span>
+    <span class="nav-product" style="margin-left:0.75rem;"><strong>EventHub</strong></span>
+  </div>
+  <div class="nav-right">
+    <a href="#registry" class="nav-link">Browse</a>
+    <a href="#publish"  class="nav-link">Publish</a>
+    <a href="#how"      class="nav-link">How it works</a>
+    <a href="#"         class="nav-link">Docs</a>
+    <a href="#"         class="nav-link nav-link--cta">Publish Event →</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section id="hero" class="z1">
+  <div class="hero-bg-text">EventHub</div>
+  <div class="hero-inner">
+    <p class="hero-badge"><span class="badge-dot"></span>Volnux Event Registry — beta</p>
+    <h1 class="hero-title">
+      Every workflow<br>
+      starts with an <em>event.</em>
+    </h1>
+    <p class="hero-desc">
+      EventHub is the open registry for Volnux EventBase components.
+      Find, publish, and pull versioned events from PyPI, Git, or the community hub —
+      directly referenced in your Pointy-lang workflows.
+    </p>
+    <div class="hero-search">
+      <input type="text" placeholder="Search events — e.g. PostgresExtract, GPT4Transform, S3Load…" id="search-input"/>
+      <button onclick="doSearch()">Search</button>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <p class="hero-stat-value">2<span>,</span>847</p>
+        <p class="hero-stat-label">published events</p>
+      </div>
+      <div>
+        <p class="hero-stat-value">641</p>
+        <p class="hero-stat-label">publishers</p>
+      </div>
+      <div>
+        <p class="hero-stat-value">1<span>.</span>2M</p>
+        <p class="hero-stat-label">monthly pulls</p>
+      </div>
+      <div>
+        <p class="hero-stat-value">98<span>%</span></p>
+        <p class="hero-stat-label">verified events</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Category strip ── -->
+<div id="categories" class="z1">
+  <div class="cat-scroll">
+    <button class="cat-btn active" onclick="setCategory(this)">All <span class="cat-count">2847</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Data Pipelines <span class="cat-count">612</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">AI &amp; Agents <span class="cat-count">489</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Streaming <span class="cat-count">334</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Databases <span class="cat-count">298</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Notifications <span class="cat-count">201</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Cloud Storage <span class="cat-count">187</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Transforms <span class="cat-count">256</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Validation <span class="cat-count">143</span></button>
+    <button class="cat-btn" onclick="setCategory(this)">Automation <span class="cat-count">327</span></button>
+  </div>
+</div>
+
+<!-- ── Registry ── -->
+<div id="registry" class="z1">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">Source</p>
+      <label class="filter-option active">
+        <input type="checkbox" checked onchange="toggleFilter(this)">
+        <span class="filter-dot" style="background:var(--cyan)"></span>
+        PyPI
+        <span class="source-badge" style="color:var(--cyan);border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.05)">pypi</span>
+      </label>
+      <label class="filter-option active">
+        <input type="checkbox" checked>
+        <span class="filter-dot" style="background:var(--purple)"></span>
+        Git
+        <span class="source-badge" style="color:var(--purple);border-color:rgba(123,97,255,0.3);background:rgba(123,97,255,0.05)">git</span>
+      </label>
+      <label class="filter-option active">
+        <input type="checkbox" checked>
+        <span class="filter-dot" style="background:var(--amber)"></span>
+        EventHub
+        <span class="source-badge" style="color:var(--amber);border-color:rgba(255,184,48,0.3);background:rgba(255,184,48,0.05)">hub</span>
+      </label>
+    </div>
+
+    <div class="sidebar-section">
+      <p class="sidebar-label">Verified</p>
+      <label class="filter-option">
+        <input type="checkbox">
+        <span style="font-size:0.75rem;color:var(--green)">✓</span>
+        Official only
+      </label>
+      <label class="filter-option">
+        <input type="checkbox" checked>
+        Community verified
+      </label>
+    </div>
+
+    <div class="sidebar-section">
+      <p class="sidebar-label">Runtime compat.</p>
+      <label class="filter-option active"><input type="checkbox" checked> Volnux 0.x</label>
+      <label class="filter-option"><input type="checkbox"> Volnux 1.x beta</label>
+    </div>
+
+    <div class="sidebar-section">
+      <p class="sidebar-label">Popular tags</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.25rem;">
+        <span class="tag tag--cyan" style="cursor:pointer">etl</span>
+        <span class="tag tag--purple" style="cursor:pointer">ai</span>
+        <span class="tag tag--green" style="cursor:pointer">streaming</span>
+        <span class="tag tag--amber" style="cursor:pointer">postgres</span>
+        <span class="tag" style="cursor:pointer">s3</span>
+        <span class="tag" style="cursor:pointer">kafka</span>
+        <span class="tag tag--cyan" style="cursor:pointer">llm</span>
+        <span class="tag" style="cursor:pointer">transform</span>
+        <span class="tag tag--purple" style="cursor:pointer">notify</span>
+        <span class="tag" style="cursor:pointer">validate</span>
+        <span class="tag tag--amber" style="cursor:pointer">snowflake</span>
+        <span class="tag" style="cursor:pointer">redis</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Event list -->
+  <main>
+    <div class="registry-header">
+      <p class="registry-count">Showing <strong>2,847</strong> events</p>
+      <select class="sort-select">
+        <option>Most downloaded</option>
+        <option>Recently updated</option>
+        <option>Alphabetical</option>
+        <option>Newest</option>
+      </select>
+    </div>
+
+    <div class="events-grid">
+
+      <!-- Card 1 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--cyan">PG</div>
+        <div>
+          <p class="event-name">PostgresExtract <span>@v2.4.1</span></p>
+          <p class="event-desc">Extract data from PostgreSQL tables with configurable batch size, cursor-based pagination, and schema inference. Supports SSL, connection pooling, and incremental extraction.</p>
+          <div class="event-tags">
+            <span class="tag tag--cyan">postgres</span>
+            <span class="tag tag--cyan">etl</span>
+            <span class="tag">extract</span>
+            <span class="tag">database</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--pypi">pypi</span>
+          <span class="event-version">v2.4.1</span>
+          <span class="event-downloads">84.2k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 2 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--purple">GPT</div>
+        <div>
+          <p class="event-name">GPT4Transform <span>@v1.8.0</span></p>
+          <p class="event-desc">Transform structured data using GPT-4 with a configurable system prompt. Handles rate limiting, token counting, retry on context overflow, and structured JSON output parsing.</p>
+          <div class="event-tags">
+            <span class="tag tag--purple">ai</span>
+            <span class="tag tag--purple">llm</span>
+            <span class="tag tag--cyan">transform</span>
+            <span class="tag">openai</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--hub">hub</span>
+          <span class="event-version">v1.8.0</span>
+          <span class="event-downloads">61.5k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 3 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--amber">S3</div>
+        <div>
+          <p class="event-name">S3Load <span>@v3.1.2</span></p>
+          <p class="event-desc">Load processed data to AWS S3 with multipart upload, automatic retry on throttling, configurable compression (gzip, zstd), and path templating for partitioned writes.</p>
+          <div class="event-tags">
+            <span class="tag tag--amber">s3</span>
+            <span class="tag tag--amber">aws</span>
+            <span class="tag">load</span>
+            <span class="tag">storage</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--pypi">pypi</span>
+          <span class="event-version">v3.1.2</span>
+          <span class="event-downloads">77.1k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 4 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--green">KFK</div>
+        <div>
+          <p class="event-name">KafkaIngest <span>@v1.3.0</span></p>
+          <p class="event-desc">Consume messages from Kafka topics with configurable consumer groups, offset management, schema registry integration, and backpressure-aware buffering for high-throughput pipelines.</p>
+          <div class="event-tags">
+            <span class="tag tag--green">kafka</span>
+            <span class="tag tag--green">streaming</span>
+            <span class="tag">ingest</span>
+            <span class="tag">messaging</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--pypi">pypi</span>
+          <span class="event-version">v1.3.0</span>
+          <span class="event-downloads">42.8k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 5 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--cyan">SNF</div>
+        <div>
+          <p class="event-name">SnowflakeLoad <span>@v1.0.4</span></p>
+          <p class="event-desc">Bulk-load transformed data into Snowflake using COPY INTO with automatic staging, file format detection, and merge / upsert support for incremental loads.</p>
+          <div class="event-tags">
+            <span class="tag tag--amber">snowflake</span>
+            <span class="tag">load</span>
+            <span class="tag">warehouse</span>
+            <span class="tag">etl</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--hub">hub</span>
+          <span class="event-version">v1.0.4</span>
+          <span class="event-downloads">38.3k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 6 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--pink">SCH</div>
+        <div>
+          <p class="event-name">SchemaValidate <span>@v2.0.1</span></p>
+          <p class="event-desc">Validate records against a Pydantic or JSON Schema definition. Emits validated records on the success branch and structured error reports on the failure branch.</p>
+          <div class="event-tags">
+            <span class="tag">validate</span>
+            <span class="tag tag--cyan">schema</span>
+            <span class="tag">pydantic</span>
+            <span class="tag">quality</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--git">git</span>
+          <span class="event-version">v2.0.1</span>
+          <span class="event-downloads">29.6k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 7 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--purple">EMB</div>
+        <div>
+          <p class="event-name">EmbedDocuments <span>@v0.9.2</span></p>
+          <p class="event-desc">Generate vector embeddings for text documents using configurable providers (OpenAI, Cohere, local sentence-transformers). Outputs embedding vectors with source metadata.</p>
+          <div class="event-tags">
+            <span class="tag tag--purple">ai</span>
+            <span class="tag tag--purple">embeddings</span>
+            <span class="tag tag--purple">llm</span>
+            <span class="tag">vectors</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--hub">hub</span>
+          <span class="event-version">v0.9.2</span>
+          <span class="event-downloads">24.1k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 8 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--amber">SLK</div>
+        <div>
+          <p class="event-name">SlackNotify <span>@v1.5.0</span></p>
+          <p class="event-desc">Send rich notifications to Slack channels or users. Supports Block Kit message templates, thread replies, file attachments, and conditional routing on workflow outcome.</p>
+          <div class="event-tags">
+            <span class="tag">notify</span>
+            <span class="tag">slack</span>
+            <span class="tag">automation</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--pypi">pypi</span>
+          <span class="event-version">v1.5.0</span>
+          <span class="event-downloads">21.7k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+      <!-- Card 9 -->
+      <a class="event-card" href="#">
+        <div class="event-icon event-icon--red">RDS</div>
+        <div>
+          <p class="event-name">RedisCache <span>@v1.1.3</span></p>
+          <p class="event-desc">Read and write intermediate results to Redis with configurable TTL, key namespacing, and pipeline batching. Designed for caching expensive transform outputs between workflow stages.</p>
+          <div class="event-tags">
+            <span class="tag">redis</span>
+            <span class="tag">cache</span>
+            <span class="tag">state</span>
+          </div>
+        </div>
+        <div class="event-meta">
+          <span class="event-source source--git">git</span>
+          <span class="event-version">v1.1.3</span>
+          <span class="event-downloads">18.4k / mo</span>
+          <span class="event-verified">official</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="page-btn">←</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn" style="width:auto;padding:0 0.75rem;">…</button>
+      <button class="page-btn">48</button>
+      <button class="page-btn">→</button>
+    </div>
+  </main>
+</div>
+
+<!-- ── Publish CTA ── -->
+<section id="publish" class="z1">
+  <div class="publish-inner">
+    <div>
+      <p class="eyebrow" style="justify-content:flex-start;">Publishing</p>
+      <h2 class="publish-title">
+        Your events.<br>
+        The <em>whole</em> ecosystem.
+      </h2>
+      <p class="publish-desc">
+        Any Python class that inherits from <code style="font-family:'DM Mono',monospace;color:var(--cyan);font-size:0.85em">EventBase</code> can be published to EventHub.
+        Once published, it becomes instantly referenceable in any Pointy-lang workflow across the entire Volnux mesh — no deployment, no shared codebase, no coordination overhead.
+      </p>
+      <div class="publish-steps">
+        <div class="publish-step">
+          <div class="step-num">01</div>
+          <div>
+            <strong>Inherit EventBase</strong>
+            <p>Subclass <code style="font-family:'DM Mono',monospace;color:var(--cyan);font-size:0.85em">EventBase</code> and implement the <code style="font-family:'DM Mono',monospace;color:var(--cyan);font-size:0.85em">__call__</code> coroutine. That's the entire interface contract.</p>
+          </div>
+        </div>
+        <div class="publish-step">
+          <div class="step-num">02</div>
+          <div>
+            <strong>Publish to PyPI, Git, or EventHub</strong>
+            <p>Push to your preferred source. EventHub picks up verified publishers automatically.</p>
+          </div>
+        </div>
+        <div class="publish-step">
+          <div class="step-num">03</div>
+          <div>
+            <strong>Reference by name in Pointy-lang</strong>
+            <p>Anyone on the Volnux mesh can now pull and execute your event with a single annotation.</p>
+          </div>
+        </div>
+      </div>
+      <a href="#" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;background:var(--amber);color:var(--ink);font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:500;text-decoration:none;border-radius:3px;transition:background 0.2s;" onmouseover="this.style.background='#ffc84a'" onmouseout="this.style.background='var(--amber)'">Publish your first event →</a>
+    </div>
+
+    <div>
+      <div class="publish-code">
+        <div class="code-bar">
+          <span class="code-dot-r"></span>
+          <span class="code-dot-y"></span>
+          <span class="code-dot-g"></span>
+          <span class="code-filename">my_event.py</span>
+        </div>
+        <div class="code-body">
+<span class="c-cm"># 1. Inherit EventBase</span><br>
+<span class="c-kw">from</span> <span class="c-nd">volnux.events</span> <span class="c-kw">import</span> <span class="c-fn">EventBase</span><br>
+<span class="c-kw">from</span> <span class="c-nd">volnux.result</span> <span class="c-kw">import</span> <span class="c-fn">EventResult</span><br>
+<br>
+<span class="c-dec">@hub.publish</span><span class="c-str">(name="MyTransform", version="1.0.0")</span><br>
+<span class="c-kw">class</span> <span class="c-fn">MyTransform</span>(<span class="c-fn">EventBase</span>):<br>
+&nbsp;&nbsp;<span class="c-kw">async def</span> <span class="c-fn">__call__</span>(<span class="c-nd">self</span>, <span class="c-nd">record</span>: <span class="c-fn">dict</span>) <span class="c-kw">-></span> <span class="c-fn">EventResult</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-cm"># your logic here</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-nd">result</span> = <span class="c-kw">await</span> <span class="c-nd">self</span>.<span class="c-fn">process</span>(<span class="c-nd">record</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span> <span class="c-fn">EventResult</span>(<span class="c-nd">content</span>=<span class="c-nd">result</span>)<br>
+        </div>
+      </div>
+
+      <div class="publish-code" style="margin-top:1rem;">
+        <div class="code-bar">
+          <span class="code-dot-r"></span>
+          <span class="code-dot-y"></span>
+          <span class="code-dot-g"></span>
+          <span class="code-filename">pipeline.pointy</span>
+        </div>
+        <div class="code-body">
+<span class="c-cm"># 3. Reference anywhere in Pointy-lang</span><br>
+<span style="color:var(--green)">hub</span><span style="color:var(--amber)">:MyTransform@v1.0.0</span><br>
+&nbsp;&nbsp;<span style="color:var(--cyan)">-></span> <span style="color:var(--green)">pypi</span><span style="color:var(--amber)">:SnowflakeLoad@v1.0.4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section id="how" class="z1">
+  <div class="how-header reveal">
+    <p class="eyebrow">How it works</p>
+    <h2 class="how-title">Runtime assembly, not deployment.</h2>
+  </div>
+  <div class="how-grid reveal">
+    <div class="how-card">
+      <p class="how-num">01</p>
+      <h3>Author once</h3>
+      <p>Write a Python class that inherits <code style="font-family:'DM Mono',monospace;color:var(--cyan);font-size:0.85em">EventBase</code> and implement a single async coroutine. No framework lock-in, no decorators, no boilerplate beyond the interface contract.</p>
+    </div>
+    <div class="how-card">
+      <p class="how-num">02</p>
+      <h3>Publish anywhere</h3>
+      <p>Push to PyPI, tag a Git release, or register on EventHub. Version pins ensure reproducible execution. The Volnux resolver fetches exactly the version you specify at runtime.</p>
+      <div class="how-pointy">
+        <span style="color:var(--green)">pypi</span><span style="color:var(--amber)">:MyEvent@v2.1.0</span><br>
+        <span style="color:var(--green)">git</span><span style="color:var(--amber)">:OrgEvent[version=<span style="color:var(--pink)">"v3.1"</span>]</span><br>
+        <span style="color:var(--green)">hub</span><span style="color:var(--amber)">:CommunityEvent@latest</span>
+      </div>
+    </div>
+    <div class="how-card">
+      <p class="how-num">03</p>
+      <h3>Run without deployment</h3>
+      <p>The Volnux runtime resolves and fetches your event at execution time — on any node in the mesh. No shared codebase. No deployment pipeline. No coordination. Reference it in Pointy-lang and it just runs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="z1">
+  <div class="footer-inner">
+    <p>© 2025 Volnux · EventHub registry</p>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="mesh-runtime.html">Mesh Runtime</a></li>
+      <li><a href="#">Docs</a></li>
+      <li><a href="#">GitHub</a></li>
+      <li><a href="#">Publisher guidelines</a></li>
+    </ul>
+    <p>eventhub v0.1-beta</p>
+  </div>
+</footer>
+
+<script>
+function setCategory(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function doSearch() {
+  const val = document.getElementById('search-input').value.trim();
+  if (val) {
+    document.getElementById('registry').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+document.getElementById('search-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+document.querySelectorAll('.page-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const siblings = this.parentElement.querySelectorAll('.page-btn');
+    siblings.forEach(s => s.classList.remove('active'));
+    if (!['←','→','…'].includes(this.textContent.trim())) {
+      this.classList.add('active');
+    }
+  });
+});
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

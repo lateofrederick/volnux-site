@@ -42,6 +42,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     </RouterLink>
 
     <ul v-if="isMesh" class="hidden list-none gap-8 md:flex">
+      <li>
+        <RouterLink
+          class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text"
+          to="/docs"
+          @click="closeProducts"
+          >Docs</RouterLink
+        >
+      </li>
       <li><a href="#how" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">How it works</a></li>
       <li>
         <a href="#capabilities" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Capabilities</a>
@@ -49,6 +57,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       <li><a href="#dispatch" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Dispatch</a></li>
     </ul>
     <ul v-else class="hidden list-none gap-8 lg:flex">
+      <li>
+        <RouterLink class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text" to="/docs"
+          >Docs</RouterLink
+        >
+      </li>
       <li>
         <RouterLink
           class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text"
@@ -79,7 +92,19 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </li>
     </ul>
 
-    <div class="flex items-center gap-3 sm:gap-4">
+    <div class="flex items-center gap-2 sm:gap-4">
+      <RouterLink
+        v-if="!isMesh"
+        to="/docs"
+        class="rounded-md px-2.5 py-2 text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text lg:hidden"
+        >Docs</RouterLink
+      >
+      <RouterLink
+        v-else
+        to="/docs"
+        class="rounded-md px-2.5 py-2 text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text md:hidden"
+        >Docs</RouterLink
+      >
       <div ref="dropdownRef" class="relative">
         <button
           type="button"

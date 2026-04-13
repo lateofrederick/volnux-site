@@ -26,7 +26,7 @@ import { RouterLink } from 'vue-router'
         <div>
           <h4 class="mb-4 font-display text-[0.8rem] font-bold uppercase tracking-wider text-vn-text">Developers</h4>
           <ul class="flex flex-col gap-2.5 text-[0.875rem]">
-            <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">Documentation</a></li>
+            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/docs">Documentation</RouterLink></li>
             <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">GitHub</a></li>
             <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">Examples</a></li>
             <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">Community</a></li>

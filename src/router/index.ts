@@ -3,9 +3,17 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import MeshRuntimeView from '@/views/MeshRuntimeView.vue'
 import ProductPlaceholderView from '@/views/ProductPlaceholderView.vue'
+import EventHubView from '@/views/EventHubView.vue'
+import EventDetailView from '@/views/EventDetailView.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Volnux — The Workflow Operating System' } },
+  {
+    path: '/docs',
+    name: 'docs',
+    component: () => import('@/views/DocsView.vue'),
+    meta: { title: 'Documentation — Volnux' },
+  },
   {
     path: '/products/mesh-runtime',
     name: 'mesh-runtime',
@@ -22,9 +30,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/products/eventhub',
     name: 'product-eventhub',
-    component: ProductPlaceholderView,
-    props: { title: 'EventHub', blurb: 'Registry and discovery for EventBase components.' },
+    component: EventHubView,
     meta: { title: 'EventHub — Volnux' },
+  },
+  {
+    path: '/products/eventhub/events/:slug',
+    name: 'eventhub-event-detail',
+    component: EventDetailView,
+    meta: { title: 'Event detail — EventHub — Volnux' },
   },
   {
     path: '/products/changelog',
@@ -39,9 +52,12 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior(to) {
+  scrollBehavior(to, _from, savedPosition) {
+    if (savedPosition) return savedPosition
+    // /docs hashes are section ids for the app router, not in-page anchors — always start at top.
+    if (to.name === 'docs') return { top: 0, left: 0 }
     if (to.hash) return { el: to.hash, behavior: 'smooth' }
-    return { top: 0 }
+    return { top: 0, left: 0 }
   },
 })
 

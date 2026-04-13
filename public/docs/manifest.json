@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "generated": "2026-04-13T14:18:37.736Z",
+  "sourceRoot": "/Users/lateo/Documents/dev/open_source/event_pipeline",
+  "groups": [
+    {
+      "id": "tutorial",
+      "title": "Getting Started",
+      "sections": [
+        {
+          "id": "tutorial-introduction",
+          "title": "Introduction",
+          "path": "markdown/tutorial--introduction.md"
+        },
+        {
+          "id": "tutorial-pipeline",
+          "title": "Pipeline",
+          "path": "markdown/tutorial--pipeline.md"
+        },
+        {
+          "id": "tutorial-scheduling",
+          "title": "Scheduling",
+          "path": "markdown/tutorial--scheduling.md"
+        },
+        {
+          "id": "tutorial-defining-events",
+          "title": "Defining Events",
+          "path": "markdown/tutorial--defining-events.md"
+        },
+        {
+          "id": "tutorial-signals",
+          "title": "Signals",
+          "path": "markdown/tutorial--signals.md"
+        },
+        {
+          "id": "tutorial-telemetry",
+          "title": "Telemetry",
+          "path": "markdown/tutorial--telemetry.md"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "title": "API reference (Sphinx sources)",
+      "sections": [
+        {
+          "id": "api-backend",
+          "title": "Backend",
+          "path": "markdown/api--backend.md"
+        },
+        {
+          "id": "api-events",
+          "title": "Events",
+          "path": "markdown/api--events.md"
+        },
+        {
+          "id": "api-executors",
+          "title": "Executors",
+          "path": "markdown/api--executors.md"
+        },
+        {
+          "id": "api-fields",
+          "title": "Fields and Signals",
+          "path": "markdown/api--fields.md"
+        },
+        {
+          "id": "api-index",
+          "title": "Overview",
+          "path": "markdown/api--index.md"
+        },
+        {
+          "id": "api-managers",
+          "title": "Managers",
+          "path": "markdown/api--managers.md"
+        },
+        {
+          "id": "api-metrics",
+          "title": "Metrics",
+          "path": "markdown/api--metrics.md"
+        },
+        {
+          "id": "api-mixins",
+          "title": "Mixins",
+          "path": "markdown/api--mixins.md"
+        },
+        {
+          "id": "api-parser",
+          "title": "Parser",
+          "path": "markdown/api--parser.md"
+        },
+        {
+          "id": "api-pipeline",
+          "title": "Pipeline",
+          "path": "markdown/api--pipeline.md"
+        },
+        {
+          "id": "api-result",
+          "title": "Results",
+          "path": "markdown/api--result.md"
+        },
+        {
+          "id": "api-scheduling",
+          "title": "Scheduling",
+          "path": "markdown/api--scheduling.md"
+        },
+        {
+          "id": "api-signals",
+          "title": "Signals",
+          "path": "markdown/api--signals.md"
+        },
+        {
+          "id": "api-telemetry",
+          "title": "Telemetry",
+          "path": "markdown/api--telemetry.md"
+        }
+      ]
+    },
+    {
+      "id": "examples",
+      "title": "Example tutorials",
+      "sections": [
+        {
+          "id": "example-simple",
+          "title": "Simple",
+          "path": "markdown/example--simple.md"
+        },
+        {
+          "id": "example-sentiment-analysis",
+          "title": "Sentiment analysis",
+          "path": "markdown/example--sentiment-analysis.md"
+        },
+        {
+          "id": "example-user-posts-etl",
+          "title": "User posts ETL",
+          "path": "markdown/example--user-posts-etl.md"
+        }
+      ]
+    }
+  ]
+}

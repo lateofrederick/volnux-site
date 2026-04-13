@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pointy-lang Wizard — Volnux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   TOKENS
+══════════════════════════════════════ */
+:root {
+  --bg:        #090c12;
+  --surface:   #0f1318;
+  --surface2:  #151a22;
+  --surface3:  #1c232e;
+  --border:    #1f2736;
+  --border2:   #2d3848;
+  --muted:     #3d4d62;
+  --fog:       #5a6d85;
+  --fog2:      #7a8fa8;
+  --text:      #c8d6e8;
+  --white:     #edf3fc;
+  --cyan:      #00e5ff;
+  --purple:    #7b61ff;
+  --green:     #00ff94;
+  --amber:     #ffb830;
+  --red:       #ff4d4d;
+  --pink:      #ff6eb4;
+  --teal:      #00d4aa;
+  --sidebar-w: 256px;
+  --toolbar-h: 48px;
+  --statusbar-h: 24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+/* ══════════════════════════════════════
+   MENUBAR
+══════════════════════════════════════ */
+#menubar {
+  height: 36px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  gap: 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 300;
+}
+
+.menu-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1.25rem;
+}
+
+.brand-icon {
+  width: 20px; height: 20px;
+}
+
+.brand-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--white);
+}
+.brand-name span { color: var(--cyan); }
+
+.menu-item {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.65rem;
+  font-size: 0.78rem;
+  color: var(--fog2);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s;
+  position: relative;
+  gap: 0.3rem;
+}
+.menu-item:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+
+.menu-item kbd {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  padding: 0.05rem 0.3rem;
+  margin-left: 0.25rem;
+}
+
+/* ── NEW WORKFLOW button — hero action ── */
+.btn-new-workflow {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 26px;
+  padding: 0 0.85rem;
+  background: var(--cyan);
+  color: var(--bg);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-new-workflow:hover {
+  background: #33eaff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,229,255,0.25);
+}
+
+.btn-new-workflow svg { flex-shrink: 0; }
+
+.menu-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 0.35rem;
+}
+
+/* dropdown hint */
+.menu-dropdown {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  min-width: 180px;
+  padding: 0.35rem 0;
+  z-index: 500;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.menu-item:hover .menu-dropdown { display: block; }
+.menu-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.menu-dropdown-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+.menu-dropdown-sep { height: 1px; background: var(--border); margin: 0.3rem 0; }
+
+/* ══════════════════════════════════════
+   TOOLBAR
+══════════════════════════════════════ */
+#toolbar {
+  height: var(--toolbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  z-index: 200;
+}
+
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 0.5rem;
+  border-right: 1px solid var(--border);
+}
+.tool-group:last-child { border-right: none; margin-left: auto; }
+
+.tool-btn {
+  width: 30px; height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.8rem;
+}
+.tool-btn:hover { color: var(--white); background: var(--surface3); border-color: var(--border2); }
+.tool-btn.active { color: var(--cyan); background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.2); }
+.tool-btn[title] { position: relative; }
+
+.tool-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fog);
+  padding: 0 0.5rem;
+}
+
+.zoom-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--fog2);
+  min-width: 42px;
+  text-align: center;
+}
+
+/* workflow name input */
+.workflow-name {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--white);
+  outline: none;
+  min-width: 160px;
+  transition: all 0.15s;
+}
+.workflow-name:focus { border-color: var(--border2); background: var(--surface3); }
+
+.run-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 28px;
+  padding: 0 0.85rem;
+  background: rgba(0,255,148,0.1);
+  border: 1px solid rgba(0,255,148,0.25);
+  border-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.run-btn:hover { background: rgba(0,255,148,0.18); border-color: rgba(0,255,148,0.45); }
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 28px;
+  padding: 0 0.85rem;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.export-btn:hover { color: var(--amber); border-color: rgba(255,184,48,0.35); }
+
+/* ══════════════════════════════════════
+   MAIN AREA
+══════════════════════════════════════ */
+#workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ══════════════════════════════════════
+   LEFT PALETTE
+══════════════════════════════════════ */
+#palette {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.palette-search {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.palette-search-input {
+  flex: 1;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 0.35rem 0.6rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--white);
+  outline: none;
+}
+.palette-search-input::placeholder { color: var(--muted); }
+.palette-search-input:focus { border-color: rgba(0,229,255,0.3); }
+
+.palette-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+.palette-section {
+  margin-bottom: 0.25rem;
+}
+
+.palette-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.palette-section-header:hover { color: var(--fog2); }
+
+.palette-section-header svg {
+  transition: transform 0.2s;
+}
+.palette-section.collapsed .palette-section-header svg { transform: rotate(-90deg); }
+.palette-section.collapsed .palette-section-items { display: none; }
+
+.palette-section-items {
+  padding: 0 0.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ── Draggable event widget ── */
+.palette-event {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: grab;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.palette-event::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 5px 0 0 5px;
+}
+
+.palette-event.cat-extract::before { background: var(--cyan); }
+.palette-event.cat-transform::before { background: var(--purple); }
+.palette-event.cat-load::before { background: var(--amber); }
+.palette-event.cat-ai::before { background: var(--pink); }
+.palette-event.cat-validate::before { background: var(--green); }
+.palette-event.cat-notify::before { background: var(--teal); }
+.palette-event.cat-control::before { background: var(--fog2); }
+
+.palette-event:hover {
+  background: var(--surface3);
+  border-color: var(--border2);
+  transform: translateX(2px);
+}
+
+.palette-event:active { cursor: grabbing; opacity: 0.7; }
+
+.palette-event-icon {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.icon-extract   { background: rgba(0,229,255,0.1);  color: var(--cyan);   border: 1px solid rgba(0,229,255,0.2);  }
+.icon-transform { background: rgba(123,97,255,0.1); color: var(--purple); border: 1px solid rgba(123,97,255,0.2); }
+.icon-load      { background: rgba(255,184,48,0.1); color: var(--amber);  border: 1px solid rgba(255,184,48,0.2); }
+.icon-ai        { background: rgba(255,110,180,0.1);color: var(--pink);   border: 1px solid rgba(255,110,180,0.2);}
+.icon-validate  { background: rgba(0,255,148,0.1);  color: var(--green);  border: 1px solid rgba(0,255,148,0.2);  }
+.icon-notify    { background: rgba(0,212,170,0.1);  color: var(--teal);   border: 1px solid rgba(0,212,170,0.2);  }
+.icon-control   { background: rgba(90,109,133,0.15);color: var(--fog2);   border: 1px solid rgba(90,109,133,0.2); }
+
+.palette-event-info { flex: 1; min-width: 0; }
+
+.palette-event-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.palette-event-sub {
+  font-size: 0.62rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.drag-handle {
+  color: var(--muted);
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.palette-event:hover .drag-handle { opacity: 1; }
+
+/* ══════════════════════════════════════
+   CANVAS
+══════════════════════════════════════ */
+#canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* dot grid */
+#canvas-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#canvas-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#canvas-nodes {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* empty state */
+#canvas-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#canvas-empty.hidden { display: none; }
+
+.empty-icon {
+  width: 64px; height: 64px;
+  border: 2px dashed var(--border2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 1.5rem;
+}
+
+.empty-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--fog2);
+}
+
+.empty-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+  max-width: 240px;
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════
+   CANVAS NODES
+══════════════════════════════════════ */
+.canvas-node {
+  position: absolute;
+  min-width: 160px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  border-radius: 8px;
+  cursor: move;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: visible;
+}
+
+.canvas-node:hover {
+  border-color: var(--border2);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.canvas-node.selected {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(0,229,255,0.15), 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.canvas-node.connecting-target {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(0,255,148,0.2);
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.node-color-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 8px 8px 0 0;
+}
+
+.node-icon {
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.node-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--white);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.node-body {
+  padding: 0.5rem 0.65rem;
+}
+
+.node-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.node-annotation {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--amber);
+  background: rgba(255,184,48,0.07);
+  border: 1px solid rgba(255,184,48,0.15);
+  border-radius: 2px;
+  padding: 0.1rem 0.35rem;
+  margin-top: 0.2rem;
+}
+
+/* ── Ports ── */
+.node-ports {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.node-ports.left {
+  left: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.node-ports.right {
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.port {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 2px solid var(--border2);
+  cursor: crosshair;
+  transition: all 0.15s;
+  position: relative;
+  z-index: 10;
+}
+
+.port:hover {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.2);
+}
+
+.port.output { cursor: crosshair; }
+.port.input  { cursor: crosshair; }
+
+.port.connected {
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+
+/* node delete button */
+.node-delete {
+  position: absolute;
+  top: -7px; right: -7px;
+  width: 18px; height: 18px;
+  background: var(--red);
+  border: 2px solid var(--surface2);
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.6rem;
+  color: white;
+  z-index: 20;
+  transition: transform 0.15s;
+}
+.canvas-node:hover .node-delete,
+.canvas-node.selected .node-delete { display: flex; }
+.node-delete:hover { transform: scale(1.15); }
+
+/* ══════════════════════════════════════
+   SVG EDGES
+══════════════════════════════════════ */
+.edge-path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  cursor: pointer;
+}
+
+.edge-path:hover { stroke-width: 3; }
+
+.edge-flow {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.edge-label-bg {
+  fill: var(--surface2);
+  rx: 3;
+}
+
+.edge-label-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  fill: var(--fog2);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* edge flow animation */
+@keyframes flowDash {
+  to { stroke-dashoffset: -20; }
+}
+
+/* ══════════════════════════════════════
+   RIGHT PANEL — Properties
+══════════════════════════════════════ */
+#right-panel {
+  width: 240px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 100;
+  transition: width 0.2s;
+}
+
+#right-panel.collapsed { width: 0; overflow: hidden; }
+
+.panel-header {
+  height: var(--toolbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fog);
+}
+
+.panel-close {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--fog);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s;
+}
+.panel-close:hover { color: var(--white); background: var(--surface3); }
+
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.85rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+.panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0.5rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.panel-empty svg { opacity: 0.4; }
+.panel-empty p { font-size: 0.72rem; line-height: 1.5; }
+
+.prop-group { margin-bottom: 1.25rem; }
+
+.prop-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.prop-input {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 0.4rem 0.6rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.prop-input:focus { border-color: rgba(0,229,255,0.35); }
+
+.prop-select {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 0.4rem 0.6rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--white);
+  outline: none;
+  cursor: pointer;
+}
+
+.prop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.prop-key { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--fog2); }
+.prop-val { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--cyan); }
+
+.prop-divider { height: 1px; background: var(--border); margin: 0.85rem 0; }
+
+/* ══════════════════════════════════════
+   BOTTOM — Pointy-lang output + statusbar
+══════════════════════════════════════ */
+#bottom-panel {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.bottom-tabs {
+  display: flex;
+  align-items: stretch;
+  height: 30px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bottom-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.85rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fog2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.bottom-tab:hover { color: var(--white); }
+.bottom-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+.bottom-tab .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pls 2s infinite;
+}
+
+@keyframes pls { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.bottom-body {
+  height: 110px;
+  padding: 0.65rem 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: pre;
+  line-height: 1.9;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+/* Pointy-lang syntax colours */
+.pt-arr  { color: var(--cyan); }
+.pt-op   { color: var(--purple); }
+.pt-nd   { color: var(--white); }
+.pt-ann  { color: var(--amber); }
+.pt-str  { color: #fd79a8; }
+.pt-rt   { color: #fdcb6e; }
+.pt-meta { color: var(--green); }
+.pt-cm   { color: var(--fog); font-style: italic; }
+
+#statusbar {
+  height: var(--statusbar-h);
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  gap: 1.25rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.status-dot { width: 5px; height: 5px; border-radius: 50%; }
+.status-dot.ok { background: var(--green); }
+.status-dot.warn { background: var(--amber); }
+
+.status-spacer { margin-left: auto; }
+
+/* ══════════════════════════════════════
+   DRAG GHOST
+══════════════════════════════════════ */
+#drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.85;
+  display: none;
+}
+
+/* ══════════════════════════════════════
+   CONTEXT MENU
+══════════════════════════════════════ */
+#ctx-menu {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 0.3rem 0;
+  min-width: 160px;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  color: var(--fog2);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.ctx-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+.ctx-item.danger { color: var(--red); }
+.ctx-item.danger:hover { background: rgba(255,77,77,0.08); }
+.ctx-sep { height: 1px; background: var(--border); margin: 0.3rem 0; }
+
+/* ══════════════════════════════════════
+   CONNECTING LINE (live drag)
+══════════════════════════════════════ */
+#live-edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ══════════════════════════════════════
+   MODAL — New Workflow
+══════════════════════════════════════ */
+#modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+}
+
+#modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  width: 440px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.modal-close {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--fog2);
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 1rem;
+  transition: all 0.15s;
+}
+.modal-close:hover { color: var(--white); background: var(--surface3); }
+
+.modal-body { padding: 1.25rem; }
+
+.modal-field { margin-bottom: 1rem; }
+
+.modal-label {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fog);
+  margin-bottom: 0.4rem;
+}
+
+.modal-input {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 0.55rem 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.modal-input:focus { border-color: rgba(0,229,255,0.4); }
+
+.modal-select {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 0.55rem 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--white);
+  outline: none;
+  cursor: pointer;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.template-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border2);
+  border-radius: 5px;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.template-card:hover { border-color: rgba(0,229,255,0.3); background: var(--surface3); }
+.template-card.selected { border-color: var(--cyan); background: rgba(0,229,255,0.04); }
+
+.template-card-icon { font-size: 1.1rem; margin-bottom: 0.3rem; }
+.template-card-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--white);
+  margin-bottom: 0.15rem;
+}
+.template-card-desc { font-size: 0.65rem; color: var(--muted); line-height: 1.4; }
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 1rem;
+  border-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+}
+
+.modal-btn.secondary {
+  background: transparent;
+  color: var(--fog2);
+  border: 1px solid var(--border2);
+}
+.modal-btn.secondary:hover { color: var(--white); border-color: var(--border2); }
+
+.modal-btn.primary {
+  background: var(--cyan);
+  color: var(--bg);
+  font-weight: 500;
+}
+.modal-btn.primary:hover { background: #33eaff; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ MENUBAR ══════════════════ -->
+<div id="menubar">
+  <div class="menu-brand">
+    <svg class="brand-icon" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="10" fill="#0f1318"/>
+      <path d="M10 10L10 1.5A8.5 8.5 0 0 1 17.9 13Z" fill="#00c8e0"/>
+      <path d="M10 10L17.9 13A8.5 8.5 0 0 1 2.1 13Z" fill="#6b4fff"/>
+      <path d="M10 10L2.1 13A8.5 8.5 0 0 1 10 1.5Z" fill="#00e87a"/>
+      <path d="M8.2 2.3C7.8 4.3 7.6 6.8 8 10A2 2 0 0 0 10 11.8A2 2 0 0 0 12 10C12.4 6.8 12.2 4.3 11.8 2.3C11.5 1.8 8.5 1.8 8.2 2.3Z" fill="#0f1318"/>
+      <path d="M2.5 12C4 10 6.5 9 9.8 8.5A2 2 0 0 0 9 7A2 2 0 0 0 7.8 6.5C5.3 7.2 3.5 8.8 2.8 11C2.6 11.6 2.6 12.8 2.5 12Z" fill="#0f1318"/>
+      <path d="M17.5 12C16 10 13.5 9 10.2 8.5A2 2 0 0 0 11 7A2 2 0 0 0 12.2 6.5C14.7 7.2 16.5 8.8 17.2 11C17.4 11.6 17.4 12.8 17.5 12Z" fill="#0f1318"/>
+      <circle cx="10" cy="10" r="1.8" fill="#0f1318"/>
+      <circle cx="10" cy="10" r="0.9" fill="#00e5ff"/>
+    </svg>
+    <span class="brand-name">vol<span>nux</span></span>
+  </div>
+
+  <div class="menu-item">
+    File
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item" onclick="openNewWorkflowModal()">New workflow <kbd>⌘N</kbd></div>
+      <div class="menu-dropdown-item">Open… <kbd>⌘O</kbd></div>
+      <div class="menu-dropdown-sep"></div>
+      <div class="menu-dropdown-item">Save <kbd>⌘S</kbd></div>
+      <div class="menu-dropdown-item">Save as…</div>
+      <div class="menu-dropdown-sep"></div>
+      <div class="menu-dropdown-item">Export Pointy-lang</div>
+      <div class="menu-dropdown-item">Export JSON</div>
+    </div>
+  </div>
+  <div class="menu-item">
+    Edit
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item">Undo <kbd>⌘Z</kbd></div>
+      <div class="menu-dropdown-item">Redo <kbd>⌘⇧Z</kbd></div>
+      <div class="menu-dropdown-sep"></div>
+      <div class="menu-dropdown-item">Select all <kbd>⌘A</kbd></div>
+      <div class="menu-dropdown-item">Delete selected <kbd>⌫</kbd></div>
+    </div>
+  </div>
+  <div class="menu-item">
+    View
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item">Fit to canvas <kbd>⌘0</kbd></div>
+      <div class="menu-dropdown-item">Zoom in <kbd>⌘+</kbd></div>
+      <div class="menu-dropdown-item">Zoom out <kbd>⌘-</kbd></div>
+      <div class="menu-dropdown-sep"></div>
+      <div class="menu-dropdown-item">Toggle palette</div>
+      <div class="menu-dropdown-item">Toggle properties</div>
+    </div>
+  </div>
+  <div class="menu-item">Workflow</div>
+  <div class="menu-item">Help</div>
+
+  <button class="btn-new-workflow" onclick="openNewWorkflowModal()">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    New workflow
+  </button>
+</div>
+
+<!-- ══════════════════ TOOLBAR ══════════════════ -->
+<div id="toolbar">
+  <div class="tool-group">
+    <button class="tool-btn active" id="tool-select" title="Select (V)" onclick="setTool('select')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l4 10 2-4 4-2-10-4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tool-btn" id="tool-connect" title="Connect (E)" onclick="setTool('connect')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="3" cy="7" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="7" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 1"/></svg>
+    </button>
+    <button class="tool-btn" id="tool-pan" title="Pan (H)" onclick="setTool('pan')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v2M7 11v2M1 7h2M11 7h2M3.5 3.5l1.4 1.4M9.1 9.1l1.4 1.4M3.5 10.5l1.4-1.4M9.1 4.9l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="tool-group">
+    <input class="workflow-name" type="text" value="untitled-workflow" id="workflow-name-input" spellcheck="false"/>
+  </div>
+
+  <div class="tool-group">
+    <button class="tool-btn" onclick="zoom(-0.1)" title="Zoom out">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <span class="zoom-display" id="zoom-display">100%</span>
+    <button class="tool-btn" onclick="zoom(0.1)" title="Zoom in">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <button class="tool-btn" onclick="fitCanvas()" title="Fit canvas">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7" y="7" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M8 4h1V3M4 8H3v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="tool-group">
+    <span class="tool-label" id="node-count">0 nodes · 0 edges</span>
+  </div>
+
+  <div class="tool-group">
+    <button class="export-btn" onclick="copyPointy()">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="1" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 3V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H8" stroke="currentColor" stroke-width="1.2"/></svg>
+      Copy Pointy
+    </button>
+    <button class="run-btn">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 1.5l7 3.5-7 3.5V1.5z" fill="currentColor"/></svg>
+      Run
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════ WORKSPACE ══════════════════ -->
+<div id="workspace">
+
+  <!-- LEFT PALETTE -->
+  <div id="palette">
+    <div class="palette-search">
+      <input class="palette-search-input" type="text" placeholder="Search events…" id="palette-search" oninput="filterPalette(this.value)"/>
+    </div>
+    <div class="palette-body" id="palette-body">
+
+      <div class="palette-section" id="sec-extract">
+        <div class="palette-section-header" onclick="toggleSection('sec-extract')">
+          Extract
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="palette-section-items">
+          <div class="palette-event cat-extract" draggable="true" data-type="PostgresExtract" data-cat="extract" data-source="pypi" data-color="#00e5ff">
+            <div class="palette-event-icon icon-extract">PG</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">PostgresExtract</div>
+              <div class="palette-event-sub">pypi · v2.4.1</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-extract" draggable="true" data-type="KafkaIngest" data-cat="extract" data-source="pypi" data-color="#00e5ff">
+            <div class="palette-event-icon icon-extract">KFK</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">KafkaIngest</div>
+              <div class="palette-event-sub">pypi · v1.3.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-extract" draggable="true" data-type="S3Extract" data-cat="extract" data-source="hub" data-color="#00e5ff">
+            <div class="palette-event-icon icon-extract">S3E</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">S3Extract</div>
+              <div class="palette-event-sub">hub · v1.0.2</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-extract" draggable="true" data-type="RestApiExtract" data-cat="extract" data-source="hub" data-color="#00e5ff">
+            <div class="palette-event-icon icon-extract">API</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">RestApiExtract</div>
+              <div class="palette-event-sub">hub · v0.8.1</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-section" id="sec-transform">
+        <div class="palette-section-header" onclick="toggleSection('sec-transform')">
+          Transform
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="palette-section-items">
+          <div class="palette-event cat-transform" draggable="true" data-type="NormaliseTimestamps" data-cat="transform" data-source="pypi" data-color="#7b61ff">
+            <div class="palette-event-icon icon-transform">NRM</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">NormaliseTimestamps</div>
+              <div class="palette-event-sub">pypi · v1.1.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-transform" draggable="true" data-type="JsonFlatten" data-cat="transform" data-source="pypi" data-color="#7b61ff">
+            <div class="palette-event-icon icon-transform">JSN</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">JsonFlatten</div>
+              <div class="palette-event-sub">pypi · v2.0.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-transform" draggable="true" data-type="DeduplicateRows" data-cat="transform" data-source="hub" data-color="#7b61ff">
+            <div class="palette-event-icon icon-transform">DDP</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">DeduplicateRows</div>
+              <div class="palette-event-sub">hub · v1.2.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-section" id="sec-ai">
+        <div class="palette-section-header" onclick="toggleSection('sec-ai')">
+          AI &amp; Agents
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="palette-section-items">
+          <div class="palette-event cat-ai" draggable="true" data-type="GPT4Transform" data-cat="ai" data-source="hub" data-color="#ff6eb4">
+            <div class="palette-event-icon icon-ai">GPT</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">GPT4Transform</div>
+              <div class="palette-event-sub">hub · v1.8.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-ai" draggable="true" data-type="EmbedDocuments" data-cat="ai" data-source="hub" data-color="#ff6eb4">
+            <div class="palette-event-icon icon-ai">EMB</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">EmbedDocuments</div>
+              <div class="palette-event-sub">hub · v0.9.2</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-ai" draggable="true" data-type="ClassifyIntent" data-cat="ai" data-source="hub" data-color="#ff6eb4">
+            <div class="palette-event-icon icon-ai">CLS</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">ClassifyIntent</div>
+              <div class="palette-event-sub">hub · v0.6.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-section" id="sec-validate">
+        <div class="palette-section-header" onclick="toggleSection('sec-validate')">
+          Validate
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="palette-section-items">
+          <div class="palette-event cat-validate" draggable="true" data-type="SchemaValidate" data-cat="validate" data-source="git" data-color="#00ff94">
+            <div class="palette-event-icon icon-validate">SCH</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">SchemaValidate</div>
+              <div class="palette-event-sub">git · v2.0.1</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-validate" draggable="true" data-type="TypeCheck" data-cat="validate" data-source="pypi" data-color="#00ff94">
+            <div class="palette-event-icon icon-validate">TYP</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">TypeCheck</div>
+              <div class="palette-event-sub">pypi · v1.0.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-section" id="sec-load">
+        <div class="palette-section-header" onclick="toggleSection('sec-load')">
+          Load
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="palette-section-items">
+          <div class="palette-event cat-load" draggable="true" data-type="SnowflakeLoad" data-cat="load" data-source="hub" data-color="#ffb830">
+            <div class="palette-event-icon icon-load">SNF</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">SnowflakeLoad</div>
+              <div class="palette-event-sub">hub · v1.0.4</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-load" draggable="true" data-type="S3Load" data-cat="load" data-source="pypi" data-color="#ffb830">
+            <div class="palette-event-icon icon-load">S3L</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">S3Load</div>
+              <div class="palette-event-sub">pypi · v3.1.2</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-load" draggable="true" data-type="RedisCache" data-cat="load" data-source="git" data-color="#ffb830">
+            <div class="palette-event-icon icon-load">RDS</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">RedisCache</div>
+              <div class="palette-event-sub">git · v1.1.3</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-section" id="sec-notify">
+        <div class="palette-section-header" onclick="toggleSection('sec-notify')">
+          Notify
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="palette-section-items">
+          <div class="palette-event cat-notify" draggable="true" data-type="SlackNotify" data-cat="notify" data-source="pypi" data-color="#00d4aa">
+            <div class="palette-event-icon icon-notify">SLK</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">SlackNotify</div>
+              <div class="palette-event-sub">pypi · v1.5.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+          <div class="palette-event cat-notify" draggable="true" data-type="EmailAlert" data-cat="notify" data-source="hub" data-color="#00d4aa">
+            <div class="palette-event-icon icon-notify">EML</div>
+            <div class="palette-event-info">
+              <div class="palette-event-name">EmailAlert</div>
+              <div class="palette-event-sub">hub · v1.0.0</div>
+            </div>
+            <span class="drag-handle">⠿</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-wrap"
+    ondragover="onDragOver(event)"
+    ondrop="onDrop(event)"
+    oncontextmenu="onCanvasCtx(event)">
+
+    <!-- Empty state -->
+    <div id="canvas-empty">
+      <div class="empty-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect x="2" y="8" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="16" y="8" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M12 13h4" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 1"/>
+          <path d="M14 5v3M14 20v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="empty-title">Canvas is empty</p>
+      <p class="empty-sub">Drag events from the palette onto the canvas, then connect them to build your workflow.</p>
+    </div>
+
+    <!-- SVG for edges -->
+    <svg id="canvas-svg">
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0 0L8 3L0 6" fill="none" stroke="#00e5ff" stroke-width="1.2" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0 0L8 3L0 6" fill="none" stroke="#00ff94" stroke-width="1.2" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <g id="edges-group"></g>
+      <path id="live-edge-path" fill="none" stroke="#00e5ff" stroke-width="2" stroke-dasharray="6 4" opacity="0.6" d=""/>
+    </svg>
+
+    <!-- Nodes -->
+    <div id="canvas-nodes"></div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+    <div class="panel-header">
+      <span class="panel-title">Properties</span>
+      <button class="panel-close" onclick="document.getElementById('right-panel').classList.toggle('collapsed')">✕</button>
+    </div>
+    <div class="panel-body" id="right-panel-body">
+      <div class="panel-empty">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 6h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 18h8M12 22h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+        <p>Select a node to<br>edit its properties</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM PANEL -->
+<div id="bottom-panel">
+  <div class="bottom-tabs">
+    <button class="bottom-tab active">
+      <div class="dot"></div>
+      Pointy-lang output
+    </button>
+    <button class="bottom-tab">Console</button>
+    <button class="bottom-tab">Validation</button>
+  </div>
+  <div class="bottom-body" id="pointy-output">
+    <span style="color:var(--fog); font-style:italic;"># Add events to the canvas to generate Pointy-lang</span>
+  </div>
+</div>
+
+<div id="statusbar">
+  <div class="status-item"><div class="status-dot ok"></div> Runtime connected</div>
+  <div class="status-item"><div class="status-dot ok"></div> EventHub online</div>
+  <div class="status-item" id="status-nodes">0 nodes</div>
+  <div class="status-item" id="status-edges">0 edges</div>
+  <div class="status-spacer"></div>
+  <div class="status-item">Pointy-lang Wizard v0.3</div>
+  <div class="status-item">volnux-core 0.9.1</div>
+</div>
+
+<!-- DRAG GHOST -->
+<div id="drag-ghost"></div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="ctxDuplicate()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V3a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H9" stroke="currentColor" stroke-width="1.2"/></svg>
+    Duplicate
+  </div>
+  <div class="ctx-item">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Add annotation
+  </div>
+  <div class="ctx-item">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 0 0-9 0z" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 4v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Add retry
+  </div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" onclick="ctxDelete()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4h9M5 4V2.5h3V4M5.5 6.5v4M7.5 6.5v4M3 4l.8 7h5.4L10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Delete
+  </div>
+</div>
+
+<!-- NEW WORKFLOW MODAL -->
+<div id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New workflow</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label class="modal-label">Workflow name</label>
+        <input class="modal-input" type="text" value="my-etl-pipeline" id="modal-name" spellcheck="false"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Start from template</label>
+        <div class="template-grid">
+          <div class="template-card selected" onclick="selectTemplate(this)">
+            <div class="template-card-icon">⬜</div>
+            <div class="template-card-name">Blank</div>
+            <div class="template-card-desc">Start from an empty canvas</div>
+          </div>
+          <div class="template-card" onclick="selectTemplate(this)">
+            <div class="template-card-icon">🔄</div>
+            <div class="template-card-name">ETL Pipeline</div>
+            <div class="template-card-desc">Extract → Transform → Load</div>
+          </div>
+          <div class="template-card" onclick="selectTemplate(this)">
+            <div class="template-card-icon">🤖</div>
+            <div class="template-card-name">AI Agent</div>
+            <div class="template-card-desc">Intent → Process → Respond</div>
+          </div>
+          <div class="template-card" onclick="selectTemplate(this)">
+            <div class="template-card-icon">📡</div>
+            <div class="template-card-name">Streaming</div>
+            <div class="template-card-desc">Ingest → Validate → Sink</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="createWorkflow()">Create workflow →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let nodes = [];
+let edges = [];
+let selectedNodeId = null;
+let currentTool = 'select';
+let zoomLevel = 1;
+let nodeCounter = 0;
+let edgeCounter = 0;
+let draggingFrom = null; // { nodeId, port }
+let ctxTargetId = null;
+let selectedTemplate = 'Blank';
+
+/* ═══════════════════════════════════════════
+   TOOL
+═══════════════════════════════════════════ */
+function setTool(tool) {
+  currentTool = tool;
+  document.querySelectorAll('.tool-btn[id^="tool-"]').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tool-' + tool);
+  if (btn) btn.classList.add('active');
+  document.getElementById('canvas-wrap').style.cursor = tool === 'pan' ? 'grab' : 'default';
+}
+
+/* ═══════════════════════════════════════════
+   ZOOM
+═══════════════════════════════════════════ */
+function zoom(delta) {
+  zoomLevel = Math.min(2, Math.max(0.3, zoomLevel + delta));
+  document.getElementById('zoom-display').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+function fitCanvas() {
+  zoomLevel = 1;
+  document.getElementById('zoom-display').textContent = '100%';
+}
+
+/* ═══════════════════════════════════════════
+   PALETTE SECTION TOGGLE
+═══════════════════════════════════════════ */
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+function filterPalette(q) {
+  const lower = q.toLowerCase();
+  document.querySelectorAll('.palette-event').forEach(el => {
+    const name = el.dataset.type.toLowerCase();
+    el.style.display = name.includes(lower) ? '' : 'none';
+  });
+}
+
+/* ═══════════════════════════════════════════
+   DRAG FROM PALETTE
+═══════════════════════════════════════════ */
+document.querySelectorAll('.palette-event').forEach(el => {
+  el.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      type: el.dataset.type,
+      cat:  el.dataset.cat,
+      source: el.dataset.source,
+      color: el.dataset.color,
+    }));
+    const ghost = document.getElementById('drag-ghost');
+    ghost.textContent = el.dataset.type;
+    ghost.style.cssText = `
+      display:block; padding:6px 12px; background:var(--surface2);
+      border:1px solid var(--border2); border-radius:4px;
+      font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--white);
+      top:-100px; left:0; position:fixed;
+    `;
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+  });
+  el.addEventListener('dragend', () => {
+    document.getElementById('drag-ghost').style.display = 'none';
+  });
+});
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const wrap = document.getElementById('canvas-wrap');
+    const rect = wrap.getBoundingClientRect();
+    const x = e.clientX - rect.left - 80;
+    const y = e.clientY - rect.top  - 30;
+    addNode(data.type, data.cat, data.source, data.color, x, y);
+  } catch(_) {}
+}
+
+/* ═══════════════════════════════════════════
+   NODE CREATION
+═══════════════════════════════════════════ */
+const CAT_META = {
+  extract:   { iconCls: 'icon-extract',   bar: '#00e5ff', badge: '#00e5ff' },
+  transform: { iconCls: 'icon-transform', bar: '#7b61ff', badge: '#7b61ff' },
+  load:      { iconCls: 'icon-load',      bar: '#ffb830', badge: '#ffb830' },
+  ai:        { iconCls: 'icon-ai',        bar: '#ff6eb4', badge: '#ff6eb4' },
+  validate:  { iconCls: 'icon-validate',  bar: '#00ff94', badge: '#00ff94' },
+  notify:    { iconCls: 'icon-notify',    bar: '#00d4aa', badge: '#00d4aa' },
+  control:   { iconCls: 'icon-control',   bar: '#5a6d85', badge: '#5a6d85' },
+};
+
+const SOURCE_COLORS = { pypi: '#00e5ff', hub: '#ffb830', git: '#7b61ff', local: '#00ff94' };
+
+function addNode(type, cat, source, color, x, y) {
+  const id = 'n' + (++nodeCounter);
+  const abbr = type.replace(/[a-z]/g, '').slice(0, 3).padEnd(2, type[1] || 'X');
+  const meta = CAT_META[cat] || CAT_META.control;
+  const srcColor = SOURCE_COLORS[source] || '#5a6d85';
+
+  const node = { id, type, cat, source, color: meta.bar, x, y, annotation: '', retry: 0 };
+  nodes.push(node);
+
+  const el = document.createElement('div');
+  el.className = 'canvas-node';
+  el.id = id;
+  el.style.cssText = `left:${x}px; top:${y}px;`;
+
+  el.innerHTML = `
+    <div class="node-color-bar" style="background:${meta.bar}"></div>
+    <div class="node-header">
+      <div class="palette-event-icon ${meta.iconCls}" style="width:22px;height:22px;font-size:0.55rem;">${abbr}</div>
+      <span class="node-title">${type}</span>
+      <span class="node-badge" style="background:${srcColor}18;border:1px solid ${srcColor}30;color:${srcColor};">${source}</span>
+    </div>
+    <div class="node-body">
+      <div class="node-meta" id="${id}-meta">${source}:${type}</div>
+    </div>
+    <div class="node-ports left">
+      <div class="port input" id="${id}-in" title="Input"></div>
+    </div>
+    <div class="node-ports right">
+      <div class="port output" id="${id}-out" title="Output — drag to connect"></div>
+    </div>
+    <div class="node-delete" onclick="deleteNode('${id}')">✕</div>
+  `;
+
+  // Drag to move
+  let ox, oy, mx, my, moving = false;
+  el.addEventListener('mousedown', ev => {
+    if (ev.target.classList.contains('port') || ev.target.classList.contains('node-delete')) return;
+    ev.preventDefault();
+    selectNode(id);
+    moving = true;
+    ox = ev.clientX; oy = ev.clientY;
+    mx = node.x;     my = node.y;
+
+    const onMove = e => {
+      if (!moving) return;
+      node.x = mx + (e.clientX - ox);
+      node.y = my + (e.clientY - oy);
+      el.style.left = node.x + 'px';
+      el.style.top  = node.y + 'px';
+      renderEdges();
+    };
+    const onUp = () => { moving = false; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  });
+
+  // Output port — start connection
+  const outPort = el.querySelector('.port.output');
+  outPort.addEventListener('mousedown', ev => {
+    ev.stopPropagation();
+    draggingFrom = { nodeId: id };
+    const liveEdge = document.getElementById('live-edge-path');
+    const wrap = document.getElementById('canvas-wrap');
+
+    const onMove = e => {
+      const r = wrap.getBoundingClientRect();
+      const fromPos = getPortCenter(id, 'out');
+      const tx = e.clientX - r.left;
+      const ty = e.clientY - r.top;
+      const cx = (fromPos.x + tx) / 2;
+      liveEdge.setAttribute('d', `M${fromPos.x},${fromPos.y} C${cx},${fromPos.y} ${cx},${ty} ${tx},${ty}`);
+
+      // Highlight valid target nodes
+      nodes.forEach(n => {
+        if (n.id !== id) {
+          const el2 = document.getElementById(n.id);
+          const inPort = el2.querySelector('.port.input');
+          const ir = inPort.getBoundingClientRect();
+          const dist = Math.hypot(e.clientX - (ir.left + 7), e.clientY - (ir.top + 7));
+          el2.classList.toggle('connecting-target', dist < 30);
+        }
+      });
+    };
+
+    const onUp = e => {
+      liveEdge.setAttribute('d', '');
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+
+      // Find target
+      nodes.forEach(n => {
+        const targetEl = document.getElementById(n.id);
+        if (targetEl) {
+          targetEl.classList.remove('connecting-target');
+          const inPort = targetEl.querySelector('.port.input');
+          const ir = inPort.getBoundingClientRect();
+          const dist = Math.hypot(e.clientX - (ir.left + 7), e.clientY - (ir.top + 7));
+          if (dist < 30 && n.id !== id) {
+            // Check not duplicate
+            const dup = edges.find(ed => ed.from === id && ed.to === n.id);
+            if (!dup) {
+              edges.push({ id: 'e' + (++edgeCounter), from: id, to: n.id });
+              renderEdges();
+              updatePointy();
+              updateStatus();
+            }
+          }
+        }
+      });
+
+      draggingFrom = null;
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    ev.preventDefault();
+  });
+
+  // Context menu
+  el.addEventListener('contextmenu', ev => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    ctxTargetId = id;
+    showCtx(ev.clientX, ev.clientY);
+  });
+
+  document.getElementById('canvas-nodes').appendChild(el);
+  document.getElementById('canvas-empty').classList.add('hidden');
+
+  selectNode(id);
+  updateStatus();
+  updatePointy();
+}
+
+/* ═══════════════════════════════════════════
+   PORT CENTER
+═══════════════════════════════════════════ */
+function getPortCenter(nodeId, side) {
+  const nodeEl = document.getElementById(nodeId);
+  const portEl = nodeEl.querySelector(`.port.${side === 'out' ? 'output' : 'input'}`);
+  const wrapRect = document.getElementById('canvas-wrap').getBoundingClientRect();
+  const pr = portEl.getBoundingClientRect();
+  return {
+    x: pr.left - wrapRect.left + pr.width / 2,
+    y: pr.top  - wrapRect.top  + pr.height / 2,
+  };
+}
+
+/* ═══════════════════════════════════════════
+   RENDER EDGES
+═══════════════════════════════════════════ */
+function renderEdges() {
+  const g = document.getElementById('edges-group');
+  g.innerHTML = '';
+
+  edges.forEach(edge => {
+    const fromNode = nodes.find(n => n.id === edge.from);
+    const toNode   = nodes.find(n => n.id === edge.to);
+    if (!fromNode || !toNode) return;
+
+    const from = getPortCenter(edge.from, 'out');
+    const to   = getPortCenter(edge.to,   'in');
+    const cx   = (from.x + to.x) / 2;
+
+    // Mark ports as connected
+    const fromEl = document.getElementById(edge.from);
+    const toEl   = document.getElementById(edge.to);
+    if (fromEl) fromEl.querySelector('.port.output')?.classList.add('connected');
+    if (toEl)   toEl.querySelector('.port.input')?.classList.add('connected');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${from.x},${from.y} C${cx},${from.y} ${cx},${to.y} ${to.x},${to.y}`);
+    path.setAttribute('class', 'edge-path');
+    path.setAttribute('stroke', '#00e5ff');
+    path.setAttribute('stroke-dasharray', '0');
+    path.setAttribute('marker-end', 'url(#arrowhead)');
+
+    // Animated flow dash on hover
+    path.addEventListener('mouseenter', () => {
+      path.setAttribute('stroke-dasharray', '8 4');
+      path.style.animation = 'flowDash 0.5s linear infinite';
+    });
+    path.addEventListener('mouseleave', () => {
+      path.setAttribute('stroke-dasharray', '0');
+      path.style.animation = '';
+    });
+
+    // Delete edge on dbl-click
+    path.addEventListener('dblclick', () => {
+      edges = edges.filter(e => e.id !== edge.id);
+      renderEdges();
+      updatePointy();
+      updateStatus();
+    });
+
+    g.appendChild(path);
+
+    // Edge label midpoint — show arrow symbol
+    const mx = (from.x + to.x) / 2;
+    const my = (from.y + to.y) / 2;
+
+    const labelBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    labelBg.setAttribute('x', mx - 14); labelBg.setAttribute('y', my - 9);
+    labelBg.setAttribute('width', 28); labelBg.setAttribute('height', 16);
+    labelBg.setAttribute('rx', 3);
+    labelBg.setAttribute('fill', '#151a22');
+    labelBg.setAttribute('stroke', '#1f2736');
+    labelBg.setAttribute('stroke-width', '1');
+    g.appendChild(labelBg);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', mx); label.setAttribute('y', my);
+    label.setAttribute('class', 'edge-label-text');
+    label.setAttribute('fill', '#00e5ff');
+    label.textContent = '→';
+    g.appendChild(label);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   SELECT NODE
+═══════════════════════════════════════════ */
+function selectNode(id) {
+  document.querySelectorAll('.canvas-node').forEach(n => n.classList.remove('selected'));
+  if (id) {
+    document.getElementById(id)?.classList.add('selected');
+    selectedNodeId = id;
+    renderRightPanel(id);
+  }
+}
+
+document.getElementById('canvas-wrap').addEventListener('mousedown', e => {
+  if (e.target === document.getElementById('canvas-wrap') || e.target === document.getElementById('canvas-nodes')) {
+    selectNode(null);
+    document.getElementById('right-panel-body').innerHTML = `
+      <div class="panel-empty">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="4" y="10" width="24" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 6h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 18h8M12 22h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+        <p>Select a node to<br>edit its properties</p>
+      </div>`;
+  }
+  hideCtx();
+});
+
+/* ═══════════════════════════════════════════
+   RIGHT PANEL
+═══════════════════════════════════════════ */
+function renderRightPanel(id) {
+  const node = nodes.find(n => n.id === id);
+  if (!node) return;
+  const srcColor = SOURCE_COLORS[node.source] || '#5a6d85';
+
+  document.getElementById('right-panel-body').innerHTML = `
+    <div class="prop-group">
+      <div class="prop-label">Event name</div>
+      <input class="prop-input" value="${node.type}" oninput="updateNodeType('${id}', this.value)"/>
+    </div>
+    <div class="prop-group">
+      <div class="prop-label">Source</div>
+      <select class="prop-select" onchange="updateNodeSource('${id}', this.value)">
+        <option ${node.source==='pypi'?'selected':''}>pypi</option>
+        <option ${node.source==='hub'?'selected':''}>hub</option>
+        <option ${node.source==='git'?'selected':''}>git</option>
+        <option ${node.source==='local'?'selected':''}>local</option>
+      </select>
+    </div>
+    <div class="prop-group">
+      <div class="prop-label">Version</div>
+      <input class="prop-input" value="@latest" id="prop-ver-${id}" oninput="updatePointy()"/>
+    </div>
+    <div class="prop-group">
+      <div class="prop-label">Node annotation</div>
+      <input class="prop-input" placeholder='e.g. node="warehouse"' id="prop-ann-${id}" oninput="updateAnnotation('${id}', this.value)"/>
+    </div>
+    <div class="prop-group">
+      <div class="prop-label">Executor</div>
+      <select class="prop-select" id="prop-exec-${id}" onchange="updatePointy()">
+        <option value="">default</option>
+        <option value="celery">celery</option>
+        <option value="local">local</option>
+      </select>
+    </div>
+    <div class="prop-group">
+      <div class="prop-label">Retry count</div>
+      <select class="prop-select" id="prop-retry-${id}" onchange="updatePointy()">
+        <option value="0">none</option>
+        <option value="2">× 2</option>
+        <option value="3">× 3</option>
+        <option value="5">× 5</option>
+      </select>
+    </div>
+    <div class="prop-divider"></div>
+    <div class="prop-row"><span class="prop-key">Node ID</span><span class="prop-val">${id}</span></div>
+    <div class="prop-row"><span class="prop-key">Category</span><span class="prop-val">${node.cat}</span></div>
+    <div class="prop-row"><span class="prop-key">Position</span><span class="prop-val">${Math.round(node.x)}, ${Math.round(node.y)}</span></div>
+    <div class="prop-divider"></div>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+      <button onclick="deleteNode('${id}')" style="flex:1;padding:0.45rem;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--red);cursor:pointer;">Delete node</button>
+      <button onclick="duplicateNode('${id}')" style="flex:1;padding:0.45rem;background:var(--surface3);border:1px solid var(--border2);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--fog2);cursor:pointer;">Duplicate</button>
+    </div>
+  `;
+}
+
+function updateNodeType(id, val) {
+  const node = nodes.find(n => n.id === id);
+  if (node) {
+    node.type = val;
+    const el = document.getElementById(id);
+    el.querySelector('.node-title').textContent = val;
+    el.querySelector(`#${id}-meta`).textContent = `${node.source}:${val}`;
+    updatePointy();
+  }
+}
+
+function updateNodeSource(id, val) {
+  const node = nodes.find(n => n.id === id);
+  if (node) { node.source = val; updatePointy(); }
+}
+
+function updateAnnotation(id, val) {
+  const node = nodes.find(n => n.id === id);
+  if (!node) return;
+  node.annotation = val;
+  const body = document.getElementById(id).querySelector('.node-body');
+  let annEl = body.querySelector('.node-annotation');
+  if (val) {
+    if (!annEl) { annEl = document.createElement('div'); annEl.className = 'node-annotation'; body.appendChild(annEl); }
+    annEl.textContent = '[' + val + ']';
+  } else if (annEl) {
+    annEl.remove();
+  }
+  updatePointy();
+}
+
+/* ═══════════════════════════════════════════
+   DELETE / DUPLICATE NODE
+═══════════════════════════════════════════ */
+function deleteNode(id) {
+  nodes = nodes.filter(n => n.id !== id);
+  edges = edges.filter(e => e.from !== id && e.to !== id);
+  document.getElementById(id)?.remove();
+  if (nodes.length === 0) document.getElementById('canvas-empty').classList.remove('hidden');
+  renderEdges();
+  updatePointy();
+  updateStatus();
+  selectNode(null);
+}
+
+function duplicateNode(id) {
+  const node = nodes.find(n => n.id === id);
+  if (!node) return;
+  addNode(node.type, node.cat, node.source, node.color, node.x + 180, node.y + 24);
+}
+
+/* ═══════════════════════════════════════════
+   STATUS BAR
+═══════════════════════════════════════════ */
+function updateStatus() {
+  document.getElementById('status-nodes').textContent = `${nodes.length} node${nodes.length !== 1 ? 's' : ''}`;
+  document.getElementById('status-edges').textContent = `${edges.length} edge${edges.length !== 1 ? 's' : ''}`;
+  document.getElementById('node-count').textContent = `${nodes.length} nodes · ${edges.length} edges`;
+}
+
+/* ═══════════════════════════════════════════
+   POINTY-LANG GENERATOR
+═══════════════════════════════════════════ */
+function updatePointy() {
+  const output = document.getElementById('pointy-output');
+
+  if (nodes.length === 0) {
+    output.innerHTML = `<span style="color:var(--fog);font-style:italic;"># Add events to the canvas to generate Pointy-lang</span>`;
+    return;
+  }
+
+  // Build adjacency: find chains
+  const inDegree = {};
+  nodes.forEach(n => inDegree[n.id] = 0);
+  edges.forEach(e => { inDegree[e.to] = (inDegree[e.to] || 0) + 1; });
+
+  const roots = nodes.filter(n => inDegree[n.id] === 0);
+
+  function getVersion(id) {
+    const el = document.getElementById('prop-ver-' + id);
+    return el ? el.value.trim() : '@latest';
+  }
+  function getAnnotation(id) {
+    const node = nodes.find(n => n.id === id);
+    const execEl = document.getElementById('prop-exec-' + id);
+    const retryEl = document.getElementById('prop-retry-' + id);
+    const parts = [];
+    if (node?.annotation) parts.push(node.annotation);
+    if (execEl && execEl.value) parts.push(`executor="${execEl.value}"`);
+    return parts.length ? '[' + parts.join(', ') + ']' : '';
+  }
+  function getRetry(id) {
+    const el = document.getElementById('prop-retry-' + id);
+    return el ? parseInt(el.value) : 0;
+  }
+
+  function renderNode(node) {
+    const ver = getVersion(node.id);
+    const ann = getAnnotation(node.id);
+    const retry = getRetry(node.id);
+    const src = `<span class="pt-meta">${node.source}</span><span>:</span><span class="pt-nd">${node.type}</span><span class="pt-ann">${ver}</span>`;
+    const annStr = ann ? `<span class="pt-ann">${ann}</span>` : '';
+    const retryStr = retry > 0 ? ` <span class="pt-rt">* ${retry}</span>` : '';
+    return src + annStr + retryStr;
+  }
+
+  function buildChain(startId, visited = new Set()) {
+    if (visited.has(startId)) return '';
+    visited.add(startId);
+
+    const node = nodes.find(n => n.id === startId);
+    if (!node) return '';
+
+    const outEdges = edges.filter(e => e.from === startId);
+    let line = renderNode(node);
+
+    if (outEdges.length === 0) return line;
+
+    if (outEdges.length === 1) {
+      const next = buildChain(outEdges[0].to, visited);
+      return line + '\n  <span class="pt-arr">-></span> ' + next;
+    }
+
+    // Fan-out
+    const branches = outEdges.map(e => buildChain(e.to, new Set(visited))).join('\n  <span class="pt-op">|-></span> ');
+    return line + '\n  <span class="pt-op">|-></span> ' + branches;
+  }
+
+  const name = document.getElementById('workflow-name-input').value || 'workflow';
+  let html = `<span class="pt-cm"># ${name}.pointy — generated by Pointy-lang Wizard</span>\n\n`;
+
+  if (roots.length === 0 && nodes.length > 0) {
+    // Cycle — just list nodes
+    html += nodes.map(n => renderNode(n)).join('\n  <span class="pt-arr">-></span> ');
+  } else {
+    html += roots.map(r => buildChain(r.id)).join('\n\n');
+  }
+
+  output.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════
+   COPY POINTY
+═══════════════════════════════════════════ */
+function copyPointy() {
+  const text = document.getElementById('pointy-output').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.export-btn');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   CONTEXT MENU
+═══════════════════════════════════════════ */
+function showCtx(x, y) {
+  const m = document.getElementById('ctx-menu');
+  m.style.cssText = `display:block; left:${x}px; top:${y}px;`;
+}
+function hideCtx() {
+  document.getElementById('ctx-menu').style.display = 'none';
+}
+function ctxDelete() { if (ctxTargetId) deleteNode(ctxTargetId); hideCtx(); }
+function ctxDuplicate() { if (ctxTargetId) duplicateNode(ctxTargetId); hideCtx(); }
+
+function onCanvasCtx(e) {
+  e.preventDefault();
+  ctxTargetId = null;
+  // Show canvas context menu
+  const m = document.getElementById('ctx-menu');
+  m.innerHTML = `
+    <div class="ctx-item" onclick="hideCtx()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Add node here
+    </div>
+    <div class="ctx-item" onclick="fitCanvas();hideCtx()">Fit canvas</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="clearCanvas();hideCtx()">Clear canvas</div>
+  `;
+  showCtx(e.clientX, e.clientY);
+}
+
+function clearCanvas() {
+  nodes = []; edges = [];
+  document.getElementById('canvas-nodes').innerHTML = '';
+  document.getElementById('edges-group').innerHTML = '';
+  document.getElementById('canvas-empty').classList.remove('hidden');
+  updatePointy();
+  updateStatus();
+}
+
+document.addEventListener('click', hideCtx);
+
+/* ═══════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════ */
+function openNewWorkflowModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('modal-name').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function selectTemplate(card) {
+  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedTemplate = card.querySelector('.template-card-name').textContent;
+}
+
+function createWorkflow() {
+  const name = document.getElementById('modal-name').value.trim() || 'my-workflow';
+  document.getElementById('workflow-name-input').value = name;
+  closeModal();
+  clearCanvas();
+
+  const tmpl = selectedTemplate;
+  setTimeout(() => {
+    if (tmpl === 'ETL Pipeline') {
+      addNode('PostgresExtract', 'extract', 'pypi', '#00e5ff', 60, 120);
+      setTimeout(() => addNode('NormaliseTimestamps', 'transform', 'pypi', '#7b61ff', 280, 120), 80);
+      setTimeout(() => addNode('SnowflakeLoad', 'load', 'hub', '#ffb830', 500, 120), 160);
+      setTimeout(() => {
+        edges.push({ id: 'e' + (++edgeCounter), from: 'n' + (nodeCounter-2), to: 'n' + (nodeCounter-1) });
+        edges.push({ id: 'e' + (++edgeCounter), from: 'n' + (nodeCounter-1), to: 'n' + nodeCounter });
+        renderEdges(); updatePointy(); updateStatus();
+      }, 280);
+    } else if (tmpl === 'AI Agent') {
+      addNode('RestApiExtract', 'extract', 'hub', '#00e5ff', 60, 100);
+      setTimeout(() => addNode('ClassifyIntent', 'ai', 'hub', '#ff6eb4', 280, 100), 80);
+      setTimeout(() => addNode('GPT4Transform', 'ai', 'hub', '#ff6eb4', 500, 60), 160);
+      setTimeout(() => addNode('SlackNotify', 'notify', 'pypi', '#00d4aa', 500, 160), 200);
+      setTimeout(() => {
+        const n = nodeCounter;
+        edges.push({ id: 'e'+(++edgeCounter), from: 'n'+(n-3), to: 'n'+(n-2) });
+        edges.push({ id: 'e'+(++edgeCounter), from: 'n'+(n-2), to: 'n'+(n-1) });
+        edges.push({ id: 'e'+(++edgeCounter), from: 'n'+(n-2), to: 'n'+n });
+        renderEdges(); updatePointy(); updateStatus();
+      }, 320);
+    } else if (tmpl === 'Streaming') {
+      addNode('KafkaIngest', 'extract', 'pypi', '#00e5ff', 60, 120);
+      setTimeout(() => addNode('SchemaValidate', 'validate', 'git', '#00ff94', 280, 120), 80);
+      setTimeout(() => addNode('RedisCache', 'load', 'git', '#ffb830', 500, 120), 160);
+      setTimeout(() => {
+        edges.push({ id: 'e'+(++edgeCounter), from: 'n'+(nodeCounter-2), to: 'n'+(nodeCounter-1) });
+        edges.push({ id: 'e'+(++edgeCounter), from: 'n'+(nodeCounter-1), to: 'n'+nodeCounter });
+        renderEdges(); updatePointy(); updateStatus();
+      }, 280);
+    }
+  }, 100);
+}
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+/* keyboard shortcuts */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); openNewWorkflowModal(); }
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (document.activeElement.tagName === 'INPUT') return;
+    if (selectedNodeId) deleteNode(selectedNodeId);
+  }
+  if (e.key === 'v' || e.key === 'V') { if (document.activeElement.tagName !== 'INPUT') setTool('select'); }
+  if (e.key === 'h' || e.key === 'H') { if (document.activeElement.tagName !== 'INPUT') setTool('pan'); }
+});
+</script>
+</body>
+</html>
