@@ -10,6 +10,7 @@
     "dev": "vite",
     "docs:sync": "node scripts/sync-docs.mjs",
     "build": "npm run docs:sync && vue-tsc -b && vite build",
+    "build:netlify": "node scripts/netlify-build.mjs",
     "dev:eventhub": "npm run dev -w @volnux/eventhub-app",
     "dev:mesh": "npm run dev -w @volnux/mesh-runtime-app",
     "dev:pointy": "npm run dev -w @volnux/pointy-app",

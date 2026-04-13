@@ -1,0 +1,38 @@
+# Unified site: marketing at / plus EventHub, Mesh Runtime, and Pointy under /products/*
+# Build: npm ci && npm run build:netlify
+#
+# In Netlify → Site configuration → Environment variables, set (use your real domain or Netlify URL):
+#   VITE_EVENTHUB_URL  = https://YOUR_SITE.netlify.app/products/eventhub
+#   VITE_MESH_URL      = https://YOUR_SITE.netlify.app/products/mesh-runtime
+#   VITE_POINTY_URL    = https://YOUR_SITE.netlify.app/products/pointy-lang
+# For branch / Deploy Preview builds you can use ${DEPLOY_PRIME_URL} in the Netlify UI
+# (e.g. ${DEPLOY_PRIME_URL}/products/eventhub) so previews redirect into the same deploy.
+
+[build]
+  command = "npm ci && npm run build:netlify"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Sub-app SPAs (must be before the site-wide fallback)
+[[redirects]]
+  from = "/products/eventhub/*"
+  to = "/products/eventhub/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/products/mesh-runtime/*"
+  to = "/products/mesh-runtime/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/products/pointy-lang/*"
+  to = "/products/pointy-lang/index.html"
+  status = 200
+
+# Marketing site (Vue Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
