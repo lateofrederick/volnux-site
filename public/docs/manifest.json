@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-13T14:18:37.736Z",
+  "generated": "2026-04-13T18:10:17.035Z",
   "sourceRoot": "/Users/lateo/Documents/dev/open_source/event_pipeline",
   "groups": [
     {
@@ -62,11 +62,6 @@
           "id": "api-fields",
           "title": "Fields and Signals",
           "path": "markdown/api--fields.md"
-        },
-        {
-          "id": "api-index",
-          "title": "Overview",
-          "path": "markdown/api--index.md"
         },
         {
           "id": "api-managers",

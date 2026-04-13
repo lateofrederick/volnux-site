@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base shell: match prototype density and no-select IDE chrome */
+@layer base {
+  html,
+  body,
+  #app {
+    @apply h-full w-full overflow-hidden;
+  }
+
+  body {
+    @apply flex flex-col bg-vn-wizard-bg font-sans text-[13px] text-vn-wizard-text antialiased selection:bg-vn-accent/20;
+  }
+
+  #app {
+    @apply flex min-h-0 flex-1 select-none flex-col overflow-hidden bg-vn-wizard-bg;
+  }
+}
+
+/* Injected Pointy output (v-html) — keep class names stable for composable */
+@layer components {
+  .pt-cm {
+    @apply text-vn-wizard-fog italic;
+  }
+
+  .pt-arr {
+    @apply text-vn-accent;
+  }
+
+  .pt-op {
+    @apply text-vn-accent2;
+  }
+
+  .pt-nd {
+    @apply text-vn-white;
+  }
+
+  .pt-ann {
+    @apply text-vn-attr;
+  }
+
+  .pt-str {
+    @apply text-vn-string;
+  }
+
+  .pt-rt {
+    @apply text-vn-retry;
+  }
+
+  .pt-meta {
+    @apply text-vn-accent3;
+  }
+
+  .port-is-connected {
+    @apply !border-vn-accent !bg-vn-accent;
+  }
+}

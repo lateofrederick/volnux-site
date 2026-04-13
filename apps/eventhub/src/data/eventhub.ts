@@ -1,4 +1,5 @@
 import type { EventHubEvent, EventSource } from '@/types/eventhub'
+import { postgresExtractDetail } from '@/data/postgresExtractEventDetail'
 
 const categories = [
   'All',
@@ -65,8 +66,17 @@ export const eventHubEvents: EventHubEvent[] = [
     accent: 'cyan',
     category: 'Data Pipelines',
     description:
-      'Extract data from PostgreSQL tables with cursor pagination, schema inference, SSL support, and incremental watermark reads.',
-    tags: ['postgres', 'etl', 'extract', 'database'],
+      'Extract data from PostgreSQL tables with configurable batch size, cursor-based pagination, and automatic schema inference. Supports SSL, connection pooling, incremental extraction via watermark columns, and parallel shard reading for large tables.',
+    tags: ['postgres', 'etl', 'extract', 'database', 'sql', 'incremental', 'streaming'],
+    tagAccent: {
+      postgres: 'tag--cyan',
+      etl: 'tag--cyan',
+      extract: null,
+      database: null,
+      sql: null,
+      incremental: null,
+      streaming: 'tag--green',
+    },
     source: 'pypi',
     downloadsMonthly: '84.2k / mo',
     verified: 'official',
@@ -76,75 +86,7 @@ export const eventHubEvents: EventHubEvent[] = [
       { label: 'Success rate', value: '98.4%' },
       { label: 'Latest', value: 'v2.4.1' },
     ],
-    detail: {
-      publisher: 'volnux-official',
-      license: 'MIT',
-      published: 'Nov 12, 2024',
-      python: '>=3.11',
-      sourceUrl: 'https://github.com/nshaibu/volnux',
-      issuesUrl: 'https://github.com/nshaibu/volnux/issues',
-      pypiUrl: 'https://pypi.org/project/event-pipeline/',
-      installRefs: ['pypi:PostgresExtract@v2.4.1', 'hub:volnux/PostgresExtract@v2.4.1'],
-      dependencies: [
-        { name: 'asyncpg', version: '>=0.29' },
-        { name: 'volnux-core', version: '>=0.8' },
-        { name: 'pydantic', version: '>=2.0' },
-      ],
-      compatibility: ['0.8.x', '0.9.x', '0.10.x', '1.0-beta'],
-      overview: [
-        'PostgresExtract streams rows from PostgreSQL into Volnux workflows with safe batching.',
-        'It handles cursor paging and incremental extraction so large tables remain practical.',
-      ],
-      interfaceCode:
-        'class PostgresExtract(EventBase):\n  def __init__(self, dsn: str, table: str, batch_size: int = 1000): ...\n  async def __call__(self) -> EventResult: ...',
-      usageExamples: [
-        {
-          title: 'Pointy quick reference',
-          language: 'pointy-lang',
-          code: 'pypi:PostgresExtract@v2.4.1\n  |-> MAP<SchemaValidate> || Checkpoint\n  -> SnowflakeLoad',
-        },
-        {
-          title: 'Python initialization',
-          language: 'python',
-          code: 'event = PostgresExtract(\n  dsn="postgresql://user:pass@host:5432/db",\n  table="orders",\n  batch_size=1000,\n)',
-        },
-      ],
-      parameters: [
-        {
-          name: 'dsn',
-          type: 'str',
-          required: true,
-          description: 'PostgreSQL connection string.',
-        },
-        {
-          name: 'table',
-          type: 'str',
-          required: true,
-          description: 'Table name to extract.',
-        },
-        {
-          name: 'batch_size',
-          type: 'int',
-          required: false,
-          description: 'Rows fetched per cursor iteration.',
-          defaultValue: '1000',
-        },
-      ],
-      changelog: [
-        {
-          version: 'v2.4.1',
-          date: '2024-11-12',
-          tag: 'fix',
-          items: ['Fixed cursor release edge case on cancelled extraction.'],
-        },
-        {
-          version: 'v2.4.0',
-          date: '2024-10-28',
-          tag: 'feature',
-          items: ['Added column whitelist support for wide tables.'],
-        },
-      ],
-    },
+    detail: postgresExtractDetail,
   },
   {
     slug: 'gpt4-transform',

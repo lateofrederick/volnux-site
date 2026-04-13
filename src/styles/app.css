@@ -1,3 +1,5 @@
+@import './site-header-extras.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,32 +9,16 @@
     @apply scroll-smooth;
   }
 
-  #app:not(.mesh-active) {
+  #app {
     @apply relative min-h-screen bg-vn-black font-sans text-base leading-relaxed text-vn-text antialiased;
   }
 
-  #app:not(.mesh-active)::before {
+  #app::before {
     @apply pointer-events-none fixed inset-0 z-0;
     background-image:
       linear-gradient(rgba(0, 229, 255, 0.015) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0, 229, 255, 0.015) 1px, transparent 1px);
     background-size: 48px 48px;
-  }
-
-  #app.mesh-active {
-    @apply relative min-h-screen bg-mesh-black font-sans text-base leading-relaxed text-mesh-text antialiased;
-  }
-
-  #app.mesh-active::after {
-    @apply pointer-events-none fixed inset-0 z-[1];
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.04) 2px,
-      rgba(0, 0, 0, 0.04) 4px
-    );
-    content: '';
   }
 }
 
@@ -94,36 +80,6 @@
 
   .vn-divider {
     @apply h-px bg-gradient-to-r from-transparent via-vn-border2 to-transparent;
-  }
-
-  /* Mesh marketing page */
-  .mesh-container {
-    @apply relative z-[2] mx-auto w-full max-w-[1140px] px-6 sm:px-10;
-  }
-
-  .mesh-section {
-    @apply relative z-[2] py-24 lg:py-32;
-  }
-
-  .mesh-topology {
-    @apply relative overflow-hidden rounded-lg border border-mesh-border bg-[rgba(11,14,20,0.92)] p-6 sm:p-8;
-  }
-
-  .mesh-topology::before {
-    @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-vn-accent via-vn-accent2 to-vn-accent3 content-[''];
-  }
-
-  .mesh-code-panel {
-    @apply relative overflow-hidden rounded-lg border border-mesh-border bg-[rgba(5,7,9,0.95)] font-mono text-[0.82rem] leading-loose sm:text-sm;
-  }
-
-  .mesh-code-panel::before {
-    @apply pointer-events-none absolute inset-x-0 top-0 z-[1] h-0.5 bg-gradient-to-r from-vn-accent to-vn-accent2 content-[''];
-  }
-
-  .mesh-btn-outline {
-    @apply inline-flex items-center gap-2 rounded-[3px] border border-mesh-border2 px-8 py-3.5 font-display text-[0.875rem] font-semibold text-mesh-text transition;
-    @apply hover:border-vn-accent/40 hover:bg-vn-accent/5 hover:text-vn-accent;
   }
 
   /* Markdown body for /docs (synced from TUTORIAL.md + Sphinx .rst) */
@@ -243,5 +199,30 @@
 
   .docs-md th {
     @apply bg-vn-surface2 text-vn-text;
+  }
+
+  /* API reference pages — Saleor-style density and hierarchy */
+  .docs-api-page .docs-md h2 {
+    @apply mt-12 border-b border-vn-border pb-2 text-lg font-semibold tracking-tight text-vn-white first:mt-2;
+  }
+
+  .docs-api-page .docs-md h3 {
+    @apply mt-8 text-base font-semibold text-vn-accent2;
+  }
+
+  .docs-api-page .docs-md h4 {
+    @apply mt-6 scroll-mt-28 font-mono text-[0.95rem] font-semibold leading-snug text-vn-text lg:scroll-mt-32;
+  }
+
+  .docs-api-page .docs-md pre {
+    @apply border-vn-border2/80 bg-[#1e222a];
+  }
+
+  .docs-api-page .docs-md table {
+    @apply text-[0.875rem];
+  }
+
+  .docs-api-page .docs-md tbody tr:nth-child(even) {
+    @apply bg-vn-surface/40;
   }
 }

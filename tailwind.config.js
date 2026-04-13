@@ -19,14 +19,6 @@ export default {
         'vn-string': '#fd79a8',
         'vn-retry': '#fdcb6e',
         'vn-attr': '#ff9f43',
-        'mesh-black': '#050709',
-        'mesh-surface': '#0b0e14',
-        'mesh-surface2': '#111620',
-        'mesh-border': '#1a2030',
-        'mesh-border2': '#263040',
-        'mesh-text': '#dde4f0',
-        'mesh-muted': '#5a6880',
-        'mesh-muted2': '#3a4558',
       },
       fontFamily: {
         display: ['Syne', 'ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -42,10 +34,6 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.45' },
         },
-        'mesh-pulse-ring': {
-          '0%, 100%': { opacity: '1', boxShadow: '0 0 0 0 rgba(0,255,148,0.4)' },
-          '50%': { opacity: '0.7', boxShadow: '0 0 0 4px rgba(0,255,148,0)' },
-        },
         'scroll-line': {
           '0%': { transform: 'scaleY(0)', transformOrigin: 'top', opacity: '0' },
           '50%': { transform: 'scaleY(1)', transformOrigin: 'top', opacity: '1' },
@@ -55,7 +43,6 @@ export default {
       animation: {
         'fade-up': 'fade-up 0.65s ease forwards',
         'pulse-dot': 'pulse-dot 2s ease infinite',
-        'mesh-pulse-ring': 'mesh-pulse-ring 2s ease infinite',
         'scroll-line': 'scroll-line 2s ease infinite',
       },
     },

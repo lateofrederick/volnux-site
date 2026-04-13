@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import MeshCanvas from '@/components/MeshCanvas.vue'
 import MeshTopologyPanels from '@/views/mesh/MeshTopologyPanels.vue'
+
+const marketingUrl = import.meta.env.VITE_MARKETING_URL || 'https://volnux.netlify.app'
 
 const mainEl = ref<HTMLElement | null>(null)
 const stepIndex = ref(0)
@@ -292,7 +293,7 @@ onUnmounted(() => revealObserver?.disconnect())
         </p>
         <div class="mesh-reveal mt-10 flex translate-y-6 flex-wrap justify-center gap-4 opacity-0 transition duration-700 ease-out">
           <a href="#" class="vn-btn-primary rounded-[3px] text-[0.875rem]">Get Early Access</a>
-          <RouterLink to="/" class="mesh-btn-outline">← Back to Home</RouterLink>
+          <a :href="marketingUrl" class="mesh-btn-outline">← Back to marketing</a>
         </div>
       </div>
     </section>

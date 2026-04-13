@@ -3,10 +3,19 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev": "vite",
     "docs:sync": "node scripts/sync-docs.mjs",
     "build": "npm run docs:sync && vue-tsc -b && vite build",
+    "dev:eventhub": "npm run dev -w @volnux/eventhub-app",
+    "dev:mesh": "npm run dev -w @volnux/mesh-runtime-app",
+    "dev:pointy": "npm run dev -w @volnux/pointy-app",
+    "build:eventhub": "npm run build -w @volnux/eventhub-app",
+    "build:mesh": "npm run build -w @volnux/mesh-runtime-app",
+    "build:pointy": "npm run build -w @volnux/pointy-app",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
@@ -21,11 +30,11 @@
     "@types/dompurify": "^3.0.5",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.13.10",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vue-tsc": "^2.2.0"

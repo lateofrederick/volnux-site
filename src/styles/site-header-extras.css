@@ -1,0 +1,18 @@
+/* Plain CSS additions for marketing shell (used alongside Tailwind until full marketing migration). */
+
+.site-header__product-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--muted, #6b7a90);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.site-header__product-link:hover {
+  color: var(--text, #e8edf5);
+  background-color: rgba(0, 229, 255, 0.06);
+}

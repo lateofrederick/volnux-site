@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  #app.mesh-active {
+    @apply relative min-h-screen bg-mesh-black font-sans text-base leading-relaxed text-mesh-text antialiased;
+  }
+
+  #app.mesh-active::after {
+    @apply pointer-events-none fixed inset-0 z-[1];
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.04) 2px,
+      rgba(0, 0, 0, 0.04) 4px
+    );
+    content: '';
+  }
+}
+
+@layer components {
+  .vn-container {
+    @apply relative z-[1] mx-auto w-full max-w-[1120px] px-6 sm:px-8;
+  }
+
+  .vn-btn-primary {
+    @apply inline-flex items-center gap-2 rounded px-8 py-3.5 font-display text-[0.95rem] font-semibold text-vn-black transition;
+    @apply bg-vn-accent hover:-translate-y-px hover:bg-[#33eaff] hover:shadow-[0_8px_32px_rgba(0,229,255,0.25)];
+  }
+
+  .mesh-container {
+    @apply relative z-[2] mx-auto w-full max-w-[1140px] px-6 sm:px-10;
+  }
+
+  .mesh-section {
+    @apply relative z-[2] py-24 lg:py-32;
+  }
+
+  .mesh-topology {
+    @apply relative overflow-hidden rounded-lg border border-mesh-border bg-[rgba(11,14,20,0.92)] p-6 sm:p-8;
+  }
+
+  .mesh-topology::before {
+    @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-vn-accent via-vn-accent2 to-vn-accent3 content-[''];
+  }
+
+  .mesh-code-panel {
+    @apply relative overflow-hidden rounded-lg border border-mesh-border bg-[rgba(5,7,9,0.95)] font-mono text-[0.82rem] leading-loose sm:text-sm;
+  }
+
+  .mesh-code-panel::before {
+    @apply pointer-events-none absolute inset-x-0 top-0 z-[1] h-0.5 bg-gradient-to-r from-vn-accent to-vn-accent2 content-[''];
+  }
+
+  .mesh-btn-outline {
+    @apply inline-flex items-center gap-2 rounded-[3px] border border-mesh-border2 px-8 py-3.5 font-display text-[0.875rem] font-semibold text-mesh-text transition;
+    @apply hover:border-vn-accent/40 hover:bg-vn-accent/5 hover:text-vn-accent;
+  }
+}

@@ -158,7 +158,7 @@ function main() {
 
   const apiSections = []
   if (existsSync(API_RST_DIR)) {
-    const files = readdirSync(API_RST_DIR).filter((f) => f.endsWith('.rst'))
+    const files = readdirSync(API_RST_DIR).filter((f) => f.endsWith('.rst') && f !== 'index.rst')
     for (const f of files.sort()) {
       const rst = readFileSync(join(API_RST_DIR, f), 'utf8')
       const titleLine = rst.split('\n')[0] || f

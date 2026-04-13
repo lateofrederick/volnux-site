@@ -1,0 +1,41 @@
+/* App mount + small Vue-specific hooks */
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+#app {
+  min-height: 100%;
+}
+
+/* CTA in publish section (replaces inline handlers from static prototype) */
+.eh-publish-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  background: var(--amber);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: background 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.eh-publish-cta:hover {
+  background: #ffc84a;
+}
+
+/* Detail: section tabs in version bar use <button> with .ver-nav-link */
+button.ver-nav-link {
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}

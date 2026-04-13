@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import MeshRuntimeView from '@/views/MeshRuntimeView.vue'
+import MeshExternalView from '@/views/MeshExternalView.vue'
 import ProductPlaceholderView from '@/views/ProductPlaceholderView.vue'
-import EventHubView from '@/views/EventHubView.vue'
-import EventDetailView from '@/views/EventDetailView.vue'
+import EventHubExternalView from '@/views/EventHubExternalView.vue'
+import PointyExternalView from '@/views/PointyExternalView.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Volnux — The Workflow Operating System' } },
@@ -17,26 +17,25 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/products/mesh-runtime',
     name: 'mesh-runtime',
-    component: MeshRuntimeView,
+    component: MeshExternalView,
     meta: { title: 'Volnux — Mesh Runtime' },
   },
   {
     path: '/products/pointy-lang',
     name: 'product-pointy-lang',
-    component: ProductPlaceholderView,
-    props: { title: 'Pointy-lang', blurb: 'Declarative workflow language built for humans.' },
+    component: PointyExternalView,
     meta: { title: 'Pointy-lang — Volnux' },
   },
   {
     path: '/products/eventhub',
     name: 'product-eventhub',
-    component: EventHubView,
+    component: EventHubExternalView,
     meta: { title: 'EventHub — Volnux' },
   },
   {
     path: '/products/eventhub/events/:slug',
     name: 'eventhub-event-detail',
-    component: EventDetailView,
+    component: EventHubExternalView,
     meta: { title: 'Event detail — EventHub — Volnux' },
   },
   {

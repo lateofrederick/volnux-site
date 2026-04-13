@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import { productUrls } from '@/config/product-urls'
 </script>
 
 <template>
@@ -17,10 +18,34 @@ import { RouterLink } from 'vue-router'
         <div>
           <h4 class="mb-4 font-display text-[0.8rem] font-bold uppercase tracking-wider text-vn-text">Product</h4>
           <ul class="flex flex-col gap-2.5 text-[0.875rem]">
-            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/products/pointy-lang">Pointy-lang</RouterLink></li>
-            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/products/eventhub">EventHub</RouterLink></li>
-            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/products/mesh-runtime">Mesh Runtime</RouterLink></li>
-            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/products/changelog">Changelog</RouterLink></li>
+            <li>
+              <a
+                class="text-vn-muted no-underline transition hover:text-vn-text"
+                :href="productUrls.pointy"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Pointy-lang</a
+              >
+            </li>
+            <li>
+              <a
+                class="text-vn-muted no-underline transition hover:text-vn-text"
+                :href="productUrls.eventhub"
+                target="_blank"
+                rel="noopener noreferrer"
+                >EventHub</a
+              >
+            </li>
+            <li>
+              <a
+                class="text-vn-muted no-underline transition hover:text-vn-text"
+                :href="productUrls.mesh"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Mesh Runtime</a
+              >
+            </li>
+            <li><a class="text-vn-muted no-underline transition hover:text-vn-text" :href="productUrls.changelog">Changelog</a></li>
           </ul>
         </div>
         <div>

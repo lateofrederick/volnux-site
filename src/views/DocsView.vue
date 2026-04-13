@@ -6,6 +6,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import type { DocsManifest, DocsManifestSection } from '@/types/docs-manifest'
+import { transformSphinxApiMarkdown } from '@/utils/sphinxApiToMarkdown'
 
 import 'highlight.js/styles/atom-one-dark.css'
 
@@ -47,6 +48,8 @@ const flatSections = computed(() => {
 })
 
 const activeSection = computed(() => flatSections.value.find((s) => s.id === activeSectionId.value) ?? null)
+
+const isApiReferencePage = computed(() => activeSection.value?.id.startsWith('api-') ?? false)
 
 function docBase() {
   const b = import.meta.env.BASE_URL || '/'
@@ -134,7 +137,10 @@ async function loadSection(section: DocsManifestSection) {
     const res = await fetch(`${docBase()}/docs/${section.path}`)
     if (!res.ok) throw new Error(`${section.path}: ${res.status}`)
     const text = await res.text()
-    const body = stripDuplicateLeadingH1(text, section.title)
+    let body = stripDuplicateLeadingH1(text, section.title)
+    if (section.id.startsWith('api-')) {
+      body = transformSphinxApiMarkdown(body)
+    }
     renderedHtml.value = sanitizeHtml(patchFenceHljsClass(md.render(body)))
     await nextTick()
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -145,23 +151,34 @@ async function loadSection(section: DocsManifestSection) {
   }
 }
 
+function normalizeDocsHashId(id: string): string {
+  if (id === 'api-index') return 'api-backend'
+  return id
+}
+
 function selectSection(id: string, pushHash = true) {
-  activeSectionId.value = id
-  const sec = flatSections.value.find((s) => s.id === id)
+  const nid = normalizeDocsHashId(id)
+  activeSectionId.value = nid
+  const sec = flatSections.value.find((s) => s.id === nid)
   if (sec) void loadSection(sec)
   if (pushHash) {
-    router.replace({ path: '/docs', hash: `#${id}` })
+    router.replace({ path: '/docs', hash: `#${nid}` })
   }
 }
 
 function resolveInitialSectionId(): string {
   const h = route.hash?.replace(/^#/, '')
-  if (h && flatSections.value.some((s) => s.id === h)) return h
+  const want = h ? normalizeDocsHashId(h) : ''
+  if (want && flatSections.value.some((s) => s.id === want)) return want
   return flatSections.value[0]?.id ?? ''
 }
 
 onMounted(async () => {
   await fetchManifest()
+  const rawHash = route.hash?.replace(/^#/, '')
+  if (rawHash === 'api-index') {
+    await router.replace({ path: '/docs', hash: '#api-backend' })
+  }
   const id = resolveInitialSectionId()
   if (id) selectSection(id, false)
   if (id && !route.hash) router.replace({ path: '/docs', hash: `#${id}` })
@@ -170,7 +187,7 @@ onMounted(async () => {
 watch(
   () => route.hash,
   () => {
-    const id = route.hash?.replace(/^#/, '')
+    const id = normalizeDocsHashId(route.hash?.replace(/^#/, '') ?? '')
     if (!id || !manifest.value) return
     if (flatSections.value.some((s) => s.id === id) && id !== activeSectionId.value) {
       activeSectionId.value = id
@@ -227,8 +244,21 @@ watch(renderedHtml, async () => {
           </nav>
         </aside>
 
-        <article class="min-w-0">
+        <article class="min-w-0" :class="{ 'docs-api-page': isApiReferencePage }">
           <header v-if="activeSection" class="mb-8">
+            <nav
+              v-if="isApiReferencePage"
+              class="docs-api-breadcrumb mb-3 font-mono text-[0.8125rem] text-vn-muted2"
+              aria-label="Breadcrumb"
+            >
+              <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 list-none p-0 m-0">
+                <li>
+                  <span class="text-vn-muted2">API reference</span>
+                </li>
+                <li aria-hidden="true" class="text-vn-border2">/</li>
+                <li class="text-vn-text">{{ activeSection.title }}</li>
+              </ol>
+            </nav>
             <h1 class="font-display text-[clamp(1.65rem,3.5vw,2.25rem)] font-extrabold tracking-tight text-vn-white">
               {{ activeSection.title }}
             </h1>
