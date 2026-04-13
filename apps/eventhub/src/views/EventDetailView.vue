@@ -279,14 +279,31 @@ function compatBadgeClass(version: string) {
                   type="button"
                   class="install-snippet"
                   :style="idx > 0 ? 'margin-top:0.5rem' : undefined"
-                  title="Click to copy"
+                  title="Copy to clipboard"
+                  aria-label="Copy install command"
                   @click="copyInstall(snip.copyText)"
                 >
-                  <span class="copy-hint">click to copy</span>
-                  <span class="prefix">$ </span>
-                  <span class="source" :style="snip.source === 'hub' ? { color: 'var(--amber)' } : undefined">{{ snip.source }}</span>
-                  <span class="pkg">{{ snip.pkg }}</span>
-                  <span class="ver">{{ snip.ver }}</span>
+                  <span class="install-snippet__main">
+                    <span class="install-snippet__prompt">$</span>
+                    <span class="install-snippet__code">
+                      <span
+                        class="source"
+                        :style="snip.source === 'hub' ? { color: 'var(--amber)' } : undefined"
+                        >{{ snip.source }}</span
+                      ><span class="pkg">{{ snip.pkg }}</span
+                      ><span class="ver">{{ snip.ver }}</span>
+                    </span>
+                  </span>
+                  <span class="install-snippet__copy-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <rect x="2" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2" />
+                      <path
+                        d="M4 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H10"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </span>
                 </button>
               </template>
               <template v-else>
@@ -296,10 +313,26 @@ function compatBadgeClass(version: string) {
                   type="button"
                   class="install-snippet"
                   style="width: 100%; margin-bottom: 0.5rem; text-align: left; cursor: pointer"
+                  title="Copy to clipboard"
+                  aria-label="Copy install reference"
                   @click="copyInstall(refValue)"
                 >
-                  <span class="copy-hint">click to copy</span>
-                  <span class="mono" style="font-size: 0.72rem; color: var(--silver)">{{ refValue }}</span>
+                  <span class="install-snippet__main">
+                    <span class="install-snippet__prompt">$</span>
+                    <span class="install-snippet__code mono" style="font-size: 0.72rem; color: var(--silver)">{{
+                      refValue
+                    }}</span>
+                  </span>
+                  <span class="install-snippet__copy-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <rect x="2" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2" />
+                      <path
+                        d="M4 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H10"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </span>
                 </button>
               </template>
             </div>

@@ -45,6 +45,13 @@ const {
   onCanvasMouseDown,
   onNodeBodyPointerDown,
   onOutputPortDown,
+  onInputPortDown,
+  startPaletteResize,
+  startRightPanelResize,
+  startBottomResize,
+  paletteWidth,
+  rightPanelWidth,
+  bottomPanelHeight,
   onNodeContextMenu,
   onCanvasContextMenu,
   hideCtx,
@@ -332,7 +339,10 @@ const {
     <!-- WORKSPACE -->
     <div class="flex min-h-0 min-w-0 flex-1 overflow-hidden">
       <!-- PALETTE -->
-      <aside class="z-[100] flex w-64 shrink-0 flex-col overflow-hidden border-r border-vn-border bg-vn-surface">
+      <aside
+        class="z-[100] flex min-w-0 shrink-0 flex-col overflow-hidden border-r border-vn-border bg-vn-surface"
+        :style="{ width: `${paletteWidth}px` }"
+      >
         <div class="flex items-center gap-2 border-b border-vn-border px-3 py-[0.65rem]">
           <input
             v-model="paletteSearch"
@@ -385,6 +395,14 @@ const {
           </div>
         </div>
       </aside>
+
+      <div
+        class="z-[101] w-1.5 shrink-0 cursor-col-resize border-r border-transparent hover:border-vn-accent/25 hover:bg-vn-accent/10"
+        title="Resize palette"
+        role="separator"
+        aria-orientation="vertical"
+        @pointerdown="startPaletteResize"
+      />
 
       <!-- CANVAS -->
       <div
@@ -464,7 +482,7 @@ const {
           />
         </svg>
 
-        <div id="canvas-nodes" class="absolute inset-0 z-[2]">
+        <div id="canvas-nodes" class="absolute inset-0 z-[2] overflow-visible pl-6">
           <div
             v-for="node in nodes"
             :id="node.id"
@@ -511,17 +529,26 @@ const {
                 [{{ node.annotation }}]
               </div>
             </div>
-            <div class="port absolute left-[-7px] top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2">
+            <div
+              data-port="in"
+              class="absolute left-0 top-1/2 z-[30] flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-crosshair items-center justify-center touch-none select-none hover:[&>div]:scale-125 hover:[&>div]:border-vn-accent hover:[&>div]:bg-vn-accent hover:[&>div]:shadow-[0_0_0_3px_rgba(0,229,255,0.2)]"
+              title="Input — drag from an upstream output, or release on another node’s output"
+              @pointerdown.stop.prevent="onInputPortDown($event, node.id)"
+              @mousedown.stop.prevent
+            >
               <div
-                class="input port h-3.5 w-3.5 cursor-crosshair rounded-full border-2 border-vn-border2 bg-vn-surface3 transition-all hover:scale-125 hover:border-vn-accent hover:bg-vn-accent hover:shadow-[0_0_0_3px_rgba(0,229,255,0.2)]"
-                title="Input"
+                class="pointer-events-none h-3.5 w-3.5 rounded-full border-2 border-vn-border2 bg-vn-surface3 transition-all"
               />
             </div>
-            <div class="port absolute right-[-7px] top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2">
+            <div
+              data-port="out"
+              class="absolute right-0 top-1/2 z-[30] flex h-11 w-11 translate-x-1/2 -translate-y-1/2 cursor-crosshair items-center justify-center touch-none select-none hover:[&>div]:scale-125 hover:[&>div]:border-vn-accent hover:[&>div]:bg-vn-accent hover:[&>div]:shadow-[0_0_0_3px_rgba(0,229,255,0.2)]"
+              title="Output — drag to an input, or start from an input and connect here"
+              @pointerdown.stop.prevent="onOutputPortDown($event, node.id)"
+              @mousedown.stop.prevent
+            >
               <div
-                class="output port h-3.5 w-3.5 cursor-crosshair rounded-full border-2 border-vn-border2 bg-vn-surface3 transition-all hover:scale-125 hover:border-vn-accent hover:bg-vn-accent hover:shadow-[0_0_0_3px_rgba(0,229,255,0.2)]"
-                title="Output — drag to connect"
-                @pointerdown.stop="onOutputPortDown($event, node.id)"
+                class="pointer-events-none h-3.5 w-3.5 rounded-full border-2 border-vn-border2 bg-vn-surface3 transition-all"
               />
             </div>
             <div
@@ -534,10 +561,20 @@ const {
         </div>
       </div>
 
+      <div
+        v-if="!rightPanelCollapsed"
+        class="z-[101] w-1.5 shrink-0 cursor-col-resize border-r border-transparent hover:border-vn-accent/25 hover:bg-vn-accent/10"
+        title="Resize properties"
+        role="separator"
+        aria-orientation="vertical"
+        @pointerdown="startRightPanelResize"
+      />
+
       <!-- PROPERTIES -->
       <aside
-        class="z-[100] flex w-60 shrink-0 flex-col overflow-hidden border-l border-vn-border bg-vn-surface transition-[width] duration-200"
+        class="z-[100] flex min-w-0 shrink-0 flex-col overflow-hidden border-l border-vn-border bg-vn-surface transition-[width] duration-200"
         :class="rightPanelCollapsed ? 'w-0 border-l-0' : ''"
+        :style="rightPanelCollapsed ? {} : { width: `${rightPanelWidth}px` }"
       >
         <div class="flex h-12 shrink-0 items-center justify-between border-b border-vn-border px-[0.85rem]">
           <span class="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-vn-wizard-fog">Properties</span>
@@ -670,8 +707,15 @@ const {
     </div>
 
     <!-- BOTTOM -->
-    <div class="shrink-0 border-t border-vn-border bg-vn-surface">
-      <div class="flex h-[30px] items-stretch border-b border-vn-border">
+    <div class="flex min-h-0 shrink-0 flex-col border-t border-vn-border bg-vn-surface">
+      <div
+        class="h-1.5 shrink-0 cursor-row-resize hover:bg-vn-accent/15"
+        title="Resize output panel"
+        role="separator"
+        aria-orientation="horizontal"
+        @pointerdown="startBottomResize"
+      />
+      <div class="flex h-[30px] shrink-0 items-stretch border-b border-vn-border">
         <button
           type="button"
           class="flex items-center gap-1.5 border-b-2 border-transparent bg-transparent px-[0.85rem] font-mono text-[0.68rem] text-vn-wizard-fog2 transition-colors hover:text-vn-white"
@@ -699,23 +743,28 @@ const {
         </button>
       </div>
       <div
-        v-show="bottomTab === 'pointy'"
-        id="pointy-output"
-        ref="pointyOutputRef"
-        class="h-[110px] overflow-auto whitespace-pre px-4 py-[0.65rem] font-mono text-[0.78rem] leading-[1.9] [scrollbar-color:#2a3340_transparent] [scrollbar-width:thin]"
-        v-html="pointyHtml"
-      />
-      <div
-        v-show="bottomTab === 'console'"
-        class="h-[110px] overflow-auto whitespace-pre px-4 py-[0.65rem] font-mono text-[0.78rem] leading-[1.9] text-vn-wizard-fog"
+        class="min-h-0 overflow-hidden"
+        :style="{ height: `${bottomPanelHeight}px` }"
       >
-        # Console (coming soon)
-      </div>
-      <div
-        v-show="bottomTab === 'validation'"
-        class="h-[110px] overflow-auto whitespace-pre px-4 py-[0.65rem] font-mono text-[0.78rem] leading-[1.9] text-vn-wizard-fog"
-      >
-        # Validation (coming soon)
+        <div
+          v-show="bottomTab === 'pointy'"
+          id="pointy-output"
+          ref="pointyOutputRef"
+          class="h-full overflow-auto whitespace-pre px-4 py-[0.65rem] font-mono text-[0.78rem] leading-[1.9] [scrollbar-color:#2a3340_transparent] [scrollbar-width:thin]"
+          v-html="pointyHtml"
+        />
+        <div
+          v-show="bottomTab === 'console'"
+          class="h-full overflow-auto whitespace-pre px-4 py-[0.65rem] font-mono text-[0.78rem] leading-[1.9] text-vn-wizard-fog"
+        >
+          # Console (coming soon)
+        </div>
+        <div
+          v-show="bottomTab === 'validation'"
+          class="h-full overflow-auto whitespace-pre px-4 py-[0.65rem] font-mono text-[0.78rem] leading-[1.9] text-vn-wizard-fog"
+        >
+          # Validation (coming soon)
+        </div>
       </div>
     </div>
 

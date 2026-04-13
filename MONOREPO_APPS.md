@@ -29,7 +29,7 @@ Ports are set in each package’s `vite.config.ts` (not in `.env`).
 
 **Marketing site** (root `npm run dev`) reads `VITE_EVENTHUB_URL`, `VITE_MESH_URL`, `VITE_POINTY_URL`, and `VITE_CHANGELOG_URL` from that root `.env`.
 
-**EventHub, Mesh, and Pointy** are configured with `envDir` pointing at the **same repository root**, so they also read that `.env` — mainly **`VITE_MARKETING_URL`** (e.g. `http://localhost:5173` when the marketing dev server is running).
+**EventHub**, **Mesh**, and **Pointy** read the root `.env` via `envDir`. **Mesh** and **Pointy** use **`VITE_MARKETING_URL`** for logo / back links. **EventHub** uses root-relative `/docs` and `/products/mesh-runtime` when `VITE_MARKETING_URL` is unset (unified deploy); for **local** `npm run dev:eventhub` on port 5174, set **`VITE_MARKETING_URL=http://localhost:5173`** so Docs and Mesh footer links hit the marketing dev server.
 
 In **production**, set the same variables in the host UI (e.g. Netlify site settings); you do not commit `.env`.
 
@@ -72,8 +72,6 @@ Set these env vars in Netlify for the marketing site once product sites are live
 The marketing routes `/products/eventhub` and `/products/eventhub/events/:slug` redirect to `VITE_EVENTHUB_URL` when it is set (must be an `http` or `https` URL). If unset, they show a short notice instead of embedding the app.
 
 `/products/mesh-runtime` redirects to `VITE_MESH_URL` when set the same way; otherwise it shows a short notice.
-
-Optional on the **EventHub** Netlify site: `VITE_MARKETING_URL` — base URL for the “Marketing site” link in the app chrome (defaults to `https://volnux.netlify.app`).
 
 Optional on the **Mesh Runtime** Netlify site: `VITE_MARKETING_URL` — used for the header logo, Docs link, footer links, and “Back to marketing” on the page (defaults to `https://volnux.netlify.app`).
 

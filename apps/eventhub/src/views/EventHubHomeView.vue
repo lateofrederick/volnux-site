@@ -2,6 +2,10 @@
 import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
+const marketing = import.meta.env.VITE_MARKETING_URL?.trim().replace(/\/$/, '') || ''
+const docsHref = computed(() => (marketing ? `${marketing}/docs` : '/docs'))
+const meshHref = computed(() => (marketing ? `${marketing}/products/mesh-runtime` : '/products/mesh-runtime'))
+
 import EventHubEventCard from '@/components/eventhub/EventHubEventCard.vue'
 import { eventHubCategories, eventHubEvents, sourceLabels } from '@/data/eventhub'
 import type { EventSource } from '@/types/eventhub'
@@ -44,7 +48,6 @@ function sourceDotClass(source: EventSource): string {
   return map[source]
 }
 
-const marketingBase = (import.meta.env.VITE_MARKETING_URL || 'https://volnux.netlify.app').replace(/\/$/, '')
 </script>
 
 <template>
@@ -293,8 +296,8 @@ const marketingBase = (import.meta.env.VITE_MARKETING_URL || 'https://volnux.net
         <p>© 2026 Volnux · EventHub registry</p>
         <div class="footer-links">
           <RouterLink to="/">Home</RouterLink>
-          <a :href="`${marketingBase}/products/mesh-runtime`">Mesh Runtime</a>
-          <a :href="`${marketingBase}/docs`">Docs</a>
+          <a :href="meshHref">Mesh Runtime</a>
+          <a :href="docsHref">Docs</a>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
         <p class="mono">eventhub v0.1-beta</p>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
-const marketingUrl = import.meta.env.VITE_MARKETING_URL?.trim() || 'https://volnux.netlify.app'
-const marketingDocsUrl = `${marketingUrl.replace(/\/$/, '')}/docs`
+/** Same-origin paths on unified deploy; full URL when EventHub dev server runs on another port (see .env.example). */
+const marketing = import.meta.env.VITE_MARKETING_URL?.trim().replace(/\/$/, '') || ''
+const docsHref = computed(() => (marketing ? `${marketing}/docs` : '/docs'))
 </script>
 
 <template>
@@ -39,11 +41,10 @@ const marketingDocsUrl = `${marketingUrl.replace(/\/$/, '')}/docs`
         <RouterLink to="/#registry" class="nav-link">Browse</RouterLink>
         <RouterLink to="/#publish" class="nav-link">Publish</RouterLink>
         <RouterLink to="/#how" class="nav-link">How it works</RouterLink>
-        <a :href="marketingDocsUrl" class="nav-link" target="_blank" rel="noopener noreferrer">Docs</a>
+        <a :href="docsHref" class="nav-link">Docs</a>
         <a href="#" class="nav-link nav-link--cta">Publish Event →</a>
       </div>
     </nav>
-    <a class="eh-marketing-only" :href="marketingUrl">Marketing site</a>
     <RouterView />
   </div>
 </template>
@@ -59,30 +60,5 @@ const marketingDocsUrl = `${marketingUrl.replace(/\/$/, '')}/docs`
   padding: 0 1.5rem;
   height: 100%;
   border-right: 1px solid var(--rule);
-}
-
-.eh-marketing-only {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 250;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  padding: 0 1rem;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--fog2);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.eh-marketing-only:hover {
-  color: var(--cyan);
-}
-
-/* Leave room so “Marketing site” does not overlap Publish CTA in nav */
-.nav-right {
-  padding-right: 7rem;
 }
 </style>

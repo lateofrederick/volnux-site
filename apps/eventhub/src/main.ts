@@ -4,6 +4,7 @@ import App from './App.vue'
 import EventHubHomeView from './views/EventHubHomeView.vue'
 import EventDetailView from './views/EventDetailView.vue'
 import './styles/app.css'
+import 'highlight.js/styles/atom-one-dark.css'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -40,10 +40,17 @@ function eventAbbr(type: string) {
     .padEnd(2, type[1] || 'X')
 }
 
+/** Port handles are explicit elements — avoids ambiguity with nested `.port` wrappers and `input` class clashes. */
+const PORT_OUT = '[data-port="out"]'
+const PORT_IN = '[data-port="in"]'
+
+/** Pixels from port center to count as a drop (handles are ~44px; keep generous). */
+const PORT_SNAP_PX = 44
+
 function getPortCenter(nodeId: string, side: 'out' | 'in', wrap: HTMLElement) {
   const nodeEl = document.getElementById(nodeId)
   if (!nodeEl) return { x: 0, y: 0 }
-  const sel = side === 'out' ? '.port.output' : '.port.input'
+  const sel = side === 'out' ? PORT_OUT : PORT_IN
   const portEl = nodeEl.querySelector(sel) as HTMLElement | null
   if (!portEl) return { x: 0, y: 0 }
   const wrapRect = wrap.getBoundingClientRect()
@@ -142,7 +149,13 @@ export function usePointyWizard() {
 
   const liveEdgeD = ref('')
   const connectingFromId = ref<string | null>(null)
+  /** When dragging a connection starting from an input port, this is the target node id. */
+  const connectingToId = ref<string | null>(null)
   const connectingHoverId = ref<string | null>(null)
+
+  const paletteWidth = ref(256)
+  const rightPanelWidth = ref(240)
+  const bottomPanelHeight = ref(110)
 
   const edgePaths = ref<EdgePath[]>([])
   const copyBtnFlash = ref(false)
@@ -198,7 +211,7 @@ export function usePointyWizard() {
       return
     }
 
-    wrap.querySelectorAll('.port').forEach((el) => el.classList.remove('port-is-connected'))
+    wrap.querySelectorAll('[data-port]').forEach((el) => el.classList.remove('port-is-connected'))
 
     const paths: EdgePath[] = []
     for (const edge of edges.value) {
@@ -214,8 +227,8 @@ export function usePointyWizard() {
       const my = (from.y + to.y) / 2
       paths.push({ id: edge.id, d, mx, my })
 
-      document.getElementById(edge.from)?.querySelector('.port.output')?.classList.add('port-is-connected')
-      document.getElementById(edge.to)?.querySelector('.port.input')?.classList.add('port-is-connected')
+      document.getElementById(edge.from)?.querySelector(PORT_OUT)?.classList.add('port-is-connected')
+      document.getElementById(edge.to)?.querySelector(PORT_IN)?.classList.add('port-is-connected')
     }
     edgePaths.value = paths
   }
@@ -284,7 +297,7 @@ export function usePointyWizard() {
 
   function onNodeBodyPointerDown(e: PointerEvent, id: string) {
     const t = e.target as HTMLElement
-    if (t.classList.contains('port') || t.classList.contains('node-delete')) return
+    if (t.closest?.('[data-port]') || t.classList.contains('node-delete')) return
     e.preventDefault()
     selectNode(id)
     const node = nodes.value.find((n) => n.id === id)
@@ -307,12 +320,70 @@ export function usePointyWizard() {
     window.addEventListener('pointerup', onUp)
   }
 
+  function startPaletteResize(e: PointerEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const startX = e.clientX
+    const w0 = paletteWidth.value
+    const onMove = (ev: PointerEvent) => {
+      paletteWidth.value = Math.min(420, Math.max(180, w0 + (ev.clientX - startX)))
+    }
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }
+
+  function startRightPanelResize(e: PointerEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const startX = e.clientX
+    const w0 = rightPanelWidth.value
+    const onMove = (ev: PointerEvent) => {
+      rightPanelWidth.value = Math.min(520, Math.max(200, w0 - (ev.clientX - startX)))
+    }
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }
+
+  function startBottomResize(e: PointerEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const startY = e.clientY
+    const h0 = bottomPanelHeight.value
+    const onMove = (ev: PointerEvent) => {
+      bottomPanelHeight.value = Math.min(480, Math.max(72, h0 + (startY - ev.clientY)))
+    }
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }
+
   function onOutputPortDown(e: PointerEvent, id: string) {
     e.stopPropagation()
     e.preventDefault()
+    connectingToId.value = null
     connectingFromId.value = id
     const wrap = canvasWrapRef.value
     if (!wrap) return
+
+    const captureEl = e.currentTarget as HTMLElement | null
+    if (captureEl?.setPointerCapture) {
+      try {
+        captureEl.setPointerCapture(e.pointerId)
+      } catch {
+        /* ignore */
+      }
+    }
 
     const onMove = (ev: PointerEvent) => {
       const fromPos = getPortCenter(id, 'out', wrap)
@@ -325,11 +396,11 @@ export function usePointyWizard() {
       let hover: string | null = null
       for (const n of nodes.value) {
         if (n.id === id) continue
-        const inPort = document.getElementById(n.id)?.querySelector('.port.input') as HTMLElement | undefined
+        const inPort = document.getElementById(n.id)?.querySelector(PORT_IN) as HTMLElement | undefined
         if (!inPort) continue
         const ir = inPort.getBoundingClientRect()
         const dist = Math.hypot(ev.clientX - (ir.left + ir.width / 2), ev.clientY - (ir.top + ir.height / 2))
-        if (dist < 30) hover = n.id
+        if (dist < PORT_SNAP_PX) hover = n.id
       }
       connectingHoverId.value = hover
     }
@@ -338,6 +409,14 @@ export function usePointyWizard() {
       liveEdgeD.value = ''
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (captureEl?.releasePointerCapture) {
+        try {
+          captureEl.releasePointerCapture(ev.pointerId)
+        } catch {
+          /* ignore */
+        }
+      }
 
       const fromId = connectingFromId.value
       connectingFromId.value = null
@@ -346,11 +425,11 @@ export function usePointyWizard() {
 
       for (const n of nodes.value) {
         if (n.id === fromId) continue
-        const inPort = document.getElementById(n.id)?.querySelector('.port.input') as HTMLElement | undefined
+        const inPort = document.getElementById(n.id)?.querySelector(PORT_IN) as HTMLElement | undefined
         if (!inPort) continue
         const ir = inPort.getBoundingClientRect()
         const dist = Math.hypot(ev.clientX - (ir.left + ir.width / 2), ev.clientY - (ir.top + ir.height / 2))
-        if (dist < 30) {
+        if (dist < PORT_SNAP_PX) {
           const dup = edges.value.find((ed) => ed.from === fromId && ed.to === n.id)
           if (!dup) {
             edges.value = [...edges.value, { id: `e${++edgeCounter}`, from: fromId, to: n.id }]
@@ -363,6 +442,91 @@ export function usePointyWizard() {
 
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+  }
+
+  function onInputPortDown(e: PointerEvent, id: string) {
+    e.stopPropagation()
+    e.preventDefault()
+    connectingFromId.value = null
+    connectingToId.value = id
+    const wrap = canvasWrapRef.value
+    if (!wrap) return
+
+    const captureEl = e.currentTarget as HTMLElement | null
+    if (captureEl?.setPointerCapture) {
+      try {
+        captureEl.setPointerCapture(e.pointerId)
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const onMove = (ev: PointerEvent) => {
+      const toPos = getPortCenter(id, 'in', wrap)
+      let hover: string | null = null
+      for (const n of nodes.value) {
+        if (n.id === id) continue
+        const outPort = document.getElementById(n.id)?.querySelector(PORT_OUT) as HTMLElement | undefined
+        if (!outPort) continue
+        const ir = outPort.getBoundingClientRect()
+        const dist = Math.hypot(ev.clientX - (ir.left + ir.width / 2), ev.clientY - (ir.top + ir.height / 2))
+        if (dist < PORT_SNAP_PX) hover = n.id
+      }
+      connectingHoverId.value = hover
+      const r = wrap.getBoundingClientRect()
+      if (hover) {
+        const fromPos = getPortCenter(hover, 'out', wrap)
+        const cx = (fromPos.x + toPos.x) / 2
+        liveEdgeD.value = `M${fromPos.x},${fromPos.y} C${cx},${fromPos.y} ${cx},${toPos.y} ${toPos.x},${toPos.y}`
+      } else {
+        const tx = ev.clientX - r.left
+        const ty = ev.clientY - r.top
+        const cx = (tx + toPos.x) / 2
+        liveEdgeD.value = `M${tx},${ty} C${cx},${ty} ${cx},${toPos.y} ${toPos.x},${toPos.y}`
+      }
+    }
+
+    const onUp = (ev: PointerEvent) => {
+      liveEdgeD.value = ''
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (captureEl?.releasePointerCapture) {
+        try {
+          captureEl.releasePointerCapture(ev.pointerId)
+        } catch {
+          /* ignore */
+        }
+      }
+
+      const toId = connectingToId.value
+      connectingToId.value = null
+      connectingHoverId.value = null
+      if (!toId || !wrap) return
+
+      for (const n of nodes.value) {
+        if (n.id === toId) continue
+        const outPort = document.getElementById(n.id)?.querySelector(PORT_OUT) as HTMLElement | undefined
+        if (!outPort) continue
+        const ir = outPort.getBoundingClientRect()
+        const dist = Math.hypot(ev.clientX - (ir.left + ir.width / 2), ev.clientY - (ir.top + ir.height / 2))
+        if (dist < PORT_SNAP_PX) {
+          const fromId = n.id
+          if (fromId === toId) break
+          const dup = edges.value.find((ed) => ed.from === fromId && ed.to === toId)
+          if (!dup) {
+            edges.value = [...edges.value, { id: `e${++edgeCounter}`, from: fromId, to: toId }]
+            void refreshEdges()
+          }
+          break
+        }
+      }
+    }
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
   }
 
   function onNodeContextMenu(e: MouseEvent, id: string) {
@@ -610,6 +774,9 @@ export function usePointyWizard() {
     ctxIsCanvas,
     liveEdgeD,
     connectingHoverId,
+    paletteWidth,
+    rightPanelWidth,
+    bottomPanelHeight,
     edgePaths,
     copyBtnFlash,
     canvasEmpty,
@@ -629,6 +796,10 @@ export function usePointyWizard() {
     onCanvasMouseDown,
     onNodeBodyPointerDown,
     onOutputPortDown,
+    onInputPortDown,
+    startPaletteResize,
+    startRightPanelResize,
+    startBottomResize,
     onNodeContextMenu,
     onCanvasContextMenu,
     hideCtx,

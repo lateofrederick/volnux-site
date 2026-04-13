@@ -40,6 +40,100 @@ body::before {
 
 .z1 { position: relative; z-index: 1; }
 
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  background: rgba(13,15,20,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.5rem;
+  border-right: 1px solid var(--rule);
+  text-decoration: none;
+  gap: 0.6rem;
+}
+
+.nav-logo-mark { width: 24px; height: 24px; }
+
+.nav-volnux {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--white);
+}
+.nav-volnux span { color: var(--cyan); }
+
+.nav-crumb {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.5rem;
+  gap: 0.5rem;
+  border-right: 1px solid var(--rule);
+}
+
+.nav-crumb a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-crumb a:hover { color: var(--white); }
+
+.crumb-sep {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog);
+}
+
+.crumb-current {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--cyan);
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-action {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.25rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog2);
+  text-decoration: none;
+  border-left: 1px solid var(--rule);
+  transition: all 0.2s;
+  cursor: pointer;
+  background: transparent;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+.nav-action:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+.nav-action--primary {
+  color: var(--ink);
+  background: var(--amber);
+  font-weight: 500;
+}
+.nav-action--primary:hover { background: #ffc84a; color: var(--ink); }
 
 /* ── Version tabs ── */
 .version-bar {
@@ -343,13 +437,14 @@ body::before {
 }
 
 .code-copy {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.62rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--fog2);
   background: transparent;
   border: 1px solid var(--rule2);
   border-radius: 2px;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.45rem;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -360,6 +455,12 @@ body::before {
   font-family: 'DM Mono', monospace;
   line-height: 2;
   overflow-x: auto;
+}
+
+/* highlight.js theme (atom-one-dark) sits on .hljs; keep readable on our background */
+.code-body code.hljs {
+  background: transparent !important;
+  padding: 0;
 }
 
 .c-kw  { color: #7b61ff; }
@@ -529,28 +630,66 @@ body::before {
 
 /* Install snippet */
 .install-snippet {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
   background: #080b10;
   border: 1px solid var(--rule);
   border-radius: 4px;
-  padding: 0.85rem 1rem;
+  padding: 0.6rem 0.65rem 0.6rem 0.75rem;
   font-family: 'DM Mono', monospace;
   font-size: 0.78rem;
   color: var(--white);
   margin-bottom: 0.75rem;
-  position: relative;
   cursor: pointer;
   transition: border-color 0.2s;
+  text-align: left;
 }
 .install-snippet:hover { border-color: var(--rule2); }
 
-.install-snippet .copy-hint {
-  position: absolute;
-  top: 0.5rem; right: 0.75rem;
-  font-size: 0.6rem;
-  color: var(--fog);
+.install-snippet__main {
+  display: flex;
+  align-items: baseline;
+  flex: 1;
+  min-width: 0;
+  gap: 0.35rem;
 }
 
-.install-snippet .prefix { color: var(--fog2); user-select: none; }
+.install-snippet__prompt {
+  flex-shrink: 0;
+  color: var(--fog2);
+  user-select: none;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+.install-snippet__code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.install-snippet__copy-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  height: 1.5rem;
+  width: 1.5rem;
+  justify-content: center;
+  color: var(--fog2);
+  opacity: 0.75;
+  pointer-events: none;
+  transition: color 0.15s, opacity 0.15s;
+}
+.install-snippet:hover .install-snippet__copy-icon {
+  color: var(--amber);
+  opacity: 1;
+}
+
 .install-snippet .source { color: var(--green); }
 .install-snippet .pkg    { color: var(--amber); }
 .install-snippet .ver    { color: var(--cyan); }
