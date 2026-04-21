@@ -1065,6 +1065,12 @@ footer {
   .feature-row { grid-template-columns: 1fr; }
   .feature-key { border-right: none; border-bottom: 1px solid var(--rule); }
 }
+
+/* This page is rendered inside the app shell iframe. */
+nav,
+footer {
+  display: none !important;
+}
 </style>
 </head>
 <body>

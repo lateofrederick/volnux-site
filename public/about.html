@@ -1207,6 +1207,12 @@ footer {
   .facts-grid { grid-template-columns: 1fr 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+/* This page is rendered inside the app shell iframe. */
+nav,
+footer {
+  display: none !important;
+}
 </style>
 </head>
 <body>

@@ -847,6 +847,12 @@ footer {
   .hero-industry-count { flex-wrap: wrap; gap: 1.5rem; }
   .hic-item { border-right: none; margin-right: 0; padding-right: 0; }
 }
+
+/* This page is rendered inside the app shell iframe. */
+nav,
+footer {
+  display: none !important;
+}
 </style>
 </head>
 <body>
