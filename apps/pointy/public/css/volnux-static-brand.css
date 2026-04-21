@@ -1,0 +1,145 @@
+/**
+ * Volnux static HTML shell — shared with marketing site tokens (tailwind vn-*).
+ * Load Syne + DM Sans + DM Mono in the HTML <head> before this file.
+ */
+
+:root {
+  --vn-black: #080a0f;
+  --vn-surface: #0e1118;
+  --vn-surface2: #151921;
+  --vn-surface3: #1a1f2e;
+  --vn-border: #1e2530;
+  --vn-border2: #2a3340;
+  --vn-accent: #00e5ff;
+  --vn-accent2: #7b61ff;
+  --vn-accent3: #00ff94;
+  --vn-text: #e8edf5;
+  --vn-muted: #6b7a90;
+  --vn-muted2: #4a5568;
+
+  /* about.html */
+  --void: var(--vn-black);
+  --dark: var(--vn-surface);
+  --dark2: var(--vn-surface2);
+  --dark3: var(--vn-surface3);
+  --border: var(--vn-border);
+  --border2: var(--vn-border2);
+  --fog: var(--vn-muted);
+  --fog2: var(--vn-muted);
+  --silver: #9aaabf;
+  --light: var(--vn-text);
+  /* wizard / product copy tone */
+  --white: #f0f4fc;
+  --accent: var(--vn-accent);
+  --accent2: var(--vn-accent2);
+  --accent3: var(--vn-accent3);
+  --gold: #ffb830;
+  --max-w: 1200px;
+
+  /* governance / use-cases (paper tokens → dark surfaces) */
+  --paper: var(--vn-surface);
+  --paper2: var(--vn-black);
+  --paper3: #12151c;
+  --ink: var(--vn-text);
+  --ink2: #c8d4e4;
+  --ink3: #9aaabf;
+  --muted: var(--vn-muted);
+  --rule: var(--vn-border);
+  --rule2: var(--vn-border2);
+  --col-max: 1200px;
+  --surface-elevated: var(--vn-surface2);
+
+  /* wizard-product.html */
+  --base: var(--vn-surface);
+  --surface: #111520;
+  --surface2: #171c2a;
+  --surface3: #1e2435;
+  --cyan: var(--vn-accent);
+  --purple: var(--vn-accent2);
+  --green: var(--vn-accent3);
+  --amber: #ffb830;
+  --pink: #ff6eb4;
+
+  /* use-cases industry accents (readable on dark) */
+  --c-finance: #5eb0ff;
+  --c-health: #45e0a0;
+  --c-data: #ff8a8a;
+  --c-ai: #b794ff;
+  --c-ops: #f0b04a;
+  --c-ecom: #5ee0d0;
+  --c-gov: #d48cff;
+  --c-mfg: #a6d96a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--vn-black);
+  color: var(--vn-text);
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Marketing grid — matches src/styles/app.css #app::before */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.layer,
+.z1 {
+  position: relative;
+  z-index: 1;
+}
+
+/* Display / editorial — Syne matches marketing tailwind font-display */
+.bebas,
+.serif {
+  font-family: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.serif {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.mono {
+  font-family: 'DM Mono', ui-monospace, monospace;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.accent2 {
+  color: var(--accent2);
+}
+
+.gold {
+  color: var(--gold);
+}

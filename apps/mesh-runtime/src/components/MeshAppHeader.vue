@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const marketingUrl = import.meta.env.VITE_MARKETING_URL || 'https://volnux.netlify.app'
 const docsUrl = `${marketingUrl.replace(/\/$/, '')}/docs`
+const homeUrl = marketingUrl.replace(/\/$/, '')
+const aboutUrl = `${homeUrl}/#problem`
+const featuresUrl = `${homeUrl}/#features`
+const governanceUrl = `${homeUrl}/#governance`
+const useCaseUrl = `${homeUrl}/#usecases`
 </script>
 
 <template>
@@ -15,14 +20,15 @@ const docsUrl = `${marketingUrl.replace(/\/$/, '')}/docs`
     </a>
 
     <ul class="hidden list-none gap-8 md:flex">
+      <li><a :href="homeUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Home</a></li>
+      <li><a :href="aboutUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">About</a></li>
+      <li><a :href="featuresUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Features</a></li>
       <li>
-        <a :href="docsUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Docs</a>
+        <a :href="governanceUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Governance</a>
       </li>
-      <li><a href="#how" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">How it works</a></li>
-      <li>
-        <a href="#capabilities" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Capabilities</a>
-      </li>
-      <li><a href="#dispatch" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Dispatch</a></li>
+      <li><a :href="docsUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Docs</a></li>
+      <li><a :href="useCaseUrl" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Use Case</a></li>
+      <li><a href="mailto:hello@volnux.ai" class="text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text">Contact Us</a></li>
     </ul>
 
     <div class="flex items-center gap-2 sm:gap-4">
@@ -31,10 +37,12 @@ const docsUrl = `${marketingUrl.replace(/\/$/, '')}/docs`
         class="rounded-md px-2.5 py-2 text-sm font-medium text-vn-muted no-underline transition hover:text-vn-text md:hidden"
         >Docs</a
       >
-      <div class="flex items-center gap-2 rounded-sm border border-emerald-400/20 bg-emerald-400/[0.04] px-3 py-1 font-mono text-[0.7rem] text-vn-accent3">
-        <span class="size-1.5 animate-mesh-pulse-ring rounded-full bg-vn-accent3" />
-        mesh online
-      </div>
+      <a
+        href="mailto:hello@volnux.ai"
+        class="rounded-sm border border-vn-border2 px-3 py-1 font-mono text-[0.72rem] text-vn-muted no-underline transition hover:border-vn-accent hover:text-vn-text"
+      >
+        Contact Us
+      </a>
     </div>
   </nav>
 </template>

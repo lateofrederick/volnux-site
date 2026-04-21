@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volnux — Building the Infrastructure for Business Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../public/css/volnux-static-brand.css">
+<style>
+/* Page layout — colours / grid / display type: /css/volnux-static-brand.css */
+
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: 52px;
+  display: flex;
+  align-items: stretch;
+  background: rgba(8,9,12,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0 1.5rem;
+  border-right: 1px solid var(--border);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-mark { width: 22px; height: 22px; }
+
+.nav-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: -0.01em;
+}
+.nav-name span { color: var(--accent2); }
+
+.nav-links {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  list-style: none;
+  margin-left: auto;
+}
+
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--fog2);
+  text-decoration: none;
+  border-left: 1px solid var(--border);
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.nav-links li a:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+
+.nav-cta a {
+  color: var(--accent) !important;
+  border-left: 1px solid var(--border) !important;
+}
+.nav-cta a:hover { background: rgba(232,96,26,0.08) !important; }
+
+/* ══════════════════════════════════════
+   HERO — FULL VIEWPORT DECLARATION
+══════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+/* giant background text */
+.hero-bg {
+  position: absolute;
+  bottom: -0.1em;
+  left: -0.02em;
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(14rem, 28vw, 28rem);
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.04);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+/* diagonal accent stripe */
+.hero-stripe {
+  position: absolute;
+  top: 0; right: 20%;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--accent) 40%, transparent);
+  opacity: 0.25;
+}
+
+.hero-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 7rem 2.5rem 5rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 4rem;
+  align-items: end;
+}
+
+.hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  animation: rise 0.7s ease 0.1s both;
+}
+.hero-tag::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+
+.hero-h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(5rem, 10vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: rise 0.7s ease 0.2s both;
+}
+
+.hero-h1 .line-accent { color: var(--accent); }
+.hero-h1 .line-dim    { color: var(--fog2); }
+
+.hero-body {
+  font-size: 1rem;
+  color: var(--silver);
+  line-height: 1.85;
+  max-width: 520px;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+  opacity: 0;
+  animation: rise 0.7s ease 0.35s both;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: rise 0.7s ease 0.45s both;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.02em;
+}
+
+.btn-ember {
+  background: var(--accent);
+  color: var(--void);
+}
+.btn-ember:hover { background: #ff7a3a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,96,26,0.3); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--silver);
+  border: 1px solid var(--border2);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* hero aside — vertical stats */
+.hero-aside {
+  opacity: 0;
+  animation: rise 0.7s ease 0.5s both;
+  border-left: 1px solid var(--border);
+  padding-left: 3rem;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+.hero-stat-item {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.hero-stat-item:last-child { border-bottom: none; }
+
+.hsi-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--white);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.2rem;
+}
+.hsi-num span { color: var(--accent); }
+
+.hsi-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fog2);
+}
+
+/* ══════════════════════════════════════
+   TICKER STRIP
+══════════════════════════════════════ */
+.ticker {
+  background: var(--accent);
+  overflow: hidden;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  animation: ticker 30s linear infinite;
+  white-space: nowrap;
+}
+
+.ticker-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(0,0,0,0.7);
+  padding: 0 2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ticker-item::after {
+  content: '◆';
+  font-size: 0.5rem;
+  opacity: 0.5;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════
+   SECTION SCAFFOLDING
+══════════════════════════════════════ */
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+section { position: relative; z-index: 1; }
+
+.section-pad { padding: 8rem 0; }
+
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+
+.display-h {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+.display-h span { color: var(--accent); }
+
+.body-lead {
+  font-size: 1rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  max-width: 580px;
+}
+
+/* ══════════════════════════════════════
+   MISSION — full bleed split
+══════════════════════════════════════ */
+#mission {
+  background: var(--dark);
+  border-bottom: 1px solid var(--border);
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: 560px;
+}
+
+.mission-left {
+  padding: 6rem 5rem 6rem 0;
+  border-right: 1px solid var(--border);
+}
+
+.mission-body {
+  font-size: 0.95rem;
+  color: var(--silver);
+  line-height: 1.9;
+  font-weight: 300;
+  margin-top: 2rem;
+}
+
+.mission-body p { margin-bottom: 1.25rem; }
+
+.mission-right {
+  padding: 6rem 0 6rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mission-quote {
+  position: relative;
+  padding: 0 0 0 2rem;
+  border-left: 3px solid var(--accent);
+}
+
+.mission-quote blockquote {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+
+.mission-quote blockquote span { color: var(--accent); }
+
+.mission-quote cite {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fog2);
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mission-quote cite::before { content: '—'; }
+
+/* ══════════════════════════════════════
+   WHAT WE BUILD
+══════════════════════════════════════ */
+#products {
+  background: var(--void);
+  border-bottom: 1px solid var(--border);
+}
+
+.products-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: end;
+  margin-bottom: 5rem;
+}
+
+.products-header p {
+  font-size: 0.95rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+/* large numbered product cards */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.product-item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 2.5rem;
+  align-items: start;
+  padding: 3rem 0;
+  border-top: 1px solid var(--border);
+  transition: border-color 0.2s;
+  cursor: default;
+}
+
+.product-item:last-child { border-bottom: 1px solid var(--border); }
+.product-item:hover { border-top-color: var(--accent); }
+
+.product-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 4rem;
+  line-height: 1;
+  color: rgba(255,255,255,0.06);
+  letter-spacing: 0.02em;
+  padding-top: 4px;
+  transition: color 0.2s;
+}
+.product-item:hover .product-num { color: rgba(232,96,26,0.2); }
+
+.product-content h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.product-item:hover .product-content h3 { color: var(--accent); }
+
+.product-content p {
+  font-size: 0.9rem;
+  color: var(--silver);
+  line-height: 1.75;
+  max-width: 560px;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ptag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2px;
+  border: 1px solid var(--border2);
+  color: var(--fog2);
+  letter-spacing: 0.04em;
+}
+
+.ptag-accent { border-color: rgba(0,229,255,0.25); color: var(--accent); background: rgba(0,229,255,0.06); }
+.ptag-blue   { border-color: rgba(123,97,255,0.25); color: var(--accent2); background: rgba(123,97,255,0.06); }
+.ptag-gold   { border-color: rgba(255,184,48,0.25); color: var(--gold);   background: rgba(255,184,48,0.06); }
+
+.product-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--fog2);
+  text-decoration: none;
+  border: 1px solid var(--border2);
+  padding: 0.45rem 0.85rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  align-self: start;
+  margin-top: 6px;
+}
+.product-link:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ══════════════════════════════════════
+   HOW WE THINK — Principles
+══════════════════════════════════════ */
+#principles {
+  background: var(--dark2);
+  border-bottom: 1px solid var(--border);
+}
+
+.principles-wrap {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 6rem;
+  align-items: start;
+}
+
+.principles-sticky {
+  position: sticky;
+  top: 80px;
+}
+
+.principles-sticky .display-h { margin-bottom: 1.5rem; }
+.principles-sticky p {
+  font-size: 0.88rem;
+  color: var(--fog2);
+  line-height: 1.8;
+}
+
+.principles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  counter-reset: p-counter;
+}
+
+.principle-item {
+  counter-increment: p-counter;
+  padding: 2.25rem 0;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.principle-item:first-child { padding-top: 0; }
+
+.p-counter-display {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--fog);
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+}
+
+.principle-item h3 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.01em;
+}
+
+.principle-item p {
+  font-size: 0.88rem;
+  color: var(--silver);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ══════════════════════════════════════
+   THE STACK — technology overview
+══════════════════════════════════════ */
+#stack {
+  background: var(--void);
+  border-bottom: 1px solid var(--border);
+}
+
+.stack-header { margin-bottom: 4rem; }
+
+.stack-diagram {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4rem;
+}
+
+.stack-layer {
+  background: var(--dark2);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--dark3); }
+
+.stack-layer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.sl-1::before { background: var(--accent); }
+.sl-2::before { background: var(--accent2); }
+.sl-3::before { background: var(--gold); }
+.sl-4::before { background: rgba(0,255,148,0.7); }
+
+.stack-layer-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--fog);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.85rem;
+}
+
+.stack-layer h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.stack-layer p {
+  font-size: 0.8rem;
+  color: var(--fog2);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.stack-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stack-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--fog2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.15s;
+}
+.stack-item:hover { color: var(--white); }
+
+.stack-item::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sl-1 .stack-item::before { background: var(--accent); }
+.sl-2 .stack-item::before { background: var(--accent2); }
+.sl-3 .stack-item::before { background: var(--gold); }
+.sl-4 .stack-item::before { background: rgba(0,255,148,0.7); }
+
+/* ══════════════════════════════════════
+   WHY VOLNUX — differentiators
+══════════════════════════════════════ */
+#why {
+  background: var(--dark);
+  border-bottom: 1px solid var(--border);
+}
+
+.why-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: start;
+}
+
+.why-left p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.9;
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+}
+
+.why-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.diff-row {
+  background: var(--dark2);
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.25rem;
+}
+
+.diff-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--fog2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-top: 0.1rem;
+}
+
+.diff-val {
+  font-size: 0.88rem;
+  color: var(--silver);
+  line-height: 1.65;
+}
+.diff-val strong { color: var(--white); font-weight: 500; display: block; margin-bottom: 0.2rem; font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+
+/* ══════════════════════════════════════
+   INDUSTRIES
+══════════════════════════════════════ */
+#industries {
+  background: var(--void);
+  border-bottom: 1px solid var(--border);
+}
+
+.industries-header { margin-bottom: 4rem; }
+
+.industries-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.industry-card {
+  background: var(--dark2);
+  padding: 2.5rem;
+  transition: background 0.15s;
+}
+.industry-card:hover { background: var(--dark3); }
+
+.industry-icon {
+  width: 44px; height: 44px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
+}
+
+.ii--ember { background: rgba(232,96,26,0.1); border: 1px solid rgba(232,96,26,0.2); }
+.ii--blue  { background: rgba(26,140,232,0.1); border: 1px solid rgba(26,140,232,0.2); }
+.ii--gold  { background: rgba(232,180,26,0.1); border: 1px solid rgba(232,180,26,0.2); }
+.ii--green { background: rgba(0,255,148,0.1);  border: 1px solid rgba(0,255,148,0.2);  }
+.ii--purple{ background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.2); }
+.ii--teal  { background: rgba(0,212,170,0.1);  border: 1px solid rgba(0,212,170,0.2);  }
+
+.industry-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 0.6rem;
+  line-height: 1;
+}
+
+.industry-card p {
+  font-size: 0.82rem;
+  color: var(--fog2);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.industry-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ie {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fog);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ie::before { content: '→'; opacity: 0.5; }
+
+/* ══════════════════════════════════════
+   OPEN SOURCE — ethos
+══════════════════════════════════════ */
+#open {
+  background: var(--dark2);
+  border-bottom: 1px solid var(--border);
+}
+
+.open-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.open-left .display-h { margin-bottom: 1.5rem; }
+
+.open-left p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  margin-bottom: 1.1rem;
+}
+
+.open-left p:last-child { margin-bottom: 2rem; }
+
+.open-right {
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.open-terminal-bar {
+  background: var(--dark);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.td { width: 9px; height: 9px; border-radius: 50%; }
+.td-r { background: #ff5f57; }
+.td-y { background: #ffbd2e; }
+.td-g { background: #28c840; }
+
+.open-terminal-title {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fog);
+}
+
+.open-terminal-body {
+  padding: 1.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 2.1;
+}
+
+.t-prompt { color: rgba(0,255,148,0.7); }
+.t-cmd    { color: var(--white); }
+.t-out    { color: var(--fog2); }
+.t-path   { color: var(--accent2); }
+.t-ok     { color: rgba(0,255,148,0.85); }
+.t-ver    { color: var(--gold); }
+.t-cm     { color: var(--fog); font-style: italic; }
+.t-blank  { display: block; height: 0.5rem; }
+
+/* ══════════════════════════════════════
+   COMPANY NUMBERS — facts strip
+══════════════════════════════════════ */
+#facts {
+  background: var(--accent);
+  position: relative;
+  overflow: hidden;
+}
+
+#facts::before {
+  content: 'VOLNUX';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(8rem, 18vw, 16rem);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 5rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.fact {
+  padding: 0 3rem;
+  border-right: 1px solid rgba(0,0,0,0.15);
+  text-align: center;
+}
+.fact:last-child { border-right: none; }
+
+.fact-num {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3.5rem, 6vw, 5rem);
+  line-height: 1;
+  color: var(--void);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.fact-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(0,0,0,0.55);
+}
+
+/* ══════════════════════════════════════
+   JOIN US
+══════════════════════════════════════ */
+#join {
+  background: var(--dark);
+  border-bottom: 1px solid var(--border);
+}
+
+.join-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: start;
+}
+
+.join-left .display-h { margin-bottom: 1.5rem; }
+
+.join-left p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  margin-bottom: 1.1rem;
+}
+
+.roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: var(--dark2);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+.role-item:first-child { border-radius: 4px 4px 0 0; }
+.role-item:last-child  { border-bottom: 1px solid var(--border); border-radius: 0 0 4px 4px; }
+.role-item:hover { background: var(--dark3); }
+
+.role-info h4 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+
+.role-info p {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fog2);
+}
+
+.role-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.rb-new   { border-color: rgba(232,96,26,0.3); color: var(--accent); background: rgba(232,96,26,0.06); }
+.rb-remote{ border-color: rgba(26,140,232,0.3); color: var(--accent2); background: rgba(26,140,232,0.06); }
+.rb-open  { border-color: rgba(232,180,26,0.3); color: var(--gold); background: rgba(232,180,26,0.06); }
+
+/* ══════════════════════════════════════
+   CONTACT / CTA
+══════════════════════════════════════ */
+#contact {
+  background: var(--void);
+  padding: 10rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#contact::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(232,96,26,0.08);
+}
+
+#contact::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px; height: 900px;
+  border-radius: 50%;
+  border: 1px solid rgba(232,96,26,0.04);
+}
+
+.contact-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+.contact-inner .eyebrow { justify-content: center; }
+.contact-inner .display-h { text-align: center; font-size: clamp(3.5rem, 7vw, 6rem); margin-bottom: 1.25rem; }
+.contact-inner .display-h span { color: var(--accent); }
+
+.contact-inner p {
+  font-size: 0.95rem;
+  color: var(--silver);
+  line-height: 1.85;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+
+.contact-methods {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  background: var(--dark2);
+  border-top: 1px solid var(--border);
+  padding: 3.5rem 0;
+}
+
+.footer-grid {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-columns: 240px 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-brand {}
+
+.footer-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.footer-brand-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--white);
+}
+.footer-brand-name span { color: var(--accent2); }
+
+.footer-brand-tagline {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fog);
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.footer-col h4 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fog2);
+  margin-bottom: 1rem;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.footer-col a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fog);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--accent); }
+
+.footer-bottom {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 2rem 2.5rem 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-bottom p {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fog);
+}
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.on { opacity: 1; transform: none; }
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal-stagger.on > *:nth-child(1) { opacity:1;transform:none;transition-delay:0s }
+.reveal-stagger.on > *:nth-child(2) { opacity:1;transform:none;transition-delay:0.07s }
+.reveal-stagger.on > *:nth-child(3) { opacity:1;transform:none;transition-delay:0.14s }
+.reveal-stagger.on > *:nth-child(4) { opacity:1;transform:none;transition-delay:0.21s }
+.reveal-stagger.on > *:nth-child(5) { opacity:1;transform:none;transition-delay:0.28s }
+.reveal-stagger.on > *:nth-child(6) { opacity:1;transform:none;transition-delay:0.35s }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-aside { display: none; }
+  .mission-grid, .why-layout, .open-layout, .join-layout { grid-template-columns: 1fr; gap: 3rem; }
+  .mission-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 4rem; }
+  .mission-right { padding-left: 0; padding-top: 4rem; }
+  .principles-wrap { grid-template-columns: 1fr; gap: 3rem; }
+  .principles-sticky { position: static; }
+  .stack-diagram { grid-template-columns: 1fr 1fr; }
+  .products-header { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+@media (max-width: 768px) {
+  .stack-diagram { grid-template-columns: 1fr; }
+  .industries-grid { grid-template-columns: 1fr 1fr; }
+  .facts-grid { grid-template-columns: 1fr 1fr; }
+  .fact { padding: 2rem; border-right: none; border-bottom: 1px solid rgba(0,0,0,0.15); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .product-item { grid-template-columns: 56px 1fr; }
+  .product-link { display: none; }
+  nav .nav-links li:not(.nav-cta) { display: none; }
+}
+
+@media (max-width: 560px) {
+  .industries-grid { grid-template-columns: 1fr; }
+  .facts-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="layer">
+  <a href="#" class="nav-brand">
+    <svg class="nav-mark" viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="11" r="11" fill="#0e1016"/>
+      <path d="M11 11L11 2A9 9 0 0 1 18.8 14Z" fill="#00c8e0"/>
+      <path d="M11 11L18.8 14A9 9 0 0 1 3.2 14Z" fill="#6b4fff"/>
+      <path d="M11 11L3.2 14A9 9 0 0 1 11 2Z" fill="#00e87a"/>
+      <path d="M8.8 2.5C8.4 4.8 8.2 7.5 8.6 11A2.4 2.4 0 0 0 11 13.4A2.4 2.4 0 0 0 13.4 11C13.8 7.5 13.6 4.8 13.2 2.5C12.8 1.9 9.2 1.9 8.8 2.5Z" fill="#0e1016"/>
+      <path d="M3.2 13C5 10.8 7.8 9.6 10.8 9.1A2.4 2.4 0 0 0 9.6 6.9A2.4 2.4 0 0 0 8.5 6.5C5.6 7.2 3.6 9 2.8 11.4C2.6 12 2.7 13.5 3.2 13Z" fill="#0e1016"/>
+      <path d="M18.8 13C17 10.8 14.2 9.6 11.2 9.1A2.4 2.4 0 0 0 12.4 6.9A2.4 2.4 0 0 0 13.5 6.5C16.4 7.2 18.4 9 19.2 11.4C19.4 12 19.3 13.5 18.8 13Z" fill="#0e1016"/>
+      <circle cx="11" cy="11" r="1.8" fill="#0e1016"/>
+      <circle cx="11" cy="11" r="0.9" fill="#00e5ff"/>
+    </svg>
+    <span class="nav-name">vol<span>nux</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#stack">Technology</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a href="#join">Careers</a></li>
+    <li class="nav-cta"><a href="index.html">Platform →</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero" class="layer">
+  <div class="hero-bg">VOLNUX</div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div>
+      <p class="hero-tag">Infrastructure for the automated enterprise</p>
+      <h1 class="hero-h1">
+        <span>WE BUILD THE</span><br>
+        <span class="line-accent">ENGINES THAT</span><br>
+        <span>RUN YOUR</span><br>
+        <span class="line-dim">BUSINESS.</span>
+      </h1>
+      <p class="hero-body">
+        Volnux is an infrastructure company. We build workflow engines, automation runtimes, and developer tools that help organisations deploy, govern, and scale their most critical automated processes — from data pipelines to AI agent systems.
+      </p>
+      <div class="hero-actions">
+        <a href="#products" class="btn btn-ember">Our products</a>
+        <a href="index.html" class="btn btn-ghost">Volnux Platform →</a>
+        <a href="#contact" class="btn btn-ghost">Work with us</a>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="hero-stat-item">
+        <div class="hsi-num">2<span>+</span></div>
+        <div class="hsi-label">Core products in active development</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hsi-num">1<span>.</span>2M<span>+</span></div>
+        <div class="hsi-label">EventHub monthly component pulls</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hsi-num">0</div>
+        <div class="hsi-label">Central schedulers required</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TICKER ══ -->
+<div class="ticker layer">
+  <div class="ticker-track">
+    <!-- duplicated for seamless loop -->
+    <span class="ticker-item">Workflow Orchestration</span>
+    <span class="ticker-item">Business Automation</span>
+    <span class="ticker-item">P2P Mesh Execution</span>
+    <span class="ticker-item">Pointy-lang DSL</span>
+    <span class="ticker-item">AI Agent Infrastructure</span>
+    <span class="ticker-item">Distributed Checkpointing</span>
+    <span class="ticker-item">EventHub Registry</span>
+    <span class="ticker-item">OpenTelemetry Native</span>
+    <span class="ticker-item">Workflow Governance</span>
+    <span class="ticker-item">Open Core</span>
+    <span class="ticker-item">Workflow Orchestration</span>
+    <span class="ticker-item">Business Automation</span>
+    <span class="ticker-item">P2P Mesh Execution</span>
+    <span class="ticker-item">Pointy-lang DSL</span>
+    <span class="ticker-item">AI Agent Infrastructure</span>
+    <span class="ticker-item">Distributed Checkpointing</span>
+    <span class="ticker-item">EventHub Registry</span>
+    <span class="ticker-item">OpenTelemetry Native</span>
+    <span class="ticker-item">Workflow Governance</span>
+    <span class="ticker-item">Open Core</span>
+  </div>
+</div>
+
+<!-- ══ MISSION ══ -->
+<section id="mission" class="layer">
+  <div class="wrap">
+    <div class="mission-grid">
+      <div class="mission-left reveal">
+        <p class="eyebrow">Our mission</p>
+        <h2 class="display-h">MAKING<br>AUTOMATION<br><span>GOVERNABLE.</span></h2>
+        <div class="mission-body">
+          <p>
+            Every organisation running at scale is running on automation. Data pipelines. Approval workflows. AI agents. Notification chains. Deployment processes. The more successful an organisation becomes, the more automation it depends on — and the harder it becomes to understand, govern, and trust that automation.
+          </p>
+          <p>
+            Volnux was founded on a single conviction: the infrastructure for business automation has not kept pace with the scale and complexity of the businesses that depend on it. Schedulers designed for batch jobs are being asked to orchestrate AI agents. Python scripts written by engineers three years ago are running critical financial processes. Nobody can explain to a compliance officer what any of it does.
+          </p>
+          <p>
+            We are building the operating system for operations — a complete execution substrate that makes every workflow in your organisation readable, reliable, and governable from day one. Not as an afterthought. Not as a compliance checkbox. As the foundation.
+          </p>
+        </div>
+      </div>
+      <div class="mission-right reveal">
+        <div class="mission-quote">
+          <blockquote>
+            "The organisations that win the next decade will not be the ones that automate the most — they will be the ones that can <span>explain, audit, and govern</span> what their automation is doing."
+          </blockquote>
+          <cite>Volnux founding thesis</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRODUCTS ══ -->
+<section id="products" class="section-pad layer">
+  <div class="wrap">
+    <div class="products-header">
+      <div class="reveal">
+        <p class="eyebrow">What we build</p>
+        <h2 class="display-h">OUR<br><span>PRODUCTS.</span></h2>
+      </div>
+      <div class="reveal">
+        <p>
+          Every product Volnux builds is a piece of the same system — an integrated stack for building, deploying, and governing automated workflows at any scale. From a single developer running a local pipeline to an enterprise operating a global distributed mesh.
+        </p>
+      </div>
+    </div>
+
+    <div class="product-list reveal-stagger">
+
+      <div class="product-item">
+        <div class="product-num">01</div>
+        <div class="product-content">
+          <h3>Volnux Platform</h3>
+          <p>The core workflow operating system. A decentralised P2P execution mesh with native checkpointing, OpenTelemetry integration, and smart serverless task dispatch. No central scheduler. No single point of failure. Workflows that heal themselves and report everything.</p>
+          <div class="product-tags">
+            <span class="ptag ptag-accent">workflow engine</span>
+            <span class="ptag ptag-blue">P2P mesh</span>
+            <span class="ptag">checkpointing</span>
+            <span class="ptag">OTEL</span>
+            <span class="ptag ptag-accent">open core</span>
+          </div>
+        </div>
+        <a href="index.html" class="product-link">Visit platform →</a>
+      </div>
+
+      <div class="product-item">
+        <div class="product-num">02</div>
+        <div class="product-content">
+          <h3>Pointy-lang</h3>
+          <p>A purpose-built declarative DSL for workflow authoring. Arrow-based syntax that expresses control flow, parallelism, retries, conditional branching, and remote dispatch in syntax readable by engineers and non-engineers alike. Compiled to an in-memory execution graph by the Volnux runtime.</p>
+          <div class="product-tags">
+            <span class="ptag ptag-accent">DSL</span>
+            <span class="ptag">compiler</span>
+            <span class="ptag ptag-blue">readable</span>
+            <span class="ptag">PLY / YACC</span>
+            <span class="ptag ptag-gold">governance</span>
+          </div>
+        </div>
+        <a href="index.html" class="product-link">Documentation →</a>
+      </div>
+
+      <div class="product-item">
+        <div class="product-num">03</div>
+        <div class="product-content">
+          <h3>EventHub</h3>
+          <p>An open registry for Volnux EventBase components. Publish versioned, schema-validated workflow event classes to PyPI, Git, or the community hub. Reference them by name in any Pointy-lang workflow — Volnux pulls and executes them at runtime. No deployment. No shared codebase.</p>
+          <div class="product-tags">
+            <span class="ptag ptag-gold">registry</span>
+            <span class="ptag">component marketplace</span>
+            <span class="ptag ptag-blue">versioning</span>
+            <span class="ptag">manifest schema</span>
+          </div>
+        </div>
+        <a href="eventhub.html" class="product-link">Browse EventHub →</a>
+      </div>
+
+      <div class="product-item">
+        <div class="product-num">04</div>
+        <div class="product-content">
+          <h3>Pointy-lang Wizard</h3>
+          <p>A visual workflow canvas for building Pointy-lang pipelines without writing code. Drag-and-drop EventBase components from the EventHub palette, connect them with edges, configure node annotations, and export the generated Pointy-lang definition directly. The bridge between workflow governance and visual authoring.</p>
+          <div class="product-tags">
+            <span class="ptag ptag-blue">visual canvas</span>
+            <span class="ptag">drag-and-drop</span>
+            <span class="ptag ptag-accent">no-code</span>
+            <span class="ptag">Pointy-lang</span>
+          </div>
+        </div>
+        <a href="pointy-wizard.html" class="product-link">Try the wizard →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRINCIPLES ══ -->
+<section id="principles" class="section-pad layer">
+  <div class="wrap">
+    <div class="principles-wrap">
+      <div class="principles-sticky reveal">
+        <p class="eyebrow">How we think</p>
+        <h2 class="display-h">ENGINEERING<br><span>PRINCIPLES.</span></h2>
+        <p>
+          Every technical decision at Volnux is grounded in a small number of principles that do not change. These are not aspirations — they are constraints that shape what we build and what we refuse to build.
+        </p>
+      </div>
+      <div class="principles-list reveal-stagger">
+
+        <div class="principle-item">
+          <div class="p-counter-display">01</div>
+          <div>
+            <h3>Governance is not optional</h3>
+            <p>A workflow that cannot be audited, explained, or intervened upon is not ready for production. We design every system so that governance is the path of least resistance, not an add-on.</p>
+          </div>
+        </div>
+
+        <div class="principle-item">
+          <div class="p-counter-display">02</div>
+          <div>
+            <h3>Decentralisation by default</h3>
+            <p>Central schedulers are single points of failure and single points of bottleneck. Every Volnux system is designed to operate without a coordinator — nodes negotiate, tasks self-route, failures self-heal.</p>
+          </div>
+        </div>
+
+        <div class="principle-item">
+          <div class="p-counter-display">03</div>
+          <div>
+            <h3>The definition is the documentation</h3>
+            <p>Separate documentation always goes stale. When the workflow definition itself is readable by any stakeholder, governance is self-maintaining as the system evolves. Pointy-lang is the executable documentation.</p>
+          </div>
+        </div>
+
+        <div class="principle-item">
+          <div class="p-counter-display">04</div>
+          <div>
+            <h3>Version everything, trust nothing floating</h3>
+            <p>An execution that cannot be reproduced cannot be audited. Every component, configuration, and workflow definition is version-pinned. Floating references are a governance failure waiting to happen.</p>
+          </div>
+        </div>
+
+        <div class="principle-item">
+          <div class="p-counter-display">05</div>
+          <div>
+            <h3>Infrastructure should be boring</h3>
+            <p>Workflow engines should be the least interesting part of your stack — reliable, transparent, and invisible when things are going well. Excitement in infrastructure is usually a symptom of something broken.</p>
+          </div>
+        </div>
+
+        <div class="principle-item">
+          <div class="p-counter-display">06</div>
+          <div>
+            <h3>Open core, not open bait</h3>
+            <p>The runtime, the language, and the core execution model are and will remain open source. We make money on the managed cloud, the enterprise governance layer, and the private EventHub — not by restricting the infrastructure itself.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TECHNOLOGY STACK ══ -->
+<section id="stack" class="section-pad layer">
+  <div class="wrap">
+    <div class="stack-header reveal">
+      <p class="eyebrow">Technology</p>
+      <h2 class="display-h">THE <span>STACK.</span></h2>
+      <p class="body-lead">Four layers. Each designed for a specific job. Together they form a complete execution substrate for business automation at any scale.</p>
+    </div>
+
+    <div class="stack-diagram reveal-stagger">
+      <div class="stack-layer sl-1">
+        <div class="stack-layer-num">Layer 01 — Language</div>
+        <h3>Pointy-lang</h3>
+        <p>The declarative DSL that makes workflows readable. Built with PLY / YACC. Compiles to an in-memory execution graph.</p>
+        <div class="stack-items">
+          <div class="stack-item">Arrow-based control flow</div>
+          <div class="stack-item">Operator precedence grammar</div>
+          <div class="stack-item">Parallel fan-out / barriers</div>
+          <div class="stack-item">Conditional branching</div>
+          <div class="stack-item">Functional meta-events (MAP)</div>
+          <div class="stack-item">Node / executor annotations</div>
+        </div>
+      </div>
+      <div class="stack-layer sl-2">
+        <div class="stack-layer-num">Layer 02 — Runtime</div>
+        <h3>Volnux Core</h3>
+        <p>The execution engine. Manages event lifecycle, context, checkpointing, and result evaluation.</p>
+        <div class="stack-items">
+          <div class="stack-item">EventBase abstraction</div>
+          <div class="stack-item">Adaptive MiniExecutionContext</div>
+          <div class="stack-item">Reservoir sampling telemetry</div>
+          <div class="stack-item">Retry / evaluation strategies</div>
+          <div class="stack-item">Checkpoint and rehydration</div>
+          <div class="stack-item">Trigger engine lifecycle</div>
+        </div>
+      </div>
+      <div class="stack-layer sl-3">
+        <div class="stack-layer-num">Layer 03 — Mesh</div>
+        <h3>Mesh Runtime</h3>
+        <p>The distributed execution layer. P2P topology with mTLS, adaptive streaming, and self-healing.</p>
+        <div class="stack-items">
+          <div class="stack-item">P2P node discovery</div>
+          <div class="stack-item">mTLS inter-node auth</div>
+          <div class="stack-item">TCP / gRPC transport</div>
+          <div class="stack-item">Celery worker dispatch</div>
+          <div class="stack-item">Watchdog and reconnect</div>
+          <div class="stack-item">Batch streaming (Redis)</div>
+        </div>
+      </div>
+      <div class="stack-layer sl-4">
+        <div class="stack-layer-num">Layer 04 — Registry</div>
+        <h3>EventHub</h3>
+        <p>The component ecosystem. Runtime assembly from PyPI, Git, or the community registry.</p>
+        <div class="stack-items">
+          <div class="stack-item">volnux.manifest.json schema</div>
+          <div class="stack-item">Version-pinned resolution</div>
+          <div class="stack-item">Deprecation lifecycle</div>
+          <div class="stack-item">Private org registries</div>
+          <div class="stack-item">CLI manifest commands</div>
+          <div class="stack-item">JSON Schema validation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY VOLNUX ══ -->
+<section id="why" class="section-pad layer">
+  <div class="wrap">
+    <div class="why-layout">
+      <div class="reveal">
+        <p class="eyebrow">Differentiation</p>
+        <h2 class="display-h">WHY<br><span>VOLNUX.</span></h2>
+        <div style="margin-top:2rem;">
+          <p>Every major workflow engine was built before AI agents, before governance became a regulatory requirement, and before the scale of modern distributed infrastructure made central schedulers a liability.</p>
+          <p>Volnux is the first workflow engine designed from first principles for the world that actually exists — one where workflows cross team and organisational boundaries, AI systems make consequential decisions at machine speed, and explainability is not optional.</p>
+          <p>We are not trying to be a better Airflow or a simpler Temporal. We are building something categorically different: a workflow operating system where governance, readability, and decentralisation are structural properties — not features you configure.</p>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="why-right">
+          <div class="diff-row">
+            <div class="diff-label">Architecture</div>
+            <div class="diff-val">
+              <strong>Decentralised P2P mesh</strong>
+              No central scheduler. No coordinator process. Every node is a full peer. Tasks self-route, failures self-heal, the mesh scales horizontally without configuration.
+            </div>
+          </div>
+          <div class="diff-row">
+            <div class="diff-label">Language</div>
+            <div class="diff-val">
+              <strong>Purpose-built DSL</strong>
+              Pointy-lang is not a library or a decorator system. It is a compiled language with a formal grammar. Readable by non-engineers. Executable by the runtime. The definition is the documentation.
+            </div>
+          </div>
+          <div class="diff-row">
+            <div class="diff-label">Governance</div>
+            <div class="diff-val">
+              <strong>Structural, not bolted on</strong>
+              Auditability, checkpointing, and execution tracing are not features you enable. They are properties of every workflow by construction. You cannot create an ungovernable workflow in Volnux.
+            </div>
+          </div>
+          <div class="diff-row">
+            <div class="diff-label">Component model</div>
+            <div class="diff-val">
+              <strong>Runtime assembly</strong>
+              Workflows reference versioned components by name. The runtime fetches them at execution time. No shared codebase. No deployment coordination. Any node can run any workflow.
+            </div>
+          </div>
+          <div class="diff-row">
+            <div class="diff-label">AI readiness</div>
+            <div class="diff-val">
+              <strong>Agent-native by design</strong>
+              LLM calls, multi-agent fan-out, conditional intent routing, and checkpoint-across-inference are first-class patterns in Pointy-lang. Not workarounds. Not plugins.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INDUSTRIES ══ -->
+<section id="industries" class="section-pad layer">
+  <div class="wrap">
+    <div class="industries-header reveal">
+      <p class="eyebrow">Industries</p>
+      <h2 class="display-h">WHO WE<br><span>SERVE.</span></h2>
+      <p class="body-lead">Volnux infrastructure is domain-agnostic. The same execution substrate serves any organisation that runs critical automated processes.</p>
+    </div>
+    <div class="industries-grid reveal-stagger">
+
+      <div class="industry-card">
+        <div class="industry-icon ii--ember">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="#e8601a" stroke-width="1.5"/><path d="M6 5V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#e8601a" stroke-width="1.5"/><path d="M10 9v3M8 11h4" stroke="#e8601a" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Financial Services</h3>
+        <p>Loan processing, compliance reporting, fraud detection, trade reconciliation, and regulatory audit workflows — all governed, traceable, and explainable by construction.</p>
+        <div class="industry-examples">
+          <span class="ie">AML transaction screening</span>
+          <span class="ie">Loan origination pipelines</span>
+          <span class="ie">Regulatory report generation</span>
+          <span class="ie">Trade settlement workflows</span>
+        </div>
+      </div>
+
+      <div class="industry-card">
+        <div class="industry-icon ii--blue">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L4 6v5c0 3.5 2.8 6.5 6 7.5 3.2-1 6-4 6-7.5V6L10 3z" stroke="#1a8ce8" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Healthcare</h3>
+        <p>Patient data pipelines, clinical decision workflows, prior authorisation automation, and HIPAA-compliant process orchestration — governance is not a feature, it's a requirement.</p>
+        <div class="industry-examples">
+          <span class="ie">Patient intake automation</span>
+          <span class="ie">Clinical trial data pipelines</span>
+          <span class="ie">Prior auth workflows</span>
+          <span class="ie">Audit-ready HL7/FHIR processing</span>
+        </div>
+      </div>
+
+      <div class="industry-card">
+        <div class="industry-icon ii--gold">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 7h14M3 10h14M3 13h8" stroke="#e8b41a" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="4" width="16" height="13" rx="2" stroke="#e8b41a" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Data Engineering</h3>
+        <p>ETL and ELT pipelines, streaming ingestion, data quality validation, warehouse loading, and real-time transformation — all expressed in readable Pointy-lang and executed across the mesh.</p>
+        <div class="industry-examples">
+          <span class="ie">Postgres → Snowflake ETL</span>
+          <span class="ie">Kafka streaming pipelines</span>
+          <span class="ie">ML feature engineering</span>
+          <span class="ie">Data quality enforcement</span>
+        </div>
+      </div>
+
+      <div class="industry-card">
+        <div class="industry-icon ii--green">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="rgba(0,255,148,0.7)" stroke-width="1.5"/><path d="M10 7v3l2 2" stroke="rgba(0,255,148,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 5.5l11 9M15.5 5.5l-11 9" stroke="rgba(0,255,148,0.7)" stroke-width="0.75" stroke-linecap="round" opacity="0.3"/></svg>
+        </div>
+        <h3>AI &amp; Machine Learning</h3>
+        <p>Multi-agent orchestration, LLM pipeline management, embedding workflows, model evaluation pipelines, and AI decision governance — built for the velocity and complexity of production AI systems.</p>
+        <div class="industry-examples">
+          <span class="ie">Multi-agent task orchestration</span>
+          <span class="ie">RAG pipeline management</span>
+          <span class="ie">Model evaluation workflows</span>
+          <span class="ie">AI decision audit trails</span>
+        </div>
+      </div>
+
+      <div class="industry-card">
+        <div class="industry-icon ii--purple">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="7" height="7" rx="1.5" stroke="#7b61ff" stroke-width="1.5"/><rect x="11" y="3" width="7" height="7" rx="1.5" stroke="#7b61ff" stroke-width="1.5"/><rect x="2" y="12" width="7" height="7" rx="1.5" stroke="#7b61ff" stroke-width="1.5"/><path d="M14.5 12v7M11 15.5h7" stroke="#7b61ff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Enterprise IT &amp; Operations</h3>
+        <p>Approval workflows, provisioning pipelines, cross-team process orchestration, infrastructure automation, and compliance reporting — governed automation across every business function.</p>
+        <div class="industry-examples">
+          <span class="ie">IT service request automation</span>
+          <span class="ie">Cross-team approval flows</span>
+          <span class="ie">Infrastructure provisioning</span>
+          <span class="ie">Compliance report generation</span>
+        </div>
+      </div>
+
+      <div class="industry-card">
+        <div class="industry-icon ii--teal">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3c-4 0-7 3-7 7s3 7 7 7 7-3 7-7" stroke="rgba(0,212,170,0.8)" stroke-width="1.5" stroke-linecap="round"/><path d="M14 3l3 3-3 3" stroke="rgba(0,212,170,0.8)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="rgba(0,212,170,0.8)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>E-commerce &amp; Retail</h3>
+        <p>Order fulfilment pipelines, inventory synchronisation, customer notification workflows, returns processing, and supplier integration — automating the operational backbone at retail scale.</p>
+        <div class="industry-examples">
+          <span class="ie">Order fulfilment orchestration</span>
+          <span class="ie">Inventory sync pipelines</span>
+          <span class="ie">Returns &amp; refund workflows</span>
+          <span class="ie">Supplier integration automation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ OPEN SOURCE ══ -->
+<section id="open" class="section-pad layer">
+  <div class="wrap">
+    <div class="open-layout">
+      <div class="reveal">
+        <p class="eyebrow">Open source</p>
+        <h2 class="display-h">BUILT IN<br><span>THE OPEN.</span></h2>
+        <p>The Volnux runtime, the Pointy-lang compiler, and the core execution model are open source. Always. This is not a marketing decision — it is an architectural one.</p>
+        <p>Infrastructure that runs your most critical processes must be auditable. Organisations need to see what executes in their environment, understand how it works, and trust it with their data. Closed-source workflow engines are a governance failure by design.</p>
+        <p>We make money on the managed cloud platform, the enterprise governance dashboard, private EventHub registries, and dedicated support — not by restricting the infrastructure itself. The open core is the product. The enterprise tier is the business model.</p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:2rem;">
+          <a href="#" class="btn btn-ghost">Star on GitHub →</a>
+          <a href="#" class="btn btn-ghost">Read the docs →</a>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="open-right">
+          <div class="open-terminal-bar">
+            <span class="td td-r"></span>
+            <span class="td td-y"></span>
+            <span class="td td-g"></span>
+            <span class="open-terminal-title">terminal</span>
+          </div>
+          <div class="open-terminal-body">
+<span class="t-cm"># Install Volnux</span><br>
+<span class="t-prompt">$</span> <span class="t-cmd">pip install volnux</span><br>
+<span class="t-ok">✓ volnux-core</span> <span class="t-ver">0.9.1</span> <span class="t-out">installed</span><br>
+<br>
+<span class="t-cm"># Create a new project</span><br>
+<span class="t-prompt">$</span> <span class="t-cmd">volnux init</span> <span class="t-path">my-pipeline</span><br>
+<span class="t-ok">✓</span> <span class="t-out">Project created at</span> <span class="t-path">./my-pipeline</span><br>
+<span class="t-blank"></span>
+<span class="t-cm"># Write a workflow in Pointy-lang</span><br>
+<span class="t-cm"># my-pipeline/workflows/etl.pointy</span><br>
+<span style="color:rgba(0,255,148,0.5)">pypi</span><span style="color:#e8b41a">:PostgresExtract@v2.4.1</span><br>
+&nbsp;&nbsp;<span style="color:#6bd4e8"> -></span> <span style="color:#edf2fa">NormaliseTimestamps</span><br>
+&nbsp;&nbsp;<span style="color:#6bd4e8"> -></span> <span style="color:#edf2fa">SnowflakeLoad</span><br>
+<span class="t-blank"></span>
+<span class="t-cm"># Start the engine</span><br>
+<span class="t-prompt">$</span> <span class="t-cmd">volnux trigger_engine start</span><br>
+<span class="t-ok">✓</span> <span class="t-out">TriggerEngine running</span><br>
+<span class="t-out">  Workflows: 1 registered</span><br>
+<span class="t-out">  Mesh: local node active</span><br>
+<span class="t-out">  OTEL: traces exporting</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FACTS STRIP ══ -->
+<section id="facts" class="layer">
+  <div class="wrap">
+    <div class="facts-grid">
+      <div class="fact">
+        <div class="fact-num">2025</div>
+        <div class="fact-label">Founded</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">100%</div>
+        <div class="fact-label">Remote-first team</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">Open</div>
+        <div class="fact-label">Core always free</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">0</div>
+        <div class="fact-label">Central schedulers needed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ JOIN US ══ -->
+<section id="join" class="section-pad layer">
+  <div class="wrap">
+    <div class="join-layout">
+      <div class="reveal">
+        <p class="eyebrow">Careers</p>
+        <h2 class="display-h">BUILD<br>WITH<br><span>US.</span></h2>
+        <p>
+          Volnux is a small team building infrastructure that runs at the centre of how organisations operate. We work on hard problems — compiler design, distributed systems, workflow governance, AI orchestration — and we do it in the open.
+        </p>
+        <p>
+          We are looking for people who want to shape foundational infrastructure, have strong opinions about how distributed systems should work, and care deeply about building tools that non-engineers can trust.
+        </p>
+        <p style="margin-top:2rem;">
+          <a href="mailto:careers@volnux.dev" class="btn btn-ember">careers@volnux.dev</a>
+        </p>
+      </div>
+      <div class="reveal">
+        <div class="roles-list">
+          <a href="mailto:careers@volnux.dev" class="role-item">
+            <div class="role-info">
+              <h4>Senior Distributed Systems Engineer</h4>
+              <p>Runtime · Mesh · P2P protocols</p>
+            </div>
+            <span class="role-badge rb-new">Hiring</span>
+          </a>
+          <a href="mailto:careers@volnux.dev" class="role-item">
+            <div class="role-info">
+              <h4>Compiler / Language Engineer</h4>
+              <p>Pointy-lang · PLY/YACC · IR design</p>
+            </div>
+            <span class="role-badge rb-new">Hiring</span>
+          </a>
+          <a href="mailto:careers@volnux.dev" class="role-item">
+            <div class="role-info">
+              <h4>Developer Experience Engineer</h4>
+              <p>CLI · SDK · Documentation</p>
+            </div>
+            <span class="role-badge rb-remote">Remote</span>
+          </a>
+          <a href="mailto:careers@volnux.dev" class="role-item">
+            <div class="role-info">
+              <h4>AI Infrastructure Engineer</h4>
+              <p>Agent orchestration · LLM pipelines</p>
+            </div>
+            <span class="role-badge rb-new">Hiring</span>
+          </a>
+          <a href="mailto:careers@volnux.dev" class="role-item">
+            <div class="role-info">
+              <h4>Enterprise Solutions Engineer</h4>
+              <p>Customer architecture · Governance</p>
+            </div>
+            <span class="role-badge rb-open">Open</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact" class="layer">
+  <div class="contact-inner">
+    <p class="eyebrow">Get in touch</p>
+    <h2 class="display-h">LET'S<br><span>TALK.</span></h2>
+    <p>Whether you are evaluating Volnux for your organisation, interested in a design partnership, or want to contribute to the open source project — we want to hear from you.</p>
+    <div class="contact-methods">
+      <a href="mailto:hello@volnux.dev" class="btn btn-ember">hello@volnux.dev</a>
+      <a href="index.html" class="btn btn-ghost">Explore the platform →</a>
+      <a href="#" class="btn btn-ghost">GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="layer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-brand-logo">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="11" fill="#141720"/>
+          <path d="M11 11L11 2A9 9 0 0 1 18.8 14Z" fill="#00c8e0"/>
+          <path d="M11 11L18.8 14A9 9 0 0 1 3.2 14Z" fill="#6b4fff"/>
+          <path d="M11 11L3.2 14A9 9 0 0 1 11 2Z" fill="#00e87a"/>
+          <path d="M8.8 2.5C8.4 4.8 8.2 7.5 8.6 11A2.4 2.4 0 0 0 11 13.4A2.4 2.4 0 0 0 13.4 11C13.8 7.5 13.6 4.8 13.2 2.5C12.8 1.9 9.2 1.9 8.8 2.5Z" fill="#141720"/>
+          <path d="M3.2 13C5 10.8 7.8 9.6 10.8 9.1A2.4 2.4 0 0 0 9.6 6.9A2.4 2.4 0 0 0 8.5 6.5C5.6 7.2 3.6 9 2.8 11.4C2.6 12 2.7 13.5 3.2 13Z" fill="#141720"/>
+          <path d="M18.8 13C17 10.8 14.2 9.6 11.2 9.1A2.4 2.4 0 0 0 12.4 6.9A2.4 2.4 0 0 0 13.5 6.5C16.4 7.2 18.4 9 19.2 11.4C19.4 12 19.3 13.5 18.8 13Z" fill="#141720"/>
+          <circle cx="11" cy="11" r="1.8" fill="#141720"/>
+          <circle cx="11" cy="11" r="0.9" fill="#00e5ff"/>
+        </svg>
+        <span class="footer-brand-name">vol<span>nux</span></span>
+      </div>
+      <p class="footer-brand-tagline">Infrastructure for<br>business automation<br>and workflow engines.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="index.html">Volnux Platform</a></li>
+        <li><a href="#">Pointy-lang</a></li>
+        <li><a href="eventhub.html">EventHub</a></li>
+        <li><a href="pointy-wizard.html">Pointy Wizard</a></li>
+        <li><a href="mesh-runtime.html">Mesh Runtime</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#mission">Mission</a></li>
+        <li><a href="#principles">Principles</a></li>
+        <li><a href="#join">Careers</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">GitHub</a></li>
+        <li><a href="governance.html">Workflow Governance</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Early Access</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Volnux. All rights reserved.</p>
+    <p>Built with Pointy-lang. Governed by design.</p>
+    <p>hello@volnux.dev</p>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import MeshExternalView from '@/views/MeshExternalView.vue'
 import ProductPlaceholderView from '@/views/ProductPlaceholderView.vue'
 import EventHubExternalView from '@/views/EventHubExternalView.vue'
 import PointyExternalView from '@/views/PointyExternalView.vue'
+import StaticHtmlFrame from '@/views/StaticHtmlFrame.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Volnux — The Workflow Operating System' } },
@@ -44,6 +45,27 @@ const routes: RouteRecordRaw[] = [
     component: ProductPlaceholderView,
     props: { title: 'Changelog', blurb: 'Release history and migration notes.' },
     meta: { title: 'Changelog — Volnux' },
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: StaticHtmlFrame,
+    props: { src: '/about.html' },
+    meta: { title: 'About — Volnux' },
+  },
+  {
+    path: '/governance',
+    name: 'governance',
+    component: StaticHtmlFrame,
+    props: { src: '/governance.html' },
+    meta: { title: 'Governance — Volnux' },
+  },
+  {
+    path: '/use-cases',
+    name: 'use-cases',
+    component: StaticHtmlFrame,
+    props: { src: '/use-cases.html' },
+    meta: { title: 'Use cases — Volnux' },
   },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]

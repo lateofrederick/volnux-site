@@ -3,6 +3,13 @@ import type { EventSource } from '@/types/wizard'
 import { usePointyWizard } from '@/composables/usePointyWizard'
 
 const marketingUrl = import.meta.env.VITE_MARKETING_URL || 'https://volnux.netlify.app'
+const marketingBase = marketingUrl.replace(/\/$/, '')
+const homeUrl = marketingBase || '/'
+const aboutUrl = `${homeUrl}/#problem`
+const featuresUrl = `${homeUrl}/#features`
+const governanceUrl = `${homeUrl}/#governance`
+const useCaseUrl = `${homeUrl}/#usecases`
+const docsUrl = `${homeUrl}/docs`
 
 const {
   canvasWrapRef,
@@ -78,137 +85,34 @@ const {
 <template>
   <div class="flex min-h-0 flex-1 select-none flex-col overflow-hidden bg-vn-wizard-bg text-[13px]">
     <!-- MENUBAR -->
-    <header
-      class="relative z-[300] flex h-9 shrink-0 items-center border-b border-vn-border bg-vn-surface px-3"
-    >
-      <a
-        :href="marketingUrl"
-        class="mr-5 flex items-center gap-2 text-inherit no-underline visited:text-inherit"
-      >
+    <header class="relative z-[300] flex h-12 shrink-0 items-center border-b border-vn-border bg-vn-surface px-4">
+      <a :href="homeUrl" class="mr-6 flex items-center gap-2 text-inherit no-underline visited:text-inherit">
         <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="10" fill="#0f1318" />
           <path d="M10 10L10 1.5A8.5 8.5 0 0 1 17.9 13Z" fill="#00c8e0" />
           <path d="M10 10L17.9 13A8.5 8.5 0 0 1 2.1 13Z" fill="#6b4fff" />
           <path d="M10 10L2.1 13A8.5 8.5 0 0 1 10 1.5Z" fill="#00e87a" />
-          <path
-            d="M8.2 2.3C7.8 4.3 7.6 6.8 8 10A2 2 0 0 0 10 11.8A2 2 0 0 0 12 10C12.4 6.8 12.2 4.3 11.8 2.3C11.5 1.8 8.5 1.8 8.2 2.3Z"
-            fill="#0f1318"
-          />
-          <path
-            d="M2.5 12C4 10 6.5 9 9.8 8.5A2 2 0 0 0 9 7A2 2 0 0 0 7.8 6.5C5.3 7.2 3.5 8.8 2.8 11C2.6 11.6 2.6 12.8 2.5 12Z"
-            fill="#0f1318"
-          />
-          <path
-            d="M17.5 12C16 10 13.5 9 10.2 8.5A2 2 0 0 0 11 7A2 2 0 0 0 12.2 6.5C14.7 7.2 16.5 8.8 17.2 11C17.4 11.6 17.4 12.8 17.5 12Z"
-            fill="#0f1318"
-          />
           <circle cx="10" cy="10" r="1.8" fill="#0f1318" />
           <circle cx="10" cy="10" r="0.9" fill="#00e5ff" />
         </svg>
-        <span class="font-mono text-[0.78rem] font-medium text-vn-white"
-          >vol<span class="text-vn-accent">nux</span></span
-        >
+        <span class="font-mono text-[0.82rem] font-medium text-vn-white">vol<span class="text-vn-accent">nux</span></span>
       </a>
 
-      <div
-        class="group relative flex h-9 cursor-default items-center gap-1 rounded px-[0.65rem] text-[0.78rem] text-vn-wizard-fog2 transition-colors hover:bg-white/5 hover:text-vn-white"
-      >
-        File
-        <div
-          class="invisible absolute left-0 top-full z-[500] min-w-[180px] rounded border border-vn-border2 bg-vn-surface2 py-1.5 opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.4)] group-hover:visible group-hover:opacity-100"
-        >
-          <div
-            class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 transition-colors hover:bg-white/[0.04] hover:text-vn-white"
-            @click.stop="openNewWorkflowModal()"
-          >
-            New workflow <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘N</kbd>
-          </div>
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">
-            Open… <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘O</kbd>
-          </div>
-          <div class="my-1 h-px bg-vn-border" />
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">
-            Save <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘S</kbd>
-          </div>
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">Save as…</div>
-          <div class="my-1 h-px bg-vn-border" />
-          <div
-            class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white"
-            @click.stop="copyPointy()"
-          >
-            Export Pointy-lang
-          </div>
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">Export JSON</div>
-        </div>
-      </div>
-      <div
-        class="group relative flex h-9 cursor-default items-center gap-1 rounded px-[0.65rem] text-[0.78rem] text-vn-wizard-fog2 transition-colors hover:bg-white/5 hover:text-vn-white"
-      >
-        Edit
-        <div
-          class="invisible absolute left-0 top-full z-[500] min-w-[180px] rounded border border-vn-border2 bg-vn-surface2 py-1.5 opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.4)] group-hover:visible group-hover:opacity-100"
-        >
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">
-            Undo <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘Z</kbd>
-          </div>
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">
-            Redo <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘⇧Z</kbd>
-          </div>
-          <div class="my-1 h-px bg-vn-border" />
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">
-            Select all <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘A</kbd>
-          </div>
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">
-            Delete selected <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌫</kbd>
-          </div>
-        </div>
-      </div>
-      <div
-        class="group relative flex h-9 cursor-default items-center gap-1 rounded px-[0.65rem] text-[0.78rem] text-vn-wizard-fog2 transition-colors hover:bg-white/5 hover:text-vn-white"
-      >
-        View
-        <div
-          class="invisible absolute left-0 top-full z-[500] min-w-[180px] rounded border border-vn-border2 bg-vn-surface2 py-1.5 opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.4)] group-hover:visible group-hover:opacity-100"
-        >
-          <div
-            class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white"
-            @click.stop="fitCanvas()"
-          >
-            Fit to canvas <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘0</kbd>
-          </div>
-          <div
-            class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white"
-            @click.stop="zoom(0.1)"
-          >
-            Zoom in <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘+</kbd>
-          </div>
-          <div
-            class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white"
-            @click.stop="zoom(-0.1)"
-          >
-            Zoom out <kbd class="ml-1 rounded border border-vn-border2 bg-vn-surface3 px-1 py-px font-mono text-[0.6rem] text-vn-wizard-muted">⌘-</kbd>
-          </div>
-          <div class="my-1 h-px bg-vn-border" />
-          <div class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white">Toggle palette</div>
-          <div
-            class="flex cursor-pointer items-center justify-between px-[0.85rem] py-1.5 text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/[0.04] hover:text-vn-white"
-            @click.stop="rightPanelCollapsed = !rightPanelCollapsed"
-          >
-            Toggle properties
-          </div>
-        </div>
-      </div>
-      <div class="flex h-9 cursor-default items-center rounded px-[0.65rem] text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/5 hover:text-vn-white">Workflow</div>
-      <div class="flex h-9 cursor-default items-center rounded px-[0.65rem] text-[0.78rem] text-vn-wizard-fog2 hover:bg-white/5 hover:text-vn-white">Help</div>
+      <nav class="hidden items-center gap-6 md:flex">
+        <a :href="homeUrl" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">Home</a>
+        <a :href="aboutUrl" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">About</a>
+        <a :href="featuresUrl" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">Features</a>
+        <a :href="governanceUrl" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">Governance</a>
+        <a :href="docsUrl" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">Docs</a>
+        <a :href="useCaseUrl" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">Use Case</a>
+        <a href="mailto:hello@volnux.ai" class="text-[0.78rem] text-vn-wizard-fog2 no-underline transition hover:text-vn-white">Contact Us</a>
+      </nav>
 
       <button
         type="button"
-        class="ml-auto flex h-[26px] shrink-0 items-center gap-2 rounded border-0 bg-vn-accent px-[0.85rem] font-mono text-[0.72rem] font-medium text-vn-wizard-bg transition-all hover:-translate-y-px hover:bg-[#33eaff] hover:shadow-[0_4px_16px_rgba(0,229,255,0.25)]"
+        class="ml-auto flex h-[28px] shrink-0 items-center gap-2 rounded border-0 bg-vn-accent px-[0.9rem] font-mono text-[0.72rem] font-medium text-vn-wizard-bg transition-all hover:-translate-y-px hover:bg-[#33eaff] hover:shadow-[0_4px_16px_rgba(0,229,255,0.25)]"
         @click="openNewWorkflowModal()"
       >
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="shrink-0">
-          <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
         New workflow
       </button>
     </header>

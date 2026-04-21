@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pointy-lang Wizard — Visual Workflow Canvas · Volnux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../public/css/volnux-static-brand.css">
+<style>
+/* Page layout — colours / grid: /css/volnux-static-brand.css */
+
+/* ══ NAV ══ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 300;
+  height: 52px;
+  display: flex;
+  align-items: stretch;
+  background: rgba(7,9,14,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  margin-right: 1.5rem;
+  padding-right: 1.5rem;
+  border-right: 1px solid var(--border);
+}
+
+.nav-logo { width: 20px; height: 20px; }
+
+.nav-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--white);
+}
+.nav-name span { color: var(--cyan); }
+
+.nav-product {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--fog2);
+}
+.nav-product strong { color: var(--purple); font-weight: 500; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin-left: auto;
+}
+
+.nav-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--fog2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+
+.nav-try {
+  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 30px;
+  padding: 0 1rem;
+  background: var(--cyan);
+  color: var(--void);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-try:hover { background: #33eaff; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,229,255,0.25); }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 5rem 0 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background glow blobs */
+.hero-glow-1 {
+  position: absolute;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(123,97,255,0.07) 0%, transparent 65%);
+  top: -100px; left: -100px;
+  pointer-events: none;
+}
+
+.hero-glow-2 {
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 65%);
+  bottom: 0; right: 10%;
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+/* ── App screenshot frame ── */
+.hero-screenshot {
+  position: relative;
+  opacity: 0;
+  animation: slideLeft 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+
+.screenshot-glow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(ellipse at center, rgba(123,97,255,0.15) 0%, transparent 70%);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* Browser chrome wrapper */
+.browser-chrome {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 40px 80px rgba(0,0,0,0.6),
+    0 0 80px rgba(123,97,255,0.08);
+  transform: perspective(1200px) rotateY(2deg) rotateX(1.5deg);
+  transition: transform 0.4s ease;
+}
+
+.browser-chrome:hover {
+  transform: perspective(1200px) rotateY(0deg) rotateX(0deg);
+}
+
+.browser-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1rem;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.chrome-dot { width: 10px; height: 10px; border-radius: 50%; }
+.cd-r { background: #ff5f57; }
+.cd-y { background: #ffbd2e; }
+.cd-g { background: #28c840; }
+
+.browser-url {
+  flex: 1;
+  margin: 0 0.75rem;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  gap: 0.4rem;
+}
+
+.url-lock {
+  width: 8px; height: 8px;
+  color: var(--green);
+  font-size: 0.6rem;
+}
+
+.url-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--fog2);
+}
+
+.browser-content {
+  display: block;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.browser-content img {
+  width: 100%;
+  display: block;
+  border: none;
+}
+
+/* ── Hero text ── */
+.hero-text {
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.3s both;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--purple);
+  border: 1px solid rgba(123,97,255,0.25);
+  background: rgba(123,97,255,0.07);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2px;
+  margin-bottom: 1.75rem;
+}
+
+.hero-badge span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--purple);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero-h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 4.5vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+}
+
+.hero-h1 em {
+  font-style: normal;
+  color: var(--cyan);
+}
+
+.hero-h1 .line-dim { color: var(--fog2); }
+
+.hero-desc {
+  font-size: 1rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  margin-bottom: 2.25rem;
+  max-width: 420px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.8rem 1.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.02em;
+}
+
+.btn-cyan { background: var(--cyan); color: var(--void); }
+.btn-cyan:hover { background: #33eaff; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,229,255,0.25); }
+
+.btn-outline { background: transparent; color: var(--silver); border: 1px solid var(--border2); }
+.btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* Hero micro-stats */
+.hero-micro-stats {
+  display: flex;
+  gap: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.hms-item {}
+
+.hms-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.02em;
+}
+.hms-val span { color: var(--cyan); }
+
+.hms-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fog2);
+}
+
+/* ══════════════════════════════════════
+   LIVE POINTY TICKER
+══════════════════════════════════════ */
+.pointy-ticker {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  height: 40px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.ticker-fade-l,
+.ticker-fade-r {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.ticker-fade-l { left: 0; background: linear-gradient(90deg, var(--surface), transparent); }
+.ticker-fade-r { right: 0; background: linear-gradient(-90deg, var(--surface), transparent); }
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  animation: tickerScroll 28s linear infinite;
+  white-space: nowrap;
+}
+
+.ticker-snippet {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 2rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  border-right: 1px solid var(--border);
+}
+
+.ticker-snippet::after {
+  content: '';
+  display: none;
+}
+
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ts-arr  { color: var(--cyan); margin: 0 0.3rem; }
+.ts-nd   { color: var(--white); }
+.ts-op   { color: var(--purple); margin: 0 0.3rem; }
+.ts-meta { color: var(--green); }
+.ts-ann  { color: var(--amber); }
+.ts-rt   { color: #fdcb6e; margin-left: 0.3rem; }
+
+/* ══════════════════════════════════════
+   WHAT IT IS — short intro
+══════════════════════════════════════ */
+#intro {
+  padding: 7rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.intro-grid {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.intro-left {
+  position: sticky;
+  top: 80px;
+}
+
+.section-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.section-eyebrow::before { content: ''; width: 18px; height: 1px; background: var(--cyan); }
+
+.section-h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+}
+.section-h2 span { color: var(--cyan); }
+
+.section-lead {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+.intro-right {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.intro-block {
+  padding-bottom: 3rem;
+  border-bottom: 1px solid var(--border);
+}
+.intro-block:last-child { border-bottom: none; padding-bottom: 0; }
+
+.intro-block h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.intro-block h3::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ib-cyan h3::before { background: var(--cyan); }
+.ib-purple h3::before { background: var(--purple); }
+.ib-green h3::before { background: var(--green); }
+
+.intro-block p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  max-width: 560px;
+}
+
+/* ══════════════════════════════════════
+   FEATURES — detailed
+══════════════════════════════════════ */
+#features {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 7rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.features-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.features-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+  margin-bottom: 5rem;
+}
+
+.features-header p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.feat-card {
+  background: var(--surface2);
+  padding: 2.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+.feat-card:hover { background: var(--surface3); }
+
+.feat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.fc-cyan::before   { background: var(--cyan); }
+.fc-purple::before { background: var(--purple); }
+.fc-green::before  { background: var(--green); }
+.fc-amber::before  { background: var(--amber); }
+.fc-pink::before   { background: var(--pink); }
+.fc-blue::before   { background: var(--accent2, #1a8ce8); }
+
+.feat-icon {
+  width: 42px; height: 42px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.fi-cyan   { background: rgba(0,229,255,0.1);  border: 1px solid rgba(0,229,255,0.2);  color: var(--cyan);   }
+.fi-purple { background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.2); color: var(--purple); }
+.fi-green  { background: rgba(0,255,148,0.1);  border: 1px solid rgba(0,255,148,0.2);  color: var(--green);  }
+.fi-amber  { background: rgba(255,184,48,0.1); border: 1px solid rgba(255,184,48,0.2); color: var(--amber);  }
+.fi-pink   { background: rgba(255,110,180,0.1);border: 1px solid rgba(255,110,180,0.2);color: var(--pink);   }
+.fi-blue   { background: rgba(26,140,232,0.1); border: 1px solid rgba(26,140,232,0.2); color: #1a8ce8;       }
+
+.feat-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.65rem;
+  letter-spacing: -0.01em;
+}
+
+.feat-card p {
+  font-size: 0.84rem;
+  color: var(--fog2);
+  line-height: 1.75;
+}
+
+/* ══════════════════════════════════════
+   HOW IT WORKS — steps
+══════════════════════════════════════ */
+#how {
+  padding: 7rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.how-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.how-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.how-header .section-eyebrow { justify-content: center; }
+.how-header .section-h2 { max-width: 520px; margin: 0 auto 1rem; }
+.how-header p { font-size: 0.92rem; color: var(--silver); max-width: 460px; margin: 0 auto; font-weight: 300; }
+
+.steps-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+/* Connecting line */
+.steps-row::before {
+  content: '';
+  position: absolute;
+  top: 32px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple), var(--cyan));
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.step {
+  padding: 0 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.step-num {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--white);
+  margin: 0 auto 1.5rem;
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s;
+}
+
+.step:hover .step-num {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 0 4px rgba(0,229,255,0.08);
+}
+
+.step h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.step p {
+  font-size: 0.82rem;
+  color: var(--fog2);
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════
+   POINTY-LANG OUTPUT SECTION
+══════════════════════════════════════ */
+#output-demo {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 7rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.output-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.output-text {}
+
+.output-text h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  line-height: 1.1;
+}
+.output-text h2 span { color: var(--cyan); }
+
+.output-text p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  margin-bottom: 1.1rem;
+}
+
+.output-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+}
+
+.output-bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--silver);
+  line-height: 1.6;
+}
+
+.output-bullets li::before {
+  content: '→';
+  color: var(--cyan);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Code panel */
+.code-panel {
+  background: var(--void);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.code-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+.cp-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.cpdot { width: 8px; height: 8px; border-radius: 50%; }
+.cpr { background: #ff5f57; }
+.cpy { background: #ffbd2e; }
+.cpg { background: #28c840; }
+
+.cp-title {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--fog);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cp-live {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease infinite;
+}
+
+.cp-body {
+  padding: 1.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 2.1;
+}
+
+.pt-arr  { color: var(--cyan); }
+.pt-op   { color: var(--purple); }
+.pt-nd   { color: var(--white); }
+.pt-src  { color: var(--green); }
+.pt-ver  { color: var(--amber); }
+.pt-ann  { color: #ffb830; }
+.pt-str  { color: #fd9fca; }
+.pt-rt   { color: #fdcb6e; }
+.pt-meta { color: var(--green); }
+.pt-cm   { color: var(--fog2); font-style: italic; }
+
+/* ══════════════════════════════════════
+   INTEGRATION / ECOSYSTEM
+══════════════════════════════════════ */
+#ecosystem {
+  padding: 7rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.eco-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.eco-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+  margin-bottom: 4rem;
+}
+
+.eco-header p {
+  font-size: 0.92rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+.eco-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.eco-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.eco-card:hover {
+  border-color: var(--border2);
+  background: var(--surface2);
+}
+
+.eco-card-icon {
+  width: 40px; height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+.eco-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.eco-card p {
+  font-size: 0.82rem;
+  color: var(--fog2);
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════
+   CTA
+══════════════════════════════════════ */
+#cta {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 8rem 0;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+#cta::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(123,97,255,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.cta-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-inner .section-eyebrow { justify-content: center; }
+
+.cta-h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 1.05;
+  margin-bottom: 1.25rem;
+}
+
+.cta-h2 span { color: var(--cyan); }
+
+.cta-body {
+  font-size: 0.95rem;
+  color: var(--silver);
+  line-height: 1.85;
+  font-weight: 300;
+  margin-bottom: 2.25rem;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  background: var(--base);
+  padding: 3rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-row {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.footer-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--white);
+}
+.footer-name span { color: var(--cyan); }
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.footer-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fog2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--cyan); }
+
+.footer-copy {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--fog);
+}
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.on { opacity: 1; transform: none; }
+
+.stagger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.stagger.on > *:nth-child(1) { opacity:1;transform:none;transition-delay:0s }
+.stagger.on > *:nth-child(2) { opacity:1;transform:none;transition-delay:0.07s }
+.stagger.on > *:nth-child(3) { opacity:1;transform:none;transition-delay:0.14s }
+.stagger.on > *:nth-child(4) { opacity:1;transform:none;transition-delay:0.21s }
+.stagger.on > *:nth-child(5) { opacity:1;transform:none;transition-delay:0.28s }
+.stagger.on > *:nth-child(6) { opacity:1;transform:none;transition-delay:0.35s }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .intro-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .intro-left { position: static; }
+  .features-header { grid-template-columns: 1fr; gap: 2rem; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .steps-row { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  .steps-row::before { display: none; }
+  .output-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .eco-header { grid-template-columns: 1fr; gap: 2rem; }
+  .eco-cards { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .steps-row { grid-template-columns: 1fr; }
+  .eco-cards { grid-template-columns: 1fr; }
+  nav .nav-links { display: none; }
+  .hero-micro-stats { flex-wrap: wrap; }
+  .footer-row { flex-direction: column; gap: 1.25rem; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="z1">
+  <div class="nav-inner">
+    <a href="./" target="_parent" class="nav-brand">
+      <svg class="nav-logo" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="10" fill="#0c0f18"/>
+        <path d="M10 10L10 1.5A8.5 8.5 0 0 1 17.9 13Z" fill="#00c8e0"/>
+        <path d="M10 10L17.9 13A8.5 8.5 0 0 1 2.1 13Z" fill="#6b4fff"/>
+        <path d="M10 10L2.1 13A8.5 8.5 0 0 1 10 1.5Z" fill="#00e87a"/>
+        <path d="M8 2.2C7.6 4.4 7.4 7 7.8 10A2.2 2.2 0 0 0 10 12.2A2.2 2.2 0 0 0 12.2 10C12.6 7 12.4 4.4 12 2.2C11.6 1.7 8.4 1.7 8 2.2Z" fill="#0c0f18"/>
+        <path d="M2.1 12C4 9.8 6.6 8.8 9.8 8.2A2.2 2.2 0 0 0 8.7 6.3A2.2 2.2 0 0 0 7.6 5.9C4.8 6.5 2.9 8.3 2.1 10.5C1.9 11.1 2 12.5 2.1 12Z" fill="#0c0f18"/>
+        <path d="M17.9 12C16 9.8 13.4 8.8 10.2 8.2A2.2 2.2 0 0 0 11.3 6.3A2.2 2.2 0 0 0 12.4 5.9C15.2 6.5 17.1 8.3 17.9 10.5C18.1 11.1 18 12.5 17.9 12Z" fill="#0c0f18"/>
+        <circle cx="10" cy="10" r="1.6" fill="#0c0f18"/>
+        <circle cx="10" cy="10" r="0.8" fill="#00e5ff"/>
+      </svg>
+      <span class="nav-name">vol<span>nux</span></span>
+    </a>
+    <span class="nav-product"><strong>Pointy-lang Wizard</strong></span>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#output-demo">Output</a></li>
+      <li><a href="/products/eventhub" target="_parent">EventHub</a></li>
+    </ul>
+    <a href="wizard" target="_parent" class="nav-try">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 1.5l6.5 3.5L2 8.5V1.5z" fill="currentColor"/></svg>
+      Open wizard
+    </a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero" class="z1">
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+
+  <div class="hero-inner">
+
+    <!-- LEFT: App screenshot -->
+    <div class="hero-screenshot">
+      <div class="screenshot-glow"></div>
+      <div class="browser-chrome">
+        <div class="browser-bar">
+          <span class="chrome-dot cd-r"></span>
+          <span class="chrome-dot cd-y"></span>
+          <span class="chrome-dot cd-g"></span>
+          <div class="browser-url">
+            <span class="url-lock" style="color:rgba(0,255,148,0.7);">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><rect x="1" y="3.5" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1"/><path d="M2.5 3.5V2.5a1.5 1.5 0 0 1 3 0V3.5" stroke="currentColor" stroke-width="1"/></svg>
+            </span>
+            <span class="url-text">app.volnux.dev/wizard</span>
+          </div>
+        </div>
+        <div class="browser-content" style="min-height:220px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#141a28 0%,#0b0e14 100%);color:rgba(0,229,255,0.35);font-family:DM Mono,monospace;font-size:0.78rem;letter-spacing:0.06em;text-transform:uppercase;">
+          Wizard preview (screenshot)
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Text -->
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span></span>
+        Volnux — Visual tooling
+      </div>
+
+      <h1 class="hero-h1">
+        Build workflows<br>
+        <em>visually.</em><br>
+        <span class="line-dim">Ship Pointy-lang.</span>
+      </h1>
+
+      <p class="hero-desc">
+        Pointy-lang Wizard is a visual canvas for building Volnux workflows without writing code. Drag EventHub components onto the canvas, connect them with edges, configure node annotations — and watch production-ready Pointy-lang generate in real time.
+      </p>
+
+      <div class="hero-actions">
+        <a href="wizard" target="_parent" class="btn btn-cyan">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 1.5l6.5 3.5L2 8.5V1.5z" fill="currentColor"/></svg>
+          Try the wizard
+        </a>
+        <a href="#features" class="btn btn-outline">See all features →</a>
+      </div>
+
+      <div class="hero-micro-stats">
+        <div class="hms-item">
+          <div class="hms-val">30<span>+</span></div>
+          <div class="hms-label">EventHub components</div>
+        </div>
+        <div class="hms-item">
+          <div class="hms-val">0</div>
+          <div class="hms-label">Lines of code to write</div>
+        </div>
+        <div class="hms-item">
+          <div class="hms-val">Live</div>
+          <div class="hms-label">Pointy-lang output</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ POINTY TICKER ══ -->
+<div class="pointy-ticker z1">
+  <div class="ticker-fade-l"></div>
+  <div class="ticker-fade-r"></div>
+  <div class="ticker-track">
+    <span class="ticker-snippet"><span class="ts-nd">Extract</span><span class="ts-arr"> -> </span><span class="ts-nd">Transform</span><span class="ts-arr"> -> </span><span class="ts-nd">Load</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">LoadUsers</span><span class="ts-op"> |-> </span><span class="ts-meta">MAP</span><span class="ts-ann">&lt;ValidateProfile&gt;</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">Ingest</span><span class="ts-arr"> -> </span><span class="ts-nd">Process</span>(<span class="ts-meta">success</span><span class="ts-arr"> -> </span><span class="ts-nd">Save</span>, <span class="ts-meta">failure</span><span class="ts-arr"> -> </span><span class="ts-nd">Reject</span>)</span>
+    <span class="ticker-snippet"><span class="ts-nd">EnrichWithAI</span><span class="ts-ann">[node=<span class="ts-str">"gpu-cluster"</span>]</span><span class="ts-rt"> * 3</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">KafkaIngest</span><span class="ts-op"> |-> </span><span class="ts-meta">MAP</span><span class="ts-ann">&lt;ValidateEvent&gt;</span><span class="ts-op"> || </span><span class="ts-nd">Checkpoint</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">ClassifyIntent</span><span class="ts-arr"> -> </span><span class="ts-nd">RouteAgent</span><span class="ts-ann">[executor=<span class="ts-str">"celery"</span>]</span></span>
+    <!-- duplicate for loop -->
+    <span class="ticker-snippet"><span class="ts-nd">Extract</span><span class="ts-arr"> -> </span><span class="ts-nd">Transform</span><span class="ts-arr"> -> </span><span class="ts-nd">Load</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">LoadUsers</span><span class="ts-op"> |-> </span><span class="ts-meta">MAP</span><span class="ts-ann">&lt;ValidateProfile&gt;</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">Ingest</span><span class="ts-arr"> -> </span><span class="ts-nd">Process</span>(<span class="ts-meta">success</span><span class="ts-arr"> -> </span><span class="ts-nd">Save</span>, <span class="ts-meta">failure</span><span class="ts-arr"> -> </span><span class="ts-nd">Reject</span>)</span>
+    <span class="ticker-snippet"><span class="ts-nd">EnrichWithAI</span><span class="ts-ann">[node=<span class="ts-str">"gpu-cluster"</span>]</span><span class="ts-rt"> * 3</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">KafkaIngest</span><span class="ts-op"> |-> </span><span class="ts-meta">MAP</span><span class="ts-ann">&lt;ValidateEvent&gt;</span><span class="ts-op"> || </span><span class="ts-nd">Checkpoint</span></span>
+    <span class="ticker-snippet"><span class="ts-nd">ClassifyIntent</span><span class="ts-arr"> -> </span><span class="ts-nd">RouteAgent</span><span class="ts-ann">[executor=<span class="ts-str">"celery"</span>]</span></span>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<section id="intro" class="z1">
+  <div class="intro-grid">
+    <div class="intro-left reveal">
+      <p class="section-eyebrow">What it is</p>
+      <h2 class="section-h2">A canvas for<br><span>Pointy-lang.</span></h2>
+      <p class="section-lead">The Wizard bridges the gap between visual authoring and production workflow code. You design — it writes the language.</p>
+    </div>
+    <div class="intro-right reveal-stagger" style="--d:0.08s">
+      <div class="intro-block ib-cyan">
+        <h3>Visual-first, code-last</h3>
+        <p>Most workflow tools make you write YAML or Python and then try to visualise it. Pointy-lang Wizard inverts this: you design the workflow visually on a canvas, and the Pointy-lang definition is generated automatically — live, as you build. The code is the output, not the input.</p>
+      </div>
+      <div class="intro-block ib-purple">
+        <h3>Powered by the EventHub registry</h3>
+        <p>The left palette is a live window into the EventHub component registry. Every EventBase class published to PyPI, Git, or the community hub appears as a draggable widget with its source, version, and category visible at a glance. Drag, connect, ship.</p>
+      </div>
+      <div class="intro-block ib-green">
+        <h3>Made for teams, not just engineers</h3>
+        <p>Because the output is readable Pointy-lang, the Wizard is not just for engineers. A product manager can sketch a workflow, an engineer can fill in the node annotations, and a compliance officer can review the generated definition — all using the same tool without any shared codebase.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section id="features" class="z1">
+  <div class="features-inner">
+    <div class="features-header reveal">
+      <div>
+        <p class="section-eyebrow">Features</p>
+        <h2 class="section-h2">Everything you need<br>to <span>build workflows</span><br>visually.</h2>
+      </div>
+      <p>The Wizard is a complete visual authoring environment — not a diagram tool. Every element on the canvas maps directly to executable Pointy-lang syntax, versioned EventHub components, and Volnux runtime annotations.</p>
+    </div>
+
+    <div class="features-grid stagger">
+
+      <div class="feat-card fc-cyan">
+        <div class="feat-icon fi-cyan">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="9" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5h3.5V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Drag-and-drop canvas</h3>
+        <p>Drop any EventHub component from the left palette directly onto the infinite canvas. Move nodes freely, snap to grid, and rearrange without losing any connections.</p>
+      </div>
+
+      <div class="feat-card fc-purple">
+        <div class="feat-icon fi-purple">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Visual edge connections</h3>
+        <p>Connect nodes by dragging from the output port of one event to the input port of another. Edges render as animated bezier curves with live arrow syntax labels. Delete any edge with a double-click.</p>
+      </div>
+
+      <div class="feat-card fc-green">
+        <div class="feat-icon fi-green">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 17V4l13 6.5L4 17z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Live Pointy-lang output</h3>
+        <p>The bottom panel updates in real time as you build. Every node, edge, annotation, and retry setting is reflected instantly in syntax-highlighted Pointy-lang. Copy to clipboard in one click.</p>
+      </div>
+
+      <div class="feat-card fc-amber">
+        <div class="feat-icon fi-amber">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Node properties panel</h3>
+        <p>Select any node to edit its name, source (pypi / hub / git / local), version, node annotation, executor, and retry count in the right-hand properties panel — all changes reflected immediately in the output.</p>
+      </div>
+
+      <div class="feat-card fc-pink">
+        <div class="feat-icon fi-pink">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v8l7 4 7-4V6L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>EventHub palette</h3>
+        <p>Browse EventBase components organised by category — Extract, Transform, AI & Agents, Validate, Load, Notify. Every widget shows its source registry and version. Search to filter instantly.</p>
+      </div>
+
+      <div class="feat-card" style="background:var(--surface2);">
+        <div class="feat-icon" style="background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.15);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4V4z" stroke="rgba(0,229,255,0.6)" stroke-width="1.5"/><path d="M8 8l4 4M12 8l-4 4" stroke="rgba(0,229,255,0.6)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Workflow templates</h3>
+        <p>Start from a blank canvas or choose a pre-built template — ETL Pipeline, AI Agent, or Streaming. Templates seed the canvas with connected nodes and appropriate annotations so you can start editing immediately.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section id="how" class="z1">
+  <div class="how-inner">
+    <div class="how-header reveal">
+      <p class="section-eyebrow">How it works</p>
+      <h2 class="section-h2">Four steps from<br><span>canvas to production.</span></h2>
+      <p>From opening the Wizard to deploying a governed Volnux workflow — no Python, no YAML, no boilerplate.</p>
+    </div>
+    <div class="steps-row stagger">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Open the canvas</h3>
+        <p>Click "New workflow" and choose a name or template. The canvas is ready immediately with the EventHub palette on the left.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Drag event components</h3>
+        <p>Browse the EventHub palette by category. Drag any EventBase component onto the canvas — it appears as a connected node with source and version badges.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Connect and configure</h3>
+        <p>Draw edges between nodes by dragging from output to input ports. Select any node to set annotations, executors, and retry counts in the properties panel.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Copy the Pointy-lang</h3>
+        <p>The live output panel shows production-ready Pointy-lang at all times. Copy it, run it with <code style="font-family:'DM Mono',monospace;font-size:0.78em;color:var(--cyan);">volnux trigger_engine start</code>, and your workflow is live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ POINTY OUTPUT DEMO ══ -->
+<section id="output-demo" class="z1">
+  <div class="output-inner">
+    <div class="output-text reveal">
+      <p class="section-eyebrow">Live output</p>
+      <h2>The canvas <span>is the code.</span></h2>
+      <p>As you drag, connect, and configure on the canvas, the Pointy-lang Wizard generates the exact workflow definition that will run on the Volnux runtime — including source references, version pins, node annotations, executor declarations, retry counts, and conditional branches.</p>
+      <p>There is no translation layer and no code generation step. What you see in the output panel is what runs in production. Export it, version it, put it in your repository. It is a valid Pointy-lang workflow file.</p>
+      <ul class="output-bullets">
+        <li>Source prefix automatically included from palette metadata</li>
+        <li>Version pins taken from the EventHub component version shown in the palette</li>
+        <li>Node and executor annotations written from the properties panel</li>
+        <li>Retry counts expressed as <code style="font-family:'DM Mono',monospace;font-size:0.85em;color:var(--cyan);">* N</code> inline on the relevant node</li>
+        <li>Fan-out connections become <code style="font-family:'DM Mono',monospace;font-size:0.85em;color:var(--cyan);">|-></code> operators automatically</li>
+        <li>Full Pointy-lang comment header generated with workflow name and timestamp</li>
+      </ul>
+    </div>
+    <div class="reveal">
+      <div class="code-panel">
+        <div class="cp-bar">
+          <span class="cpdot cpr"></span>
+          <span class="cpdot cpy"></span>
+          <span class="cpdot cpg"></span>
+          <div class="cp-title">
+            <span class="cp-live"></span>
+            my-etl-pipeline.pointy — live output
+          </div>
+        </div>
+        <div class="cp-body">
+<span class="pt-cm"># my-etl-pipeline.pointy</span><br>
+<span class="pt-cm"># generated by Pointy-lang Wizard</span><br>
+<br>
+<span class="pt-cm"># AI-assisted pipeline with parallel fan-out</span><br>
+<span class="pt-src">hub</span><span class="pt-ver">:RestApiExtract@latest</span><br>
+&nbsp;&nbsp;<span class="pt-arr">-></span> <span class="pt-nd">ClassifyIntent</span><span class="pt-ann">[node=<span class="pt-str">"gpu-cluster"</span>]</span><br>
+&nbsp;&nbsp;<span class="pt-arr">-></span> <span class="pt-nd">RouteDecision</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="pt-meta">ai_route</span>  <span class="pt-arr">-></span> <span class="pt-nd">GPT4Transform</span><span class="pt-ann">[executor=<span class="pt-str">"celery"</span>]</span> <span class="pt-rt">* 3</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="pt-arr">-></span> <span class="pt-nd">SlackNotify</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="pt-meta">direct</span>     <span class="pt-arr">-></span> <span class="pt-nd">SlackNotify</span><br>
+&nbsp;&nbsp;)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ECOSYSTEM ══ -->
+<section id="ecosystem" class="z1">
+  <div class="eco-inner">
+    <div class="eco-header reveal">
+      <div>
+        <p class="section-eyebrow">Built for the Volnux ecosystem</p>
+        <h2 class="section-h2">Part of the<br><span>full platform.</span></h2>
+      </div>
+      <p>The Wizard does not stand alone. It is one layer of the Volnux stack — connected to EventHub for components, the Volnux runtime for execution, and the Pointy-lang compiler for validation. Your visual workflow plugs into everything.</p>
+    </div>
+
+    <div class="eco-cards stagger">
+
+      <div class="eco-card">
+        <div class="eco-card-icon" style="background:rgba(255,184,48,0.1);border:1px solid rgba(255,184,48,0.2);color:var(--amber);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v8l7 4 7-4V6L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>EventHub integration</h4>
+        <p>The palette is a live view of the EventHub registry. Every draggable component corresponds to a real, versioned EventBase class that the Volnux runtime can pull at execution time.</p>
+      </div>
+
+      <div class="eco-card">
+        <div class="eco-card-icon" style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);color:var(--cyan);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Pointy-lang compiler</h4>
+        <p>The generated Pointy-lang is valid, production-ready code. Run it directly with the Volnux CLI — <code style="font-family:'DM Mono',monospace;font-size:0.82em;color:var(--cyan);">volnux trigger_engine start</code> — no intermediate steps required.</p>
+      </div>
+
+      <div class="eco-card">
+        <div class="eco-card-icon" style="background:rgba(123,97,255,0.1);border:1px solid rgba(123,97,255,0.2);color:var(--purple);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Volnux runtime</h4>
+        <p>Every node annotation set in the Wizard — <code style="font-family:'DM Mono',monospace;font-size:0.82em;color:var(--purple);">node=</code>, <code style="font-family:'DM Mono',monospace;font-size:0.82em;color:var(--purple);">executor=</code> — is respected by the Volnux P2P mesh. Your visual dispatch decisions become real infrastructure routing.</p>
+      </div>
+
+      <div class="eco-card">
+        <div class="eco-card-icon" style="background:rgba(0,255,148,0.1);border:1px solid rgba(0,255,148,0.2);color:var(--green);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h4>Governance built in</h4>
+        <p>Workflows built in the Wizard are governed by design — the Pointy-lang output is readable by any stakeholder, and the Volnux runtime produces a complete OTEL trace for every execution.</p>
+      </div>
+
+      <div class="eco-card">
+        <div class="eco-card-icon" style="background:rgba(255,110,180,0.1);border:1px solid rgba(255,110,180,0.2);color:var(--pink);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <h4>Version control friendly</h4>
+        <p>The Pointy-lang output is a plain text file. Put it in your repository, diff it, review it in a pull request. The Wizard generates code you can maintain like any other source file.</p>
+      </div>
+
+      <div class="eco-card">
+        <div class="eco-card-icon" style="background:rgba(255,184,48,0.1);border:1px solid rgba(255,184,48,0.2);color:var(--amber);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3v14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h4>Extensible palette</h4>
+        <p>Publish your own EventBase classes to EventHub and they appear automatically in the Wizard palette — for your team, your organisation, or the entire community.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section id="cta" class="z1">
+  <div class="cta-inner">
+    <p class="section-eyebrow">Ready to build?</p>
+    <h2 class="cta-h2">Open the canvas.<br><span>Ship your workflow.</span></h2>
+    <p class="cta-body">The Wizard is available now in early access — free, in-browser, no installation required. Build your first governed workflow in under five minutes.</p>
+    <div class="cta-actions">
+      <a href="wizard" target="_parent" class="btn btn-cyan">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 1.5l6.5 3.5L2 8.5V1.5z" fill="currentColor"/></svg>
+        Open the wizard
+      </a>
+      <a href="/products/eventhub" target="_parent" class="btn btn-outline">Browse EventHub →</a>
+      <a href="/" target="_parent" class="btn btn-outline">Volnux platform →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="z1">
+  <div class="footer-row">
+    <a href="/" target="_parent" class="footer-brand">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="10" fill="#111520"/>
+        <path d="M10 10L10 1.5A8.5 8.5 0 0 1 17.9 13Z" fill="#00c8e0"/>
+        <path d="M10 10L17.9 13A8.5 8.5 0 0 1 2.1 13Z" fill="#6b4fff"/>
+        <path d="M10 10L2.1 13A8.5 8.5 0 0 1 10 1.5Z" fill="#00e87a"/>
+        <path d="M8 2.2C7.6 4.4 7.4 7 7.8 10A2.2 2.2 0 0 0 10 12.2A2.2 2.2 0 0 0 12.2 10C12.6 7 12.4 4.4 12 2.2C11.6 1.7 8.4 1.7 8 2.2Z" fill="#111520"/>
+        <path d="M2.1 12C4 9.8 6.6 8.8 9.8 8.2A2.2 2.2 0 0 0 8.7 6.3A2.2 2.2 0 0 0 7.6 5.9C4.8 6.5 2.9 8.3 2.1 10.5C1.9 11.1 2 12.5 2.1 12Z" fill="#111520"/>
+        <path d="M17.9 12C16 9.8 13.4 8.8 10.2 8.2A2.2 2.2 0 0 0 11.3 6.3A2.2 2.2 0 0 0 12.4 5.9C15.2 6.5 17.1 8.3 17.9 10.5C18.1 11.1 18 12.5 17.9 12Z" fill="#111520"/>
+        <circle cx="10" cy="10" r="1.6" fill="#111520"/>
+        <circle cx="10" cy="10" r="0.8" fill="#00e5ff"/>
+      </svg>
+      <span class="footer-name">vol<span>nux</span></span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="/" target="_parent">Platform</a></li>
+      <li><a href="/products/eventhub" target="_parent">EventHub</a></li>
+      <li><a href="/products/mesh-runtime" target="_parent">Mesh Runtime</a></li>
+      <li><a href="/governance" target="_parent">Governance</a></li>
+      <li><a href="/use-cases" target="_parent">Use Cases</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 Volnux · Pointy-lang Wizard</p>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal, .stagger, .reveal-stagger').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

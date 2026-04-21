@@ -33,16 +33,18 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
-  pointer-events: none;
   z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 .z1 { position: relative; z-index: 1; }
 
 /* ── Typography ── */
-.serif  { font-family: 'Instrument Serif', serif; }
+.serif  { font-family: 'Syne', sans-serif; }
 .mono   { font-family: 'DM Mono', monospace; }
 
 /* ── Nav ── */
@@ -145,7 +147,7 @@ nav {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-family: 'Instrument Serif', serif;
+  font-family: 'Syne', sans-serif;
   font-size: clamp(8rem, 20vw, 18rem);
   color: transparent;
   -webkit-text-stroke: 1px rgba(255,255,255,0.03);
@@ -191,7 +193,7 @@ nav {
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 .hero-title {
-  font-family: 'Instrument Serif', serif;
+  font-family: 'Syne', sans-serif;
   font-size: clamp(3.5rem, 7vw, 6.5rem);
   color: var(--white);
   line-height: 1.0;
@@ -267,7 +269,7 @@ nav {
 }
 
 .hero-stat-value {
-  font-family: 'Instrument Serif', serif;
+  font-family: 'Syne', sans-serif;
   font-size: 2.2rem;
   color: var(--white);
   line-height: 1;
@@ -652,7 +654,7 @@ nav {
 }
 
 .publish-title {
-  font-family: 'Instrument Serif', serif;
+  font-family: 'Syne', sans-serif;
   font-size: clamp(2rem, 3.5vw, 3rem);
   color: var(--white);
   letter-spacing: -0.03em;
@@ -780,7 +782,7 @@ nav {
 }
 
 .how-title {
-  font-family: 'Instrument Serif', serif;
+  font-family: 'Syne', sans-serif;
   font-size: clamp(2rem, 3.5vw, 3rem);
   color: var(--white);
   letter-spacing: -0.03em;
@@ -803,7 +805,7 @@ nav {
 }
 
 .how-num {
-  font-family: 'Instrument Serif', serif;
+  font-family: 'Syne', sans-serif;
   font-size: 3rem;
   color: rgba(255,184,48,0.12);
   line-height: 1;

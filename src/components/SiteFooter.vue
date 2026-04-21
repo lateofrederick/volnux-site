@@ -16,7 +16,7 @@ import { productUrls } from '@/config/product-urls'
           </p>
         </div>
         <div>
-          <h4 class="mb-4 font-display text-[0.8rem] font-bold uppercase tracking-wider text-vn-text">Product</h4>
+          <h4 class="mb-4 font-display text-[0.8rem] font-bold uppercase tracking-wider text-vn-text">Features</h4>
           <ul class="flex flex-col gap-2.5 text-[0.875rem]">
             <li>
               <a
@@ -60,10 +60,11 @@ import { productUrls } from '@/config/product-urls'
         <div>
           <h4 class="mb-4 font-display text-[0.8rem] font-bold uppercase tracking-wider text-vn-text">Company</h4>
           <ul class="flex flex-col gap-2.5 text-[0.875rem]">
-            <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">About</a></li>
-            <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">Blog</a></li>
-            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/">Early Access</RouterLink></li>
-            <li><a href="#" class="text-vn-muted no-underline transition hover:text-vn-text">Contact</a></li>
+            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/about">About</RouterLink></li>
+            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" :to="{ path: '/', hash: '#features' }">Features</RouterLink></li>
+            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/governance">Governance</RouterLink></li>
+            <li><RouterLink class="text-vn-muted no-underline transition hover:text-vn-text" to="/use-cases">Use cases</RouterLink></li>
+            <li><a href="mailto:hello@volnux.ai" class="text-vn-muted no-underline transition hover:text-vn-text">Contact Us</a></li>
           </ul>
         </div>
       </div>

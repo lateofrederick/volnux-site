@@ -62,7 +62,7 @@ function compatBadgeClass(version: string) {
           <h1 style="margin-bottom: 1rem; font-family: 'DM Mono', monospace; font-size: 1.5rem; color: var(--white)">
             Event not found
           </h1>
-          <RouterLink to="/" class="ver-nav-link" style="display: inline-flex">← Back to EventHub</RouterLink>
+          <RouterLink to="/browse" class="ver-nav-link" style="display: inline-flex">← Back to registry</RouterLink>
         </main>
       </div>
     </template>

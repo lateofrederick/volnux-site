@@ -5,6 +5,11 @@ import { RouterLink, RouterView } from 'vue-router'
 /** Same-origin paths on unified deploy; full URL when EventHub dev server runs on another port (see .env.example). */
 const marketing = import.meta.env.VITE_MARKETING_URL?.trim().replace(/\/$/, '') || ''
 const docsHref = computed(() => (marketing ? `${marketing}/docs` : '/docs'))
+const homeHref = computed(() => (marketing ? marketing : '/'))
+const aboutHref = computed(() => (marketing ? `${marketing}/about` : '/about'))
+const featuresHref = computed(() => `${homeHref.value}/#features`)
+const governanceHref = computed(() => (marketing ? `${marketing}/governance` : '/governance'))
+const useCaseHref = computed(() => (marketing ? `${marketing}/use-cases` : '/use-cases'))
 </script>
 
 <template>
@@ -38,11 +43,14 @@ const docsHref = computed(() => (marketing ? `${marketing}/docs` : '/docs'))
         <span class="nav-product"><strong>EventHub</strong></span>
       </div>
       <div class="nav-right">
-        <RouterLink to="/#registry" class="nav-link">Browse</RouterLink>
-        <RouterLink to="/#publish" class="nav-link">Publish</RouterLink>
-        <RouterLink to="/#how" class="nav-link">How it works</RouterLink>
+        <a :href="homeHref" class="nav-link">Home</a>
+        <a :href="aboutHref" class="nav-link">About</a>
+        <a :href="featuresHref" class="nav-link">Features</a>
+        <a :href="governanceHref" class="nav-link">Governance</a>
         <a :href="docsHref" class="nav-link">Docs</a>
-        <a href="#" class="nav-link nav-link--cta">Publish Event →</a>
+        <a :href="useCaseHref" class="nav-link">Use Case</a>
+        <RouterLink to="/browse" class="nav-link">Browse</RouterLink>
+        <a href="mailto:hello@volnux.ai" class="nav-link">Contact Us</a>
       </div>
     </nav>
     <RouterView />

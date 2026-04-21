@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import PointyWizardApp from '@/components/PointyWizardApp.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <PointyWizardApp />
+  <RouterView />
 </template>

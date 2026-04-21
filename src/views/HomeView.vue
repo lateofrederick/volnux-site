@@ -324,7 +324,7 @@ onUnmounted(() => observer?.disconnect())
 
     <div class="vn-divider" />
 
-    <section id="features" class="vn-section">
+    <section id="features" class="vn-section bg-vn-surface">
       <div class="vn-container">
         <span class="vn-section-tag vn-reveal">Platform</span>
         <h2 class="vn-section-title vn-reveal">Everything your workflows need.</h2>
