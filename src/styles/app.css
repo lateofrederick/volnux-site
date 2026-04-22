@@ -6,11 +6,11 @@
 
 @layer base {
   html {
-    @apply scroll-smooth;
+    @apply scroll-smooth overflow-x-hidden;
   }
 
   #app {
-    @apply relative min-h-screen bg-vn-black font-sans text-base leading-relaxed text-vn-text antialiased;
+    @apply relative min-h-screen bg-vn-black font-sans text-base leading-relaxed text-vn-text antialiased overflow-x-hidden;
   }
 
   #app::before {
