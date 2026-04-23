@@ -346,7 +346,7 @@ onUnmounted(() => observer?.disconnect())
 
         <div class="vn-reveal grid grid-cols-2 overflow-hidden rounded-lg border border-vn-border sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
           <button
-            v-for="(t, idx) in useCaseTabs"
+            v-for="t in useCaseTabs"
             :key="t.id"
             type="button"
             class="px-4 py-2.5 font-sans text-[0.8rem] font-medium transition sm:flex-1 sm:min-w-[140px] sm:px-5 sm:text-[0.875rem]"
