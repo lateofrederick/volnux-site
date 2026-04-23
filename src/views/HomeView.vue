@@ -231,7 +231,7 @@ onUnmounted(() => observer?.disconnect())
               The Workflow Operating System
             </p>
             <h1
-              class="animate-fade-up mb-6 font-display text-[clamp(3rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.04em] text-vn-white opacity-0 [animation-delay:80ms] [animation-fill-mode:forwards]"
+              class="animate-fade-up mb-6 font-display text-[clamp(2.25rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.04em] text-vn-white opacity-0 [animation-delay:80ms] [animation-fill-mode:forwards]"
             >
               Workflows your<br />
               entire org can<br />
@@ -244,10 +244,10 @@ onUnmounted(() => observer?.disconnect())
               that engineers deploy and stakeholders actually understand.
             </p>
             <div
-              class="animate-fade-up mb-16 flex flex-wrap gap-4 opacity-0 [animation-delay:240ms] [animation-fill-mode:forwards]"
+              class="animate-fade-up mb-16 flex flex-col gap-4 opacity-0 sm:flex-row sm:flex-wrap [animation-delay:240ms] [animation-fill-mode:forwards]"
             >
-              <a href="#" class="vn-btn-primary">Get Early Access</a>
-              <a href="#" class="vn-btn-outline">Read the Docs →</a>
+              <a href="#" class="vn-btn-primary justify-center sm:justify-start">Get Early Access</a>
+              <a href="#" class="vn-btn-outline justify-center sm:justify-start">Read the Docs →</a>
             </div>
           </div>
 
@@ -255,7 +255,7 @@ onUnmounted(() => observer?.disconnect())
             class="w-full max-w-[560px] animate-fade-up opacity-0 [animation-delay:320ms] [animation-fill-mode:forwards] lg:justify-self-end"
           >
             <p class="vn-code-label">pointy-lang — production AI pipeline</p>
-            <div class="vn-hero-code-block w-full min-w-0">
+            <div class="vn-hero-code-block w-full min-w-0 text-[0.78rem] leading-[1.7] sm:text-[0.85rem] md:text-[0.95rem] md:leading-[1.8]">
               <span class="font-medium text-vn-text">LoadUsers</span>
               <span class="font-medium text-vn-accent2"> |-></span>
               <span class="font-medium text-vn-accent3">MAP</span><span class="text-vn-attr">&lt;ValidateProfile&gt;</span>
@@ -271,7 +271,7 @@ onUnmounted(() => observer?.disconnect())
               <span class="font-medium text-vn-text">AlertOps</span><br />
               &nbsp;&nbsp;)
             </div>
-            <div class="mt-4 flex flex-wrap gap-6 font-mono text-[0.75rem] text-vn-muted">
+            <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.7rem] text-vn-muted sm:gap-6 sm:text-[0.75rem]">
               <span class="inline-flex items-center gap-2">
                 <span class="inline-block size-1.5 animate-pulse-dot rounded-full bg-vn-accent3" />
                 parallel validation
@@ -361,12 +361,12 @@ onUnmounted(() => observer?.disconnect())
           One engine across every critical workload in your organisation.
         </p>
 
-        <div class="vn-reveal flex flex-wrap rounded-lg border border-vn-border divide-x divide-vn-border">
+        <div class="vn-reveal grid grid-cols-2 overflow-hidden rounded-lg border border-vn-border sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
           <button
-            v-for="t in useCaseTabs"
+            v-for="(t, idx) in useCaseTabs"
             :key="t.id"
             type="button"
-            class="flex-1 min-w-[140px] px-4 py-2.5 font-sans text-[0.875rem] font-medium transition sm:px-5"
+            class="px-4 py-2.5 font-sans text-[0.8rem] font-medium transition sm:flex-1 sm:min-w-[140px] sm:px-5 sm:text-[0.875rem]"
             :class="
               activeTab === t.id
                 ? 'bg-vn-surface2 text-vn-accent'
@@ -380,7 +380,7 @@ onUnmounted(() => observer?.disconnect())
 
         <div v-show="activeTab === 'ai'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h3 class="mb-4 font-display text-2xl font-bold tracking-tight text-vn-white">
+            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">
               Orchestrate agents with confidence
             </h3>
             <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
@@ -405,7 +405,7 @@ onUnmounted(() => observer?.disconnect())
 
         <div v-show="activeTab === 'data'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h3 class="mb-4 font-display text-2xl font-bold tracking-tight text-vn-white">ETL that anyone can audit</h3>
+            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">ETL that anyone can audit</h3>
             <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
               Replace fragile ETL scripts and over-engineered DAG configurations with workflows any data engineer can write
               and any data stakeholder can review.
@@ -428,7 +428,7 @@ onUnmounted(() => observer?.disconnect())
 
         <div v-show="activeTab === 'streaming'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h3 class="mb-4 font-display text-2xl font-bold tracking-tight text-vn-white">
+            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">
               Continuous data, readable pipelines
             </h3>
             <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
@@ -453,7 +453,7 @@ onUnmounted(() => observer?.disconnect())
 
         <div v-show="activeTab === 'automation'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h3 class="mb-4 font-display text-2xl font-bold tracking-tight text-vn-white">
+            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">
               Business process in plain language
             </h3>
             <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
@@ -553,7 +553,7 @@ onUnmounted(() => observer?.disconnect())
           The Volnux runtime and Pointy-lang compiler are free forever. The enterprise platform scales with your organisation.
         </p>
         <div class="vn-reveal grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div class="rounded-xl border border-vn-border bg-vn-surface2 p-10">
+          <div class="rounded-xl border border-vn-border bg-vn-surface2 p-6 sm:p-10">
             <div class="mb-1 font-display text-xl font-bold text-vn-white">Open Core</div>
             <div class="mb-1 font-mono text-4xl font-light text-vn-accent">
               Free <span class="text-base text-vn-muted">forever</span>
@@ -566,7 +566,7 @@ onUnmounted(() => observer?.disconnect())
             </ul>
             <a href="#" class="vn-btn-outline flex w-full justify-center">Get started →</a>
           </div>
-          <div class="relative rounded-xl border border-vn-accent bg-gradient-to-br from-vn-accent/5 to-vn-surface2 p-10">
+          <div class="relative rounded-xl border border-vn-accent bg-gradient-to-br from-vn-accent/5 to-vn-surface2 p-6 sm:p-10">
             <div
               class="absolute -top-px right-8 rounded-b bg-vn-accent px-3 py-1 font-mono text-[0.7rem] font-medium uppercase tracking-wider text-vn-black"
             >

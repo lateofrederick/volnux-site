@@ -60,6 +60,23 @@
     @apply pointer-events-none absolute inset-x-0 top-0 h-0.5 rounded-t-lg bg-gradient-to-r from-vn-accent to-vn-accent2 content-[''];
   }
 
+  /* Responsive hero code block: tighter on mobile */
+  @media (max-width: 639px) {
+    .vn-hero-code-block {
+      @apply px-4 py-4;
+    }
+  }
+
+  /* Mobile 2×2 tab grid borders */
+  @media (max-width: 639px) {
+    .grid-cols-2 > button:nth-child(odd) {
+      border-right: 1px solid theme('colors.vn-border');
+    }
+    .grid-cols-2 > button:nth-child(-n+2) {
+      border-bottom: 1px solid theme('colors.vn-border');
+    }
+  }
+
   .vn-code-label {
     @apply mb-3 font-mono text-[0.75rem] font-medium uppercase tracking-[0.08em] text-vn-muted;
   }
