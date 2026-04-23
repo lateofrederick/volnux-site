@@ -148,24 +148,7 @@ const comparisonRows = [
   { cap: 'Purpose-built DSL', a: 'x', p: 'x', t: 'x' },
 ] as const
 
-const pricingOpen = [
-  'Full Pointy-lang language support',
-  'Local and self-hosted execution',
-  'Community EventHub access',
-  'OpenTelemetry integration',
-  'Git and PyPI component sources',
-  'Checkpointing and rehydration',
-] as const
 
-const pricingPlatform = [
-  'Everything in Open Core',
-  'Managed execution mesh',
-  'Private EventHub registry with access control',
-  'Governance and compliance dashboard',
-  'SSO and role-based access control',
-  'SLA-backed support',
-  'Dedicated onboarding',
-] as const
 
 function setTab(id: TabId) {
   activeTab.value = id
@@ -543,61 +526,6 @@ onUnmounted(() => observer?.disconnect())
       </div>
     </section>
 
-    <div class="vn-divider" />
 
-    <section id="pricing" class="vn-section bg-vn-surface">
-      <div class="vn-container">
-        <span class="vn-section-tag vn-reveal">Pricing</span>
-        <h2 class="vn-section-title vn-reveal">Start open. Scale enterprise.</h2>
-        <p class="vn-section-sub vn-reveal mb-12">
-          The Volnux runtime and Pointy-lang compiler are free forever. The enterprise platform scales with your organisation.
-        </p>
-        <div class="vn-reveal grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div class="rounded-xl border border-vn-border bg-vn-surface2 p-6 sm:p-10">
-            <div class="mb-1 font-display text-xl font-bold text-vn-white">Open Core</div>
-            <div class="mb-1 font-mono text-4xl font-light text-vn-accent">
-              Free <span class="text-base text-vn-muted">forever</span>
-            </div>
-            <p class="mb-8 border-b border-vn-border pb-8 text-[0.875rem] text-vn-muted">
-              Everything you need to build and run workflows on a single node or a self-managed cluster.
-            </p>
-            <ul class="mb-8 flex flex-col gap-3 text-[0.875rem] text-vn-muted">
-              <li v-for="x in pricingOpen" :key="x" class="flex gap-3"><span class="text-vn-accent3">✓</span>{{ x }}</li>
-            </ul>
-            <a href="#" class="vn-btn-outline flex w-full justify-center">Get started →</a>
-          </div>
-          <div class="relative rounded-xl border border-vn-accent bg-gradient-to-br from-vn-accent/5 to-vn-surface2 p-6 sm:p-10">
-            <div
-              class="absolute -top-px right-8 rounded-b bg-vn-accent px-3 py-1 font-mono text-[0.7rem] font-medium uppercase tracking-wider text-vn-black"
-            >
-              Enterprise
-            </div>
-            <div class="mb-1 font-display text-xl font-bold text-vn-white">Platform</div>
-            <div class="mb-1 font-mono text-4xl font-light text-vn-accent2">
-              Contact <span class="text-base text-vn-muted">us</span>
-            </div>
-            <p class="mb-8 border-b border-vn-border pb-8 text-[0.875rem] text-vn-muted">
-              The full Volnux platform for organisations that need governance, scale, and dedicated support.
-            </p>
-            <ul class="mb-8 flex flex-col gap-3 text-[0.875rem] text-vn-muted">
-              <li v-for="x in pricingPlatform" :key="x" class="flex gap-3"><span class="text-vn-accent3">✓</span>{{ x }}</li>
-            </ul>
-            <a href="#" class="vn-btn-primary flex w-full justify-center">Talk to us →</a>
-          </div>
-        </div>
-        <div
-          class="vn-reveal relative mt-16 overflow-hidden rounded-xl border border-vn-border2 bg-gradient-to-br from-vn-accent2/10 to-vn-accent/10 px-8 py-14 text-center before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-gradient-to-r before:from-vn-accent2 before:via-vn-accent before:to-vn-accent3 sm:px-12"
-        >
-          <h3 class="mb-3 font-display text-2xl font-extrabold tracking-tight text-vn-white sm:text-3xl">
-            Become a design partner
-          </h3>
-          <p class="mx-auto mb-8 max-w-lg text-[0.95rem] text-vn-muted">
-            We are working with a small number of engineering teams to shape the Volnux roadmap. Design partners get early
-            access, direct input on Pointy-lang features, and dedicated support during onboarding.
-          </p>
-          <a href="#" class="vn-btn-ghost">Apply to be a design partner →</a>
-        </div>
-      </div>
-    </section>
   </main>
 </template>
