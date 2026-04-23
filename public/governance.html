@@ -513,31 +513,31 @@ section {
    VOLNUX APPROACH — full-bleed dark
 ══════════════════════════════════ */
 #volnux-approach {
-  background: var(--ink);
-  color: var(--paper);
-  border-top: 1px solid rgba(255,255,255,0.06);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: var(--paper2);
+  color: var(--ink);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
 }
 
-#volnux-approach .eyebrow { color: #e8a882; }
-#volnux-approach .eyebrow::before { background: #e8a882; }
-#volnux-approach .section-h2 { color: var(--paper); }
-#volnux-approach .section-h2 em { color: #e8a882; }
-#volnux-approach .section-lead { color: rgba(240,236,228,0.65); }
+#volnux-approach .eyebrow { color: var(--accent); }
+#volnux-approach .eyebrow::before { background: var(--accent); }
+#volnux-approach .section-h2 { color: var(--ink); }
+#volnux-approach .section-h2 em { color: var(--accent); }
+#volnux-approach .section-lead { color: var(--ink3); }
 
 .approach-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--rule);
+  border: 1px solid var(--rule);
   border-radius: 4px;
   overflow: hidden;
   margin-top: 4rem;
 }
 
 .approach-card {
-  background: var(--ink2);
+  background: var(--surface-elevated);
   padding: 2.25rem;
   position: relative;
   overflow: hidden;
@@ -568,21 +568,21 @@ section {
   font-family: 'DM Mono', monospace;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--paper);
+  color: var(--ink);
   margin-bottom: 0.75rem;
 }
 
 .approach-card p {
   font-size: 0.85rem;
-  color: rgba(240,236,228,0.55);
+  color: var(--ink3);
   line-height: 1.75;
 }
 
 /* Pointy-lang demo inside approach */
 .pointy-demo {
   margin-top: 1.25rem;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #080a0f;
+  border: 1px solid var(--rule);
   border-radius: 3px;
   padding: 0.85rem 1rem;
   font-family: 'DM Mono', monospace;
@@ -590,13 +590,13 @@ section {
   line-height: 2;
 }
 
-.pt-arr  { color: #6bd4e8; }
-.pt-nd   { color: #f0ece4; }
+.pt-arr  { color: #00e5ff; }
+.pt-nd   { color: #f0f4fc; }
 .pt-meta { color: #7ee8b4; }
-.pt-ann  { color: #f5c270; }
-.pt-rt   { color: #f5a742; }
-.pt-cm   { color: rgba(240,236,228,0.35); font-style: italic; }
-.pt-br   { color: #a89aff; }
+.pt-ann  { color: #ff7b61; }
+.pt-rt   { color: #ff8a8a; }
+.pt-cm   { color: var(--muted); font-style: italic; }
+.pt-br   { color: #b794ff; }
 
 /* ══════════════════════════════════
    GOVERNANCE IN VOLNUX — FEATURES
@@ -963,10 +963,11 @@ section {
    FOOTER
 ══════════════════════════════════ */
 footer {
-  background: var(--ink);
+  background: var(--paper2);
   padding: 3.5rem 0;
   position: relative;
   z-index: 1;
+  border-top: 1px solid var(--rule);
 }
 
 .footer-inner {
@@ -990,7 +991,7 @@ footer {
   font-family: 'DM Mono', monospace;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--paper);
+  color: var(--ink);
 }
 .footer-brand-name span { color: rgba(104,196,218,0.9); }
 
