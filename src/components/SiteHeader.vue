@@ -48,7 +48,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="fixed left-0 right-0 top-0 z-[100] border-b border-vn-border bg-[rgba(8,10,15,0.85)] backdrop-blur-md">
+  <nav class="fixed left-0 right-0 top-0 z-[200] border-b border-vn-border bg-[rgba(8,10,15,0.85)] backdrop-blur-md">
     <div class="mx-auto flex w-full max-w-[1120px] items-center justify-between px-6 py-5 sm:px-8">
       <RouterLink to="/" class="font-display text-xl font-extrabold tracking-[-0.02em] text-vn-white no-underline">
         vol<span class="text-vn-accent">nux</span>
