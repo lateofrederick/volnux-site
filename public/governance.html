@@ -140,8 +140,15 @@ nav {
   width: 100%;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 6rem;
+  gap: 2rem;
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
 }
 
 .hero-kicker {
@@ -166,14 +173,22 @@ nav {
 
 .hero-h1 {
   font-family: 'Syne', serif;
-  font-size: clamp(3.5rem, 6.5vw, 6rem);
+  font-size: clamp(2.25rem, 6.5vw, 6rem);
   font-weight: 900;
-  line-height: 1.0;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   color: var(--ink);
   margin-bottom: 1.75rem;
   opacity: 0;
   animation: fadeUp 0.7s ease 0.2s both;
+}
+
+@media (max-width: 640px) {
+  .hero-h1 {
+    font-size: clamp(1.4rem, 10vw, 2.2rem);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
 }
 
 .hero-h1 em {
@@ -322,6 +337,17 @@ section {
   max-width: var(--col-max);
   margin: 0 auto;
   padding: 7rem 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .nav-inner, .hero-inner, .section-wrap, .cta-inner, .footer-inner {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+  .section-wrap {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
 }
 
 .eyebrow {
@@ -1059,12 +1085,15 @@ footer {
   .principles-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
-  .hero-stats { grid-template-columns: 1fr 1fr; }
-  .hero-stat { border-right: none; padding-right: 0; padding-left: 0 !important; }
+  .hero-stats { grid-template-columns: 1fr; gap: 1.5rem; }
+  .hero-stat { border-right: none; padding-right: 0; padding-left: 0 !important; border-bottom: 1px solid var(--rule); padding-bottom: 1.5rem; }
+  .hero-stat:last-child { border-bottom: none; }
+  .stat-number { font-size: 2.2rem; }
   .principles-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .feature-row { grid-template-columns: 1fr; }
   .feature-key { border-right: none; border-bottom: 1px solid var(--rule); }
+  .is-num { font-size: 3.5rem; }
 }
 
 /* This page is rendered inside the app shell iframe. */
@@ -1112,8 +1141,8 @@ footer {
     <div>
       <p class="hero-kicker">Volnux — Workflow Governance</p>
       <h1 class="hero-h1">
-        The systems that run<br>
-        your business deserve<br>
+        The systems that run
+        your business deserve
         to be <em>understood.</em>
       </h1>
       <p class="hero-lead">

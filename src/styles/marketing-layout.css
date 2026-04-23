@@ -45,8 +45,8 @@
   .mono { font-family: 'DM Mono', monospace; }
 
   /* ── Layout ── */
-  .container { max-width: 1120px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-  .container--narrow { max-width: 760px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 1.25rem; position: relative; z-index: 1; }
+  .container--narrow { max-width: 760px; margin: 0 auto; padding: 0 1.25rem; position: relative; z-index: 1; }
 
   /* ── Nav ── */
   nav {

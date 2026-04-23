@@ -214,10 +214,10 @@ onUnmounted(() => observer?.disconnect())
               The Workflow Operating System
             </p>
             <h1
-              class="animate-fade-up mb-6 font-display text-[clamp(2.25rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.04em] text-vn-white opacity-0 [animation-delay:80ms] [animation-fill-mode:forwards]"
+              class="animate-fade-up mb-6 font-display text-[clamp(1.5rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.04em] text-vn-white opacity-0 [animation-delay:80ms] [animation-fill-mode:forwards]"
             >
-              Workflows your<br />
-              entire org can<br />
+              Workflows your <br class="hidden sm:block" />
+              entire org can <br class="hidden sm:block" />
               <span class="text-vn-accent">read.</span>
             </h1>
             <p
@@ -344,7 +344,7 @@ onUnmounted(() => observer?.disconnect())
           One engine across every critical workload in your organisation.
         </p>
 
-        <div class="vn-reveal grid grid-cols-2 overflow-hidden rounded-lg border border-vn-border sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
+        <div class="vn-reveal grid grid-cols-1 divide-y divide-vn-border overflow-hidden rounded-lg border border-vn-border min-[400px]:grid-cols-2 min-[400px]:divide-y-0 sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
           <button
             v-for="t in useCaseTabs"
             :key="t.id"

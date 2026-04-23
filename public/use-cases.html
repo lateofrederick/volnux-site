@@ -132,9 +132,15 @@ nav {
   padding: 0 2rem;
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1.2fr 1fr;
   gap: 0;
   align-items: end;
+}
+
+@media (max-width: 1024px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hero-left {
@@ -160,14 +166,22 @@ nav {
 
 .hero-h1 {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(3.5rem, 6.5vw, 6rem);
+  font-size: clamp(2.25rem, 6.5vw, 6rem);
   font-weight: 700;
-  line-height: 1.0;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   color: var(--ink);
   margin-bottom: 2rem;
   opacity: 0;
   animation: fadeUp 0.7s ease 0.2s both;
+}
+
+@media (max-width: 640px) {
+  .hero-h1 {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
 }
 
 .hero-h1 em {
@@ -298,6 +312,16 @@ nav {
 .is-header {
   padding: 5rem 0 0;
   position: relative;
+}
+
+@media (max-width: 640px) {
+  .nav-inner, .hero-inner, .is-header-inner, .is-cases, .cross-inner, .cta-inner, .footer-row {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+  .is-header, .is-cases, #cross, #cta-section {
+    padding-top: 3.5rem;
+  }
 }
 
 .is-header-inner {
@@ -846,8 +870,14 @@ footer {
   nav .nav-links li:not(.nav-cta-link) { display: none; }
   .is-header-inner { grid-template-columns: 1fr; gap: 1.5rem; }
   .is-num { display: none; }
-  .hero-industry-count { flex-wrap: wrap; gap: 1.5rem; }
-  .hic-item { border-right: none; margin-right: 0; padding-right: 0; }
+  .hero-industry-count { flex-direction: column; gap: 1.5rem; }
+  .hic-item { border-right: none; margin-right: 0; padding-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
+  .hic-item:last-child { border-bottom: none; }
+  .hic-num { font-size: 2.2rem; }
+  .is-stat-val { font-size: 1.8rem; }
+  .case-card { padding: 1.5rem; }
+  .case-h3 { font-size: 1.1rem; }
+  .case-code { font-size: 0.68rem; }
 }
 
 /* This page is rendered inside the app shell iframe. */
@@ -895,8 +925,8 @@ footer {
     <div class="hero-left">
       <p class="hero-kicker">Volnux across industries</p>
       <h1 class="hero-h1">
-        Workflows that run<br>
-        the world's most<br>
+        Workflows that run
+        the world's most
         <em>critical processes.</em>
       </h1>
       <p class="hero-body">

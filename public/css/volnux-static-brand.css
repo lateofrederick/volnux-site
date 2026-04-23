@@ -48,6 +48,16 @@
   --rule2: var(--vn-border2);
   --col-max: 1200px;
   --surface-elevated: var(--vn-surface2);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --col-max: 100%;
+    --max-w: 100%;
+  }
+}
+
+:root {
 
   /* wizard-product.html */
   --base: var(--vn-surface);
