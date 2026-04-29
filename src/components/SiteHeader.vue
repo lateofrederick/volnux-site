@@ -48,89 +48,84 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="fixed left-0 right-0 top-0 z-[200] border-b border-vn-border bg-[rgba(8,10,15,0.85)] backdrop-blur-md">
-    <div class="mx-auto flex w-full max-w-[1120px] items-center justify-between px-6 py-5 sm:px-8">
-      <RouterLink to="/" class="font-display text-xl font-extrabold tracking-[-0.02em] text-vn-white no-underline">
+  <nav class="fixed left-0 right-0 top-0 z-50 border-b border-vn-border bg-vn-black/90 backdrop-blur-md">
+    <div class="vn-container flex items-center justify-between py-4">
+      <!-- Logo -->
+      <RouterLink to="/" class="font-display text-lg font-bold tracking-tight text-vn-white transition-colors hover:text-vn-accent sm:text-xl">
         vol<span class="text-vn-accent">nux</span>
       </RouterLink>
 
       <!-- Desktop nav -->
-      <ul class="hidden list-none gap-8 lg:flex">
+      <ul class="hidden items-center gap-6 lg:flex">
         <li>
-          <RouterLink class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text" to="/"
-            >Home</RouterLink
-          >
+          <RouterLink class="text-sm font-medium text-vn-muted transition-colors hover:text-vn-text" to="/">Home</RouterLink>
         </li>
         <li>
-          <RouterLink class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text" to="/about"
-            >About</RouterLink
-          >
+          <RouterLink class="text-sm font-medium text-vn-muted transition-colors hover:text-vn-text" to="/about">About</RouterLink>
         </li>
         <li ref="dropdownRef" class="relative">
           <button
             type="button"
-            class="inline-flex items-center gap-1 text-[0.9rem] font-medium text-vn-muted transition hover:text-vn-text"
+            class="flex items-center gap-1 text-sm font-medium text-vn-muted transition-colors hover:text-vn-text"
             @click.stop="featuresOpen = !featuresOpen"
           >
             Features
-            <span class="inline-block text-[0.65rem] transition-transform" :class="featuresOpen ? 'rotate-180' : ''">▾</span>
+            <svg class="h-3 w-3 transition-transform" :class="featuresOpen ? 'rotate-180' : ''" fill="currentColor" viewBox="0 0 12 12">
+              <path d="M6 8L1 3h10L6 8z" />
+            </svg>
           </button>
-          <ul
-            v-if="featuresOpen"
-            class="absolute left-0 top-[calc(100%+0.5rem)] z-[200] min-w-[190px] list-none rounded-md border border-vn-border bg-vn-surface2 py-1.5 shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
-          >
-            <li v-for="feature in featureLinks" :key="feature.label">
-              <a
-                class="site-header__product-link"
-                :href="feature.href"
-                :target="feature.openInNewTab ? '_blank' : undefined"
-                :rel="feature.openInNewTab ? 'noopener noreferrer' : undefined"
-                @click="closeFeatures"
-                >{{ feature.label }}</a
-              >
-            </li>
-          </ul>
+          <Transition name="dropdown">
+            <ul
+              v-if="featuresOpen"
+              class="absolute left-0 top-full z-50 mt-2 min-w-[180px] rounded-lg border border-vn-border bg-vn-surface2 py-1 shadow-xl"
+            >
+              <li v-for="feature in featureLinks" :key="feature.label">
+                <a
+                  class="site-header__product-link block px-4 py-2 text-sm text-vn-muted transition-colors hover:bg-vn-surface hover:text-vn-text"
+                  :href="feature.href"
+                  :target="feature.openInNewTab ? '_blank' : undefined"
+                  :rel="feature.openInNewTab ? 'noopener noreferrer' : undefined"
+                  @click="closeFeatures"
+                >
+                  {{ feature.label }}
+                </a>
+              </li>
+            </ul>
+          </Transition>
         </li>
         <li>
-          <RouterLink
-            class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text"
-            to="/governance"
-            >Governance</RouterLink
-          >
+          <RouterLink class="text-sm font-medium text-vn-muted transition-colors hover:text-vn-text" to="/governance">Governance</RouterLink>
         </li>
         <li>
-          <RouterLink class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text" to="/docs"
-            >Docs</RouterLink
-          >
+          <RouterLink class="text-sm font-medium text-vn-muted transition-colors hover:text-vn-text" to="/docs">Docs</RouterLink>
         </li>
         <li>
-          <RouterLink class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text" to="/use-cases"
-            >Use Case</RouterLink
-          >
+          <RouterLink class="text-sm font-medium text-vn-muted transition-colors hover:text-vn-text" to="/use-cases">Use Cases</RouterLink>
         </li>
-        <li><a class="text-[0.9rem] font-medium text-vn-muted no-underline transition hover:text-vn-text" href="mailto:hello@volnux.ai">Contact Us</a></li>
+        <li>
+          <a class="text-sm font-medium text-vn-muted transition-colors hover:text-vn-text" href="mailto:hello@volnux.ai">Contact</a>
+        </li>
       </ul>
 
-      <!-- Hamburger button (mobile / tablet) -->
+      <!-- Mobile hamburger -->
       <button
         type="button"
-        class="relative z-[201] flex size-10 items-center justify-center rounded-md border border-vn-border text-vn-muted transition hover:border-vn-accent hover:text-vn-accent lg:hidden"
+        class="flex h-10 w-10 items-center justify-center rounded-md border border-vn-border text-vn-muted transition-colors hover:border-vn-accent hover:text-vn-accent lg:hidden"
         aria-label="Toggle navigation menu"
         @click="toggleMobile"
       >
-        <!-- Animated hamburger icon -->
-        <span class="flex flex-col items-center justify-center gap-[5px]">
+        <span class="flex flex-col items-center justify-center gap-1.5">
           <span
-            class="block h-[2px] w-5 rounded-full bg-current transition-transform duration-300"
-            :class="mobileOpen ? 'translate-y-[7px] rotate-45' : ''"
+            class="block h-0.5 w-5 rounded-full bg-current transition-transform duration-300"
+            :class="mobileOpen ? 'translate-y-2 rotate-45' : ''"
           />
           <span
-            class="block h-[2px] w-5 rounded-full bg-current transition-opacity duration-200"
+            class="block h-0.5 w-5 rounded-full bg-current transition-opacity duration-200"
             :class="mobileOpen ? 'opacity-0' : 'opacity-100'"
           />
           <span
-            class="block h-[2px] w-5 rounded-full bg-current transition-transform duration-300"
-            :class="mobileOpen ? '-translate-y-[7px] -rotate-45' : ''"
+            class="block h-0.5 w-5 rounded-full bg-current transition-transform duration-300"
+            :class="mobileOpen ? '-translate-y-2 -rotate-45' : ''"
           />
         </span>
       </button>
@@ -141,49 +136,50 @@ onUnmounted(() => {
   <Transition name="mobile-nav">
     <div
       v-if="mobileOpen"
-      class="fixed inset-0 z-[150] flex flex-col bg-vn-black/98 backdrop-blur-xl lg:hidden"
+      class="fixed inset-0 z-40 flex flex-col bg-vn-black/98 backdrop-blur-xl lg:hidden"
     >
-      <!-- Spacer for the fixed navbar -->
-      <div class="h-[72px] shrink-0" />
+      <!-- Spacer for fixed navbar -->
+      <div class="h-16 shrink-0" />
 
-      <div class="flex flex-1 flex-col overflow-y-auto px-6 pb-10 pt-6 sm:px-8">
-        <ul class="flex flex-col gap-1 text-lg">
+      <div class="flex flex-1 flex-col overflow-y-auto px-4 pb-8 pt-4">
+        <ul class="flex flex-col gap-1">
           <li>
             <RouterLink
               to="/"
-              class="block rounded-lg px-4 py-3 font-medium text-vn-text no-underline transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="block rounded-lg px-4 py-3 text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="closeMobile"
             >Home</RouterLink>
           </li>
           <li>
             <RouterLink
               to="/about"
-              class="block rounded-lg px-4 py-3 font-medium text-vn-text no-underline transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="block rounded-lg px-4 py-3 text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="closeMobile"
             >About</RouterLink>
           </li>
           <li>
             <button
               type="button"
-              class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-lg font-medium text-vn-text transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="mobileFeaturesSub = !mobileFeaturesSub"
             >
               Features
-              <span
-                class="text-[0.7rem] text-vn-muted transition-transform duration-200"
-                :class="mobileFeaturesSub ? 'rotate-180' : ''"
-              >▾</span>
+              <svg class="h-4 w-4 text-vn-muted transition-transform" :class="mobileFeaturesSub ? 'rotate-180' : ''" fill="currentColor" viewBox="0 0 12 12">
+                <path d="M6 8L1 3h10L6 8z" />
+              </svg>
             </button>
             <Transition name="sub-expand">
-              <ul v-if="mobileFeaturesSub" class="ml-4 mt-1 flex flex-col gap-0.5 border-l border-vn-border2 pl-4">
+              <ul v-if="mobileFeaturesSub" class="ml-4 mt-1 flex flex-col gap-0.5 border-l border-vn-border pl-4">
                 <li v-for="feature in featureLinks" :key="feature.label">
                   <a
                     :href="feature.href"
                     :target="feature.openInNewTab ? '_blank' : undefined"
                     :rel="feature.openInNewTab ? 'noopener noreferrer' : undefined"
-                    class="block rounded-md px-3 py-2 text-[0.95rem] text-vn-muted no-underline transition hover:bg-vn-surface2 hover:text-vn-text"
+                    class="block rounded-md px-3 py-2 text-sm text-vn-muted transition-colors hover:bg-vn-surface hover:text-vn-text"
                     @click="closeMobile"
-                  >{{ feature.label }}</a>
+                  >
+                    {{ feature.label }}
+                  </a>
                 </li>
               </ul>
             </Transition>
@@ -191,40 +187,42 @@ onUnmounted(() => {
           <li>
             <RouterLink
               to="/governance"
-              class="block rounded-lg px-4 py-3 font-medium text-vn-text no-underline transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="block rounded-lg px-4 py-3 text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="closeMobile"
             >Governance</RouterLink>
           </li>
           <li>
             <RouterLink
               to="/docs"
-              class="block rounded-lg px-4 py-3 font-medium text-vn-text no-underline transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="block rounded-lg px-4 py-3 text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="closeMobile"
             >Docs</RouterLink>
           </li>
           <li>
             <RouterLink
               to="/use-cases"
-              class="block rounded-lg px-4 py-3 font-medium text-vn-text no-underline transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="block rounded-lg px-4 py-3 text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="closeMobile"
             >Use Cases</RouterLink>
           </li>
           <li>
             <a
               href="mailto:hello@volnux.ai"
-              class="block rounded-lg px-4 py-3 font-medium text-vn-text no-underline transition hover:bg-vn-surface2 hover:text-vn-accent"
+              class="block rounded-lg px-4 py-3 text-base font-medium text-vn-text transition-colors hover:bg-vn-surface hover:text-vn-accent"
               @click="closeMobile"
             >Contact Us</a>
           </li>
         </ul>
 
-        <!-- CTA at bottom of mobile nav -->
-        <div class="mt-auto pt-8">
+        <!-- CTA at bottom -->
+        <div class="mt-auto pt-6">
           <RouterLink
             to="/"
             class="vn-btn-primary flex w-full justify-center"
             @click="closeMobile"
-          >Get Early Access</RouterLink>
+          >
+            Get Early Access
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -232,18 +230,25 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Dropdown animation */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
 /* Mobile nav overlay transitions */
 .mobile-nav-enter-active,
 .mobile-nav-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.2s ease;
 }
-.mobile-nav-enter-from {
-  opacity: 0;
-  transform: translateY(-8px);
-}
+.mobile-nav-enter-from,
 .mobile-nav-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
 }
 
 /* Features sub-menu expand */

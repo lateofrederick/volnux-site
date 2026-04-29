@@ -192,53 +192,61 @@ onUnmounted(() => observer?.disconnect())
 </script>
 
 <template>
-  <main ref="mainEl" class="relative z-[1]">
+  <main ref="mainEl" class="relative z-10">
+    <!-- Hero Section -->
     <section
       id="hero"
-      class="relative flex min-h-[100dvh] items-center overflow-hidden pb-24 pt-28 sm:pt-32 lg:min-h-screen lg:pb-24 lg:pt-32"
+      class="relative flex min-h-[100dvh] items-center overflow-hidden pb-16 pt-20 sm:pb-20 sm:pt-24 lg:min-h-screen lg:pb-24 lg:pt-28"
     >
+      <!-- Background effects -->
       <div
-        class="pointer-events-none absolute -right-[200px] -top-[200px] h-[800px] w-[800px] rounded-full bg-[radial-gradient(circle,rgba(0,229,255,0.06)_0%,transparent_70%)]"
+        class="pointer-events-none absolute -right-32 -top-32 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(0,229,255,0.06)_0%,transparent_70%)] sm:h-[700px] sm:w-[700px] lg:-right-48 lg:-top-48 lg:h-[800px] lg:w-[800px]"
       />
       <div
-        class="pointer-events-none absolute -bottom-[100px] -left-[100px] h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(123,97,255,0.06)_0%,transparent_70%)]"
+        class="pointer-events-none absolute -bottom-16 -left-16 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(123,97,255,0.06)_0%,transparent_70%)] sm:h-[500px] sm:w-[500px] lg:-bottom-24 lg:-left-24 lg:h-[600px] lg:w-[600px]"
       />
-      <div class="vn-container">
-        <!-- index.html: .hero-layout — 1fr 1fr, gap 5rem, align-items center -->
-        <div class="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+
+      <div class="vn-container relative z-10">
+        <div class="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <!-- Left: Content -->
           <div class="min-w-0">
-            <p
-              class="mb-6 flex animate-fade-up items-center gap-3 font-mono text-[0.8rem] uppercase tracking-[0.15em] text-vn-accent opacity-0 [animation-delay:0ms] [animation-fill-mode:forwards]"
-            >
-              <span class="h-px w-8 shrink-0 bg-vn-accent" />
+            <p class="vn-section-tag animate-fade-up opacity-0" style="animation-delay: 0ms; animation-fill-mode: forwards;">
               The Workflow Operating System
             </p>
+
             <h1
-              class="animate-fade-up mb-6 font-display text-[clamp(1.5rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.04em] text-vn-white opacity-0 [animation-delay:80ms] [animation-fill-mode:forwards]"
+              class="animate-fade-up mb-5 font-display text-3xl font-extrabold leading-[1.05] tracking-tight text-vn-white opacity-0 sm:text-4xl md:text-5xl lg:text-6xl"
+              style="animation-delay: 80ms; animation-fill-mode: forwards;"
             >
               Workflows your <br class="hidden sm:block" />
               entire org can <br class="hidden sm:block" />
               <span class="text-vn-accent">read.</span>
             </h1>
+
             <p
-              class="animate-fade-up mb-10 max-w-[540px] text-[1.15rem] leading-[1.8] text-vn-muted opacity-0 [animation-delay:160ms] [animation-fill-mode:forwards]"
+              class="animate-fade-up mb-8 max-w-lg text-base leading-relaxed text-vn-muted opacity-0 sm:text-lg"
+              style="animation-delay: 160ms; animation-fill-mode: forwards;"
             >
               Volnux is the execution layer for the AI age. Write distributed workflows in Pointy-lang — a declarative DSL
               that engineers deploy and stakeholders actually understand.
             </p>
+
             <div
-              class="animate-fade-up mb-16 flex flex-col gap-4 opacity-0 sm:flex-row sm:flex-wrap [animation-delay:240ms] [animation-fill-mode:forwards]"
+              class="animate-fade-up mb-12 flex flex-col gap-3 opacity-0 sm:flex-row sm:flex-wrap"
+              style="animation-delay: 240ms; animation-fill-mode: forwards;"
             >
               <a href="#" class="vn-btn-primary justify-center sm:justify-start">Get Early Access</a>
-              <a href="#" class="vn-btn-outline justify-center sm:justify-start">Read the Docs →</a>
+              <a href="#" class="vn-btn-outline justify-center sm:justify-start">Read the Docs</a>
             </div>
           </div>
 
+          <!-- Right: Code example -->
           <div
-            class="w-full max-w-[560px] animate-fade-up opacity-0 [animation-delay:320ms] [animation-fill-mode:forwards] lg:justify-self-end"
+            class="w-full max-w-xl animate-fade-up opacity-0 lg:justify-self-end"
+            style="animation-delay: 320ms; animation-fill-mode: forwards;"
           >
             <p class="vn-code-label">pointy-lang — production AI pipeline</p>
-            <div class="vn-hero-code-block w-full min-w-0 text-[0.78rem] leading-[1.7] sm:text-[0.85rem] md:text-[0.95rem] md:leading-[1.8]">
+            <div class="vn-hero-code-block text-xs sm:text-sm lg:text-base">
               <span class="font-medium text-vn-text">LoadUsers</span>
               <span class="font-medium text-vn-accent2"> |-></span>
               <span class="font-medium text-vn-accent3">MAP</span><span class="text-vn-attr">&lt;ValidateProfile&gt;</span>
@@ -273,258 +281,267 @@ onUnmounted(() => observer?.disconnect())
       </div>
     </section>
 
-    <div class="vn-divider" />
+  <div class="vn-divider" />
 
-    <section id="problem" class="vn-section bg-vn-surface">
-      <div class="vn-container">
-        <div class="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <span class="vn-section-tag vn-reveal">The problem</span>
-            <h2 class="vn-section-title vn-reveal">
-              Your workflows are running.<br />Does anyone know what they do?
-            </h2>
-            <p class="vn-section-sub vn-reveal">
-              Current tools were built for engineers and forgotten by everyone else. When something breaks at 2am, you
-              don't need more code. You need clarity.
-            </p>
-          </div>
-          <div class="flex flex-col gap-6">
-            <div v-for="(row, i) in problemRows" :key="i" class="vn-reveal flex gap-4">
-              <div
-                class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded border border-red-400/20 bg-red-500/10 text-sm text-red-400"
-              >
-                ✗
-              </div>
-              <div>
-                <strong class="mb-1 block font-medium text-vn-text">{{ row.t }}</strong>
-                <p class="text-[0.95rem] leading-relaxed text-vn-muted">{{ row.p }}</p>
-              </div>
+  <!-- Problem Section -->
+  <section id="problem" class="vn-section bg-vn-surface">
+    <div class="vn-container">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <span class="vn-section-tag vn-reveal">The problem</span>
+          <h2 class="vn-section-title vn-reveal">
+            Your workflows are running.<br />Does anyone know what they do?
+          </h2>
+          <p class="vn-section-sub vn-reveal">
+            Current tools were built for engineers and forgotten by everyone else. When something breaks at 2am, you
+            don't need more code. You need clarity.
+          </p>
+        </div>
+        <div class="flex flex-col gap-5">
+          <div v-for="(row, i) in problemRows" :key="i" class="vn-reveal flex gap-3">
+            <div
+              class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded border border-red-400/20 bg-red-500/10 text-sm text-red-400"
+            >
+              ✗
+            </div>
+            <div>
+              <strong class="mb-1 block text-sm font-medium text-vn-text sm:text-base">{{ row.t }}</strong>
+              <p class="text-sm leading-relaxed text-vn-muted">{{ row.p }}</p>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <div class="vn-divider" />
+  <div class="vn-divider" />
 
-    <section id="features" class="vn-section bg-vn-surface">
-      <div class="vn-container">
-        <span class="vn-section-tag vn-reveal">Platform</span>
-        <h2 class="vn-section-title vn-reveal">Everything your workflows need.</h2>
-        <p class="vn-section-sub vn-reveal mb-12 lg:mb-16">
-          One engine. Every execution model. From a single local node to a distributed P2P mesh across your entire
-          infrastructure.
-        </p>
-        <div
-          class="vn-reveal grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-vn-border bg-vn-border sm:grid-cols-2 xl:grid-cols-3"
+  <!-- Features Section -->
+  <section id="features" class="vn-section bg-vn-surface">
+    <div class="vn-container">
+      <span class="vn-section-tag vn-reveal">Platform</span>
+      <h2 class="vn-section-title vn-reveal">Everything your workflows need.</h2>
+      <p class="vn-section-sub vn-reveal mb-10 sm:mb-12 lg:mb-16">
+        One engine. Every execution model. From a single local node to a distributed P2P mesh across your entire
+        infrastructure.
+      </p>
+      <div
+        class="vn-reveal grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-vn-border bg-vn-border sm:grid-cols-2 xl:grid-cols-3"
+      >
+        <article
+          v-for="f in features"
+          :key="f.title"
+          class="vn-card transition-colors hover:bg-vn-surface2 sm:p-6"
         >
-          <article
-            v-for="f in features"
-            :key="f.title"
-            class="bg-vn-surface p-8 transition-colors hover:bg-vn-surface2 sm:p-10"
-          >
-            <div class="mb-5 flex size-11 items-center justify-center rounded-lg border text-xl" :class="f.iconWrap">
-              {{ f.icon }}
-            </div>
-            <h3 class="mb-3 font-display text-base font-bold tracking-tight text-vn-white">{{ f.title }}</h3>
-            <p class="mb-5 text-[0.875rem] leading-relaxed text-vn-muted">{{ f.body }}</p>
-            <div v-if="f.code" class="vn-code-block p-4 text-[0.8rem] leading-relaxed" v-html="f.code" />
-          </article>
+          <div class="mb-4 flex size-10 items-center justify-center rounded-lg border text-lg" :class="f.iconWrap">
+            {{ f.icon }}
+          </div>
+          <h3 class="mb-2 font-display text-base font-bold tracking-tight text-vn-white sm:text-lg">{{ f.title }}</h3>
+          <p class="mb-4 text-sm leading-relaxed text-vn-muted">{{ f.body }}</p>
+          <div v-if="f.code" class="vn-code-block text-xs leading-relaxed sm:text-sm" v-html="f.code" />
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="vn-divider" />
+
+  <!-- Use Cases Section -->
+  <section id="usecases" class="vn-section bg-vn-surface">
+    <div class="vn-container">
+      <span class="vn-section-tag vn-reveal">Use Cases</span>
+      <h2 class="vn-section-title vn-reveal">Built for the workflows that matter.</h2>
+      <p class="vn-section-sub vn-reveal mb-8 sm:mb-10 lg:mb-12">
+        One engine across every critical workload in your organisation.
+      </p>
+
+      <!-- Tabs -->
+      <div class="vn-reveal grid grid-cols-1 divide-y divide-vn-border overflow-hidden rounded-lg border border-vn-border min-[400px]:grid-cols-2 min-[400px]:divide-y-0 sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
+        <button
+          v-for="t in useCaseTabs"
+          :key="t.id"
+          type="button"
+          class="px-4 py-3 text-center text-sm font-medium transition sm:flex-1 sm:min-w-[120px] sm:px-5"
+          :class="
+            activeTab === t.id
+              ? 'bg-vn-surface2 text-vn-accent'
+              : 'text-vn-muted hover:bg-vn-surface2 hover:text-vn-text'
+          "
+          @click="setTab(t.id)"
+        >
+          {{ t.label }}
+        </button>
+      </div>
+
+      <!-- AI Tab -->
+      <div v-show="activeTab === 'ai'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
+        <div>
+          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">
+            Orchestrate agents with confidence
+          </h3>
+          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
+            Multi-agent pipelines need reliable execution, automatic checkpointing across LLM calls, and conditional
+            routing based on model output. Volnux provides the execution substrate that ad-hoc Python scripts cannot.
+          </p>
+          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
+            <li
+              v-for="b in ucAi"
+              :key="b"
+              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
+            >
+              {{ b }}
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p class="vn-code-label">multi-agent pipeline</p>
+          <div class="vn-code-block text-xs sm:text-sm" v-html="ucAiCode" />
         </div>
       </div>
-    </section>
 
-    <div class="vn-divider" />
-
-    <section id="usecases" class="vn-section bg-vn-surface">
-      <div class="vn-container">
-        <span class="vn-section-tag vn-reveal">Use Cases</span>
-        <h2 class="vn-section-title vn-reveal">Built for the workflows that matter.</h2>
-        <p class="vn-section-sub vn-reveal mb-10 lg:mb-12">
-          One engine across every critical workload in your organisation.
-        </p>
-
-        <div class="vn-reveal grid grid-cols-1 divide-y divide-vn-border overflow-hidden rounded-lg border border-vn-border min-[400px]:grid-cols-2 min-[400px]:divide-y-0 sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
-          <button
-            v-for="t in useCaseTabs"
-            :key="t.id"
-            type="button"
-            class="px-4 py-2.5 font-sans text-[0.8rem] font-medium transition sm:flex-1 sm:min-w-[140px] sm:px-5 sm:text-[0.875rem]"
-            :class="
-              activeTab === t.id
-                ? 'bg-vn-surface2 text-vn-accent'
-                : 'text-vn-muted hover:bg-vn-surface2 hover:text-vn-text'
-            "
-            @click="setTab(t.id)"
-          >
-            {{ t.label }}
-          </button>
+      <!-- Data Tab -->
+      <div v-show="activeTab === 'data'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
+        <div>
+          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">ETL that anyone can audit</h3>
+          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
+            Replace fragile ETL scripts and over-engineered DAG configurations with workflows any data engineer can write
+            and any data stakeholder can review.
+          </p>
+          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
+            <li
+              v-for="b in ucData"
+              :key="b"
+              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
+            >
+              {{ b }}
+            </li>
+          </ul>
         </div>
-
-        <div v-show="activeTab === 'ai'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">
-              Orchestrate agents with confidence
-            </h3>
-            <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
-              Multi-agent pipelines need reliable execution, automatic checkpointing across LLM calls, and conditional
-              routing based on model output. Volnux provides the execution substrate that ad-hoc Python scripts cannot.
-            </p>
-            <ul class="flex flex-col gap-2.5 text-[0.9rem] text-vn-muted">
-              <li
-                v-for="b in ucAi"
-                :key="b"
-                class="flex items-start gap-3 before:shrink-0 before:font-mono before:text-xs before:text-vn-accent before:content-['→']"
-              >
-                {{ b }}
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="vn-code-label">multi-agent pipeline</p>
-            <div class="vn-code-block text-[0.8125rem] md:text-sm" v-html="ucAiCode" />
-          </div>
-        </div>
-
-        <div v-show="activeTab === 'data'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">ETL that anyone can audit</h3>
-            <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
-              Replace fragile ETL scripts and over-engineered DAG configurations with workflows any data engineer can write
-              and any data stakeholder can review.
-            </p>
-            <ul class="flex flex-col gap-2.5 text-[0.9rem] text-vn-muted">
-              <li
-                v-for="b in ucData"
-                :key="b"
-                class="flex items-start gap-3 before:shrink-0 before:font-mono before:text-xs before:text-vn-accent before:content-['→']"
-              >
-                {{ b }}
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="vn-code-label">versioned etl pipeline</p>
-            <div class="vn-code-block text-[0.8125rem] md:text-sm" v-html="ucDataCode" />
-          </div>
-        </div>
-
-        <div v-show="activeTab === 'streaming'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">
-              Continuous data, readable pipelines
-            </h3>
-            <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
-              Handle continuous data flows with parallel processing, adaptive buffering, and stateful execution. Volnux
-              manages backpressure automatically.
-            </p>
-            <ul class="flex flex-col gap-2.5 text-[0.9rem] text-vn-muted">
-              <li
-                v-for="b in ucStream"
-                :key="b"
-                class="flex items-start gap-3 before:shrink-0 before:font-mono before:text-xs before:text-vn-accent before:content-['→']"
-              >
-                {{ b }}
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="vn-code-label">kafka streaming pipeline</p>
-            <div class="vn-code-block text-[0.8125rem] md:text-sm" v-html="ucStreamCode" />
-          </div>
-        </div>
-
-        <div v-show="activeTab === 'automation'" class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h3 class="mb-4 font-display text-xl font-bold tracking-tight text-vn-white sm:text-2xl">
-              Business process in plain language
-            </h3>
-            <p class="mb-6 text-[0.95rem] leading-relaxed text-vn-muted">
-              Express approval workflows, notification chains, and event-driven processes in language your entire organisation
-              understands. When compliance asks, show them the source.
-            </p>
-            <ul class="flex flex-col gap-2.5 text-[0.9rem] text-vn-muted">
-              <li
-                v-for="b in ucAuto"
-                :key="b"
-                class="flex items-start gap-3 before:shrink-0 before:font-mono before:text-xs before:text-vn-accent before:content-['→']"
-              >
-                {{ b }}
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="vn-code-label">approval automation</p>
-            <div class="vn-code-block text-[0.8125rem] md:text-sm" v-html="ucAutoCode" />
-          </div>
+        <div>
+          <p class="vn-code-label">versioned etl pipeline</p>
+          <div class="vn-code-block text-xs sm:text-sm" v-html="ucDataCode" />
         </div>
       </div>
-    </section>
 
-    <div class="vn-divider" />
-
-    <section id="governance" class="vn-section">
-      <div class="vn-container max-w-[1120px]">
-        <span class="vn-section-tag vn-reveal">Governance</span>
-        <h2 class="vn-section-title vn-reveal">Governance is not a feature.<br />It is the foundation.</h2>
-        <p class="vn-section-sub vn-reveal mb-12 max-w-3xl">
-          Every enterprise deploying AI and automation at scale will face the same question: how do you maintain control
-          over systems that move faster than any human can review?
-        </p>
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-          <article
-            v-for="g in governance"
-            :key="g.title"
-            class="vn-reveal relative overflow-hidden rounded-lg border border-vn-border bg-vn-surface p-8 pl-8 before:absolute before:inset-y-0 before:left-0 before:w-[3px]"
-            :class="g.bar"
-          >
-            <h3 class="mb-3 font-display text-base font-bold text-vn-white">{{ g.title }}</h3>
-            <p class="text-[0.875rem] leading-relaxed text-vn-muted">{{ g.body }}</p>
-          </article>
+      <!-- Streaming Tab -->
+      <div v-show="activeTab === 'streaming'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
+        <div>
+          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">
+            Continuous data, readable pipelines
+          </h3>
+          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
+            Handle continuous data flows with parallel processing, adaptive buffering, and stateful execution. Volnux
+            manages backpressure automatically.
+          </p>
+          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
+            <li
+              v-for="b in ucStream"
+              :key="b"
+              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
+            >
+              {{ b }}
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p class="vn-code-label">kafka streaming pipeline</p>
+          <div class="vn-code-block text-xs sm:text-sm" v-html="ucStreamCode" />
         </div>
       </div>
-    </section>
 
-    <div class="vn-divider" />
-
-    <section id="comparison" class="vn-section">
-      <div class="vn-container">
-        <span class="vn-section-tag vn-reveal">Comparison</span>
-        <h2 class="vn-section-title vn-reveal">Not a scheduler. Something new.</h2>
-        <p class="vn-section-sub vn-reveal mb-10">
-          Airflow schedules jobs. Prefect runs Python. Temporal manages state machines. Volnux governs operations.
-        </p>
-        <div class="vn-reveal overflow-x-auto rounded-xl border border-vn-border">
-          <table class="w-full min-w-[640px] border-collapse text-left text-[0.875rem]">
-            <thead>
-              <tr class="border-b border-vn-border bg-vn-surface2">
-                <th class="px-6 py-4 font-display text-[0.85rem] font-bold tracking-wide text-vn-text">Capability</th>
-                <th class="bg-vn-accent/5 px-6 py-4 font-display text-[0.85rem] font-bold tracking-wide text-vn-accent">
-                  Volnux
-                </th>
-                <th class="px-6 py-4 font-display text-[0.85rem] font-bold tracking-wide text-vn-muted">Airflow</th>
-                <th class="px-6 py-4 font-display text-[0.85rem] font-bold tracking-wide text-vn-muted">Prefect</th>
-                <th class="px-6 py-4 font-display text-[0.85rem] font-bold tracking-wide text-vn-muted">Temporal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(row, idx) in comparisonRows"
-                :key="row.cap"
-                class="border-b border-vn-border transition-colors hover:bg-vn-surface2/80"
-                :class="idx === comparisonRows.length - 1 ? 'border-b-0' : ''"
-              >
-                <td class="px-6 py-4 font-medium text-vn-text">{{ row.cap }}</td>
-                <td class="bg-vn-accent/[0.04] px-6 py-4 text-vn-muted"><span class="text-vn-accent3">✓</span></td>
-                <td class="px-6 py-4 text-vn-muted2" v-html="cellMark(row.a)" />
-                <td class="px-6 py-4 text-vn-muted2" v-html="cellMark(row.p)" />
-                <td class="px-6 py-4 text-vn-muted2" v-html="cellMark(row.t)" />
-              </tr>
-            </tbody>
-          </table>
+      <!-- Automation Tab -->
+      <div v-show="activeTab === 'automation'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
+        <div>
+          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">
+            Business process in plain language
+          </h3>
+          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
+            Express approval workflows, notification chains, and event-driven processes in language your entire organisation
+            understands. When compliance asks, show them the source.
+          </p>
+          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
+            <li
+              v-for="b in ucAuto"
+              :key="b"
+              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
+            >
+              {{ b }}
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p class="vn-code-label">approval automation</p>
+          <div class="vn-code-block text-xs sm:text-sm" v-html="ucAutoCode" />
         </div>
       </div>
-    </section>
+    </div>
+  </section>
+
+  <div class="vn-divider" />
+
+  <!-- Governance Section -->
+  <section id="governance" class="vn-section">
+    <div class="vn-container">
+      <span class="vn-section-tag vn-reveal">Governance</span>
+      <h2 class="vn-section-title vn-reveal">Governance is not a feature.<br />It is the foundation.</h2>
+      <p class="vn-section-sub vn-reveal mb-10 max-w-3xl sm:mb-12">
+        Every enterprise deploying AI and automation at scale will face the same question: how do you maintain control
+        over systems that move faster than any human can review?
+      </p>
+      <div class="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2">
+        <article
+          v-for="g in governance"
+          :key="g.title"
+          class="vn-reveal vn-card relative overflow-hidden pl-6 before:absolute before:inset-y-0 before:left-0 before:w-1"
+          :class="g.bar"
+        >
+          <h3 class="mb-2 font-display text-base font-bold text-vn-white sm:text-lg">{{ g.title }}</h3>
+          <p class="text-sm leading-relaxed text-vn-muted">{{ g.body }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="vn-divider" />
+
+  <!-- Comparison Section -->
+  <section id="comparison" class="vn-section">
+    <div class="vn-container">
+      <span class="vn-section-tag vn-reveal">Comparison</span>
+      <h2 class="vn-section-title vn-reveal">Not a scheduler. Something new.</h2>
+      <p class="vn-section-sub vn-reveal mb-8 sm:mb-10">
+        Airflow schedules jobs. Prefect runs Python. Temporal manages state machines. Volnux governs operations.
+      </p>
+      <div class="vn-reveal overflow-x-auto rounded-xl border border-vn-border">
+        <table class="w-full min-w-[600px] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-vn-border bg-vn-surface2">
+              <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase tracking-wide text-vn-text sm:px-6 sm:py-4 sm:text-sm">Capability</th>
+              <th class="bg-vn-accent/5 px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-accent sm:px-6 sm:py-4 sm:text-sm">
+                Volnux
+              </th>
+              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-muted sm:px-6 sm:py-4 sm:text-sm">Airflow</th>
+              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-muted sm:px-6 sm:py-4 sm:text-sm">Prefect</th>
+              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-muted sm:px-6 sm:py-4 sm:text-sm">Temporal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="row in comparisonRows"
+              :key="row.cap"
+              class="border-b border-vn-border transition-colors hover:bg-vn-surface2/80 last:border-b-0"
+            >
+              <td class="px-4 py-3 text-sm font-medium text-vn-text sm:px-6 sm:py-4">{{ row.cap }}</td>
+              <td class="bg-vn-accent/[0.04] px-4 py-3 text-center text-vn-muted sm:px-6 sm:py-4"><span class="text-vn-accent3">✓</span></td>
+              <td class="px-4 py-3 text-center text-vn-muted2 sm:px-6 sm:py-4" v-html="cellMark(row.a)" />
+              <td class="px-4 py-3 text-center text-vn-muted2 sm:px-6 sm:py-4" v-html="cellMark(row.p)" />
+              <td class="px-4 py-3 text-center text-vn-muted2 sm:px-6 sm:py-4" v-html="cellMark(row.t)" />
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
 
   </main>

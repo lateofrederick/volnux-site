@@ -14,6 +14,17 @@ Pointy describes **how events connect**. This file sets recursion depth and mode
 @mode: CFG
 
 10 * Fetch || Process || Execute -> SaveToDB -> Return
+
+#A -> B (
+#    0->C (
+#        0 |-> T,
+#        1 -> Z
+#    ),
+#    1 -> E
+#) -> F (
+#    0 -> Y,
+#    1 -> Z
+#)
 ```
 
 
