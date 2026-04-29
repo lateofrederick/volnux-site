@@ -4,10 +4,10 @@ import HomeView from '@/views/HomeView.vue'
 import AboutView from '@/views/AboutView.vue'
 import GovernanceView from '@/views/GovernanceView.vue'
 import UseCasesView from '@/views/UseCasesView.vue'
-import MeshExternalView from '@/views/MeshExternalView.vue'
+import MeshRuntimeLandingView from '@/views/MeshRuntimeLandingView.vue'
+import EventHubLandingView from '@/views/EventHubLandingView.vue'
+import PointyLandingView from '@/views/PointyLandingView.vue'
 import ProductPlaceholderView from '@/views/ProductPlaceholderView.vue'
-import EventHubExternalView from '@/views/EventHubExternalView.vue'
-import PointyExternalView from '@/views/PointyExternalView.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Volnux — The Workflow Operating System' } },
@@ -20,26 +20,26 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/products/mesh-runtime',
     name: 'mesh-runtime',
-    component: MeshExternalView,
+    component: MeshRuntimeLandingView,
     meta: { title: 'Volnux — Mesh Runtime' },
   },
   {
     path: '/products/pointy-lang',
     name: 'product-pointy-lang',
-    component: PointyExternalView,
+    component: PointyLandingView,
     meta: { title: 'Pointy-lang — Volnux' },
   },
   {
     path: '/products/eventhub',
     name: 'product-eventhub',
-    component: EventHubExternalView,
+    component: EventHubLandingView,
     meta: { title: 'EventHub — Volnux' },
   },
   {
-    path: '/products/eventhub/events/:slug',
-    name: 'eventhub-event-detail',
-    component: EventHubExternalView,
-    meta: { title: 'Event detail — EventHub — Volnux' },
+    path: '/products/eventhub/browse',
+    name: 'eventhub-browse',
+    component: () => import('@/views/EventHubBrowseView.vue'),
+    meta: { title: 'Browse Registry — EventHub — Volnux' },
   },
   {
     path: '/products/changelog',
@@ -48,24 +48,9 @@ const routes: RouteRecordRaw[] = [
     props: { title: 'Changelog', blurb: 'Release history and migration notes.' },
     meta: { title: 'Changelog — Volnux' },
   },
-  {
-    path: '/about',
-    name: 'about',
-    component: AboutView,
-    meta: { title: 'About — Volnux' },
-  },
-  {
-    path: '/governance',
-    name: 'governance',
-    component: GovernanceView,
-    meta: { title: 'Governance — Volnux' },
-  },
-  {
-    path: '/use-cases',
-    name: 'use-cases',
-    component: UseCasesView,
-    meta: { title: 'Use Cases — Volnux' },
-  },
+  { path: '/about', name: 'about', component: AboutView, meta: { title: 'About — Volnux' } },
+  { path: '/governance', name: 'governance', component: GovernanceView, meta: { title: 'Governance — Volnux' } },
+  { path: '/use-cases', name: 'use-cases', component: UseCasesView, meta: { title: 'Use Cases — Volnux' } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 

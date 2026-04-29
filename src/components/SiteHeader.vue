@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { productUrls } from '@/config/product-urls'
 
 const route = useRoute()
 
@@ -11,9 +10,9 @@ const mobileFeaturesSub = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
 const featureLinks = [
-  { label: 'Pointy-lang', href: productUrls.pointy, openInNewTab: true },
-  { label: 'EventHub', href: productUrls.eventhub, openInNewTab: true },
-  { label: 'Mesh Runtime', href: productUrls.mesh, openInNewTab: true },
+  { label: 'Pointy-lang', to: '/products/pointy-lang' },
+  { label: 'EventHub', to: '/products/eventhub' },
+  { label: 'Mesh Runtime', to: '/products/mesh-runtime' },
 ] as const
 
 function closeFeatures() {
@@ -79,17 +78,15 @@ onUnmounted(() => {
               v-if="featuresOpen"
               class="absolute left-0 top-full z-50 mt-2 min-w-[180px] rounded-lg border border-vn-border bg-vn-surface2 py-1 shadow-xl"
             >
-              <li v-for="feature in featureLinks" :key="feature.label">
-                <a
-                  class="site-header__product-link block px-4 py-2 text-sm text-vn-muted transition-colors hover:bg-vn-surface hover:text-vn-text"
-                  :href="feature.href"
-                  :target="feature.openInNewTab ? '_blank' : undefined"
-                  :rel="feature.openInNewTab ? 'noopener noreferrer' : undefined"
-                  @click="closeFeatures"
-                >
-                  {{ feature.label }}
-                </a>
-              </li>
+<li v-for="feature in featureLinks" :key="feature.label">
+              <RouterLink
+                class="site-header__product-link block px-4 py-2 text-sm text-vn-muted transition-colors hover:bg-vn-surface hover:text-vn-text"
+                :to="feature.to"
+                @click="closeFeatures"
+              >
+                {{ feature.label }}
+              </RouterLink>
+            </li>
             </ul>
           </Transition>
         </li>
@@ -171,15 +168,13 @@ onUnmounted(() => {
             <Transition name="sub-expand">
               <ul v-if="mobileFeaturesSub" class="ml-4 mt-1 flex flex-col gap-0.5 border-l border-vn-border pl-4">
                 <li v-for="feature in featureLinks" :key="feature.label">
-                  <a
-                    :href="feature.href"
-                    :target="feature.openInNewTab ? '_blank' : undefined"
-                    :rel="feature.openInNewTab ? 'noopener noreferrer' : undefined"
+                  <RouterLink
+                    :to="feature.to"
                     class="block rounded-md px-3 py-2 text-sm text-vn-muted transition-colors hover:bg-vn-surface hover:text-vn-text"
                     @click="closeMobile"
                   >
                     {{ feature.label }}
-                  </a>
+                  </RouterLink>
                 </li>
               </ul>
             </Transition>
