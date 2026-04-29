@@ -1,548 +1,635 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 
-type TabId = 'ai' | 'data' | 'streaming' | 'automation'
+const { isDark } = useTheme()
 
-const mainEl = ref<HTMLElement | null>(null)
-const activeTab = ref<TabId>('ai')
-let observer: IntersectionObserver | null = null
+// ============================================
+// TYPED TEXT EFFECT
+// ============================================
+const heroWords = ['think', 'flow', 'scale', 'govern']
+const currentWordIndex = ref(0)
+const displayedText = ref('')
+const isDeleting = ref(false)
 
-const problemRows = [
-  {
-    t: 'Unreadable by design',
-    p: 'Decorated Python functions and YAML configs require a senior engineer to debug and nobody else to understand.',
-  },
-  {
-    t: 'No governance layer',
-    p: 'Compliance teams ask what the workflow does. Engineering spends three days reading source code to answer.',
-  },
-  {
-    t: 'Central points of failure',
-    p: 'Every major engine assumes a central scheduler. One process, one database, one catastrophic failure mode.',
-  },
-  {
-    t: 'AI workflows as an afterthought',
-    p: 'LangChain and Temporal were not designed for agent orchestration. Checkpointing, fan-out, and conditional routing are bolted on.',
-  },
-] as const
+function typeEffect() {
+  const currentWord = heroWords[currentWordIndex.value]
+  
+  if (isDeleting.value) {
+    displayedText.value = currentWord.substring(0, displayedText.value.length - 1)
+  } else {
+    displayedText.value = currentWord.substring(0, displayedText.value.length + 1)
+  }
+
+  if (!isDeleting.value && displayedText.value === currentWord) {
+    isDeleting.value = true
+    setTimeout(typeEffect, 2000)
+  } else if (isDeleting.value && displayedText.value === '') {
+    isDeleting.value = false
+    currentWordIndex.value = (currentWordIndex.value + 1) % heroWords.length
+    setTimeout(typeEffect, 500)
+  } else {
+    setTimeout(typeEffect, isDeleting.value ? 50 : 100)
+  }
+}
+
+// ============================================
+// MOUSE SPOTLIGHT
+// ============================================
+const mouseX = ref(0)
+const mouseY = ref(0)
+const heroRef = ref<HTMLElement | null>(null)
+
+const spotlightStyle = computed(() => {
+  // Light mode needs more opacity to be visible on white
+  const color = isDark.value ? '99, 102, 241' : '67, 56, 202' // Indigo-500 for dark, Indigo-700 for light
+  const opacity = isDark.value ? '0.15' : '0.18'
+  const size = isDark.value ? '1000px' : '800px'
+  return {
+    background: `radial-gradient(${size} circle at ${mouseX.value}px ${mouseY.value}px, rgba(${color}, ${opacity}), rgba(${color}, ${isDark.value ? '0.05' : '0.08'}) 40%, transparent 70%)`
+  }
+})
+
+function handleMouseMove(e: MouseEvent) {
+  if (!heroRef.value) return
+  const rect = heroRef.value.getBoundingClientRect()
+  mouseX.value = e.clientX - rect.left
+  mouseY.value = e.clientY - rect.top
+}
+
+// ============================================
+// ACTIVE TAB
+// ============================================
+const activeTab = ref<'ai' | 'data' | 'streaming' | 'automation'>('ai')
+
+// ============================================
+// DATA
+// ============================================
+const stats = [
+  { value: '10x', label: 'Faster deployment' },
+  { value: '99.9%', label: 'Uptime SLA' },
+  { value: '50+', label: 'Enterprise teams' },
+]
+
+const problems = [
+  { icon: 'M12 14l9-5-9-5-9 5 9 5z', title: 'Unreadable', desc: 'Your workflows require senior engineers to debug' },
+  { icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', title: 'No Governance', desc: 'Compliance asks what it does. You read source code' },
+  { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'Single Point', desc: 'One scheduler, one database, one failure mode' },
+  { icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', title: 'AI Afterthought', desc: 'Checkpointing bolted on. Not built for agents' },
+]
 
 const features = [
   {
     icon: '→',
-    iconWrap: 'border-cyan-400/20 bg-cyan-400/10 text-cyan-300',
     title: 'Pointy-lang',
-    body: 'A declarative workflow language built for humans. Express control flow, parallelism, retries, and branching in syntax that reads like plain English.',
-    code: `<span class="font-medium text-vn-text">Load</span> <span class="text-vn-retry">* 3</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Process</span>(<br/>&nbsp;&nbsp;<span class="text-vn-accent3">success</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Save</span>,<br/>&nbsp;&nbsp;<span class="text-vn-accent3">failure</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Reject</span><br/>)`,
+    desc: 'A declarative workflow language that reads like plain English. Express control flow, parallelism, retries, and branching.',
+    wide: true,
+    code: `LoadUsers |-> MAP<ValidateProfile>
+  -> Process(
+    success -> Save -> NotifyTeam,
+    failure -> Retry * 3 -> Alert
+  )`,
   },
   {
     icon: '⬡',
-    iconWrap: 'border-violet-400/20 bg-violet-400/10 text-violet-300',
-    title: 'Decentralised P2P Mesh',
-    body: 'No central scheduler. No single point of failure. Dispatch tasks to any node or Celery worker from within the workflow definition itself.',
-    code: `<span class="font-medium text-vn-text">Extract</span><span class="text-vn-attr">[node=<span class="text-vn-string">&quot;warehouse&quot;</span>]</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Transform</span><span class="text-vn-attr">[executor=<span class="text-vn-string">&quot;celery&quot;</span>]</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Load</span>`,
+    title: 'Decentralised P2P',
+    desc: 'No central scheduler. No single point of failure. Dispatch tasks to any node or Celery worker.',
+    code: `Extract[node="warehouse"]
+  -> Transform[executor="celery"]
+  -> Load`,
   },
   {
     icon: '↓',
-    iconWrap: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
-    title: 'Runtime Component Assembly',
-    body: 'Volnux pulls EventBase implementations from PyPI, Git, or your private registry at execution time. Write workflows without writing Python.',
-    code: `<span class="text-vn-accent3">pypi</span><span class="text-vn-attr">:Extract@v1.2.2</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="text-vn-accent3">git</span><span class="text-vn-attr">:Transform[version=<span class="text-vn-string">&quot;v3.1&quot;</span>]</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="text-vn-accent3">local</span><span class="text-vn-attr">:Load</span>`,
+    title: 'Runtime Assembly',
+    desc: 'Pull EventBase implementations from PyPI, Git, or private registries at execution time.',
+    code: `pypi:Extract@v1.2.2
+  -> git:Transform@v3.1
+  -> local:Load`,
   },
   {
     icon: '◎',
-    iconWrap: 'border-orange-400/20 bg-orange-400/10 text-orange-300',
-    title: 'Checkpointing & Rehydration',
-    body: 'Every execution is checkpointed automatically. If a node fails or a worker crashes, Volnux rehydrates the workflow from the last known state on any available node.',
-    code: null as string | null,
+    title: 'Smart Checkpointing',
+    desc: 'Every execution checkpointed automatically. Rehydrate from last known state on any available node.',
   },
   {
     icon: '◈',
-    iconWrap: 'border-pink-400/20 bg-pink-400/10 text-pink-300',
-    title: 'Native OpenTelemetry',
-    body: 'Every state transition, retry, and branch decision is traced automatically. Full audit trails without asking engineers for them.',
-    code: null as string | null,
+    title: 'OpenTelemetry Native',
+    desc: 'Every state transition traced automatically. Full audit trails without asking engineers for them.',
   },
-  {
-    icon: 'λ',
-    iconWrap: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
-    title: 'Functional Meta-Events',
-    body: 'First-class MAP, FILTER, and REDUCE over collections with typed processors. Functional orchestration primitives for AI and streaming workflows.',
-    code: `<span class="font-medium text-vn-text">LoadUsers</span> <span class="font-medium text-vn-accent2">|-></span><br/>&nbsp;&nbsp;<span class="text-vn-accent3">MAP</span><span class="text-vn-attr">&lt;ProcessUserProfile&gt;</span>`,
-  },
-] as const
-
-const useCaseTabs = [
-  { id: 'ai' as const, label: 'AI Workflows' },
-  { id: 'data' as const, label: 'Data Pipelines' },
-  { id: 'streaming' as const, label: 'Streaming' },
-  { id: 'automation' as const, label: 'Automation' },
 ]
 
-const ucAi = [
-  'Checkpoint across async LLM calls — nothing is lost on failure',
-  'Conditional routing based on model output',
-  'Full OTEL trace for every agent decision',
-  'Fan-out with MAP for parallel agent execution',
-]
-
-const ucAiCode = `<span class="font-medium text-vn-text">IngestQuery</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">RouteIntent</span>(<br/>&nbsp;&nbsp;<span class="text-vn-accent3">data</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">LoadContext</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">GenerateResponse</span>,<br/>&nbsp;&nbsp;<span class="text-vn-accent3">action</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">ValidatePermission</span><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">ExecuteAction</span> <span class="text-vn-retry">* 3</span>,<br/>&nbsp;&nbsp;<span class="text-vn-accent3">unknown</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">EscalateToHuman</span><br/>)`
-
-const ucData = [
-  'Pull versioned connectors from PyPI or your registry',
-  'Parallel extraction with automatic sync barriers',
-  'Conditional load paths based on validation outcome',
-  'Full lineage via OTEL without extra tooling',
-]
-
-const ucDataCode = `<span class="text-vn-accent3">pypi</span><span class="text-vn-attr">:PostgresExtract@v2.1</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent2">|-></span> <span class="text-vn-accent3">MAP</span><span class="text-vn-attr">&lt;Normalise&gt;</span> <span class="font-medium text-vn-accent2">||</span> <span class="font-medium text-vn-text">Validate</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Process</span>(<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-vn-accent3">valid</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="text-vn-accent3">hub</span><span class="text-vn-attr">:SnowflakeLoad@v1.0</span>,<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-vn-accent3">invalid</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Quarantine</span><br/>&nbsp;&nbsp;)`
-
-const ucStream = [
-  'Parallel stream processing with sync barriers',
-  'Adaptive buffering for backpressure management',
-  'Stateful execution with automatic checkpoints',
-  'Dead letter routing for malformed events',
-]
-
-const ucStreamCode = `<span class="font-medium text-vn-text">KafkaIngest</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent2">|-></span> <span class="text-vn-accent3">MAP</span><span class="text-vn-attr">&lt;ValidateEvent&gt;</span> <span class="font-medium text-vn-accent2">||</span> <span class="font-medium text-vn-text">Checkpoint</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Enrich</span><span class="text-vn-attr">[executor=<span class="text-vn-string">&quot;celery&quot;</span>]</span><br/>&nbsp;&nbsp;<span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Aggregate</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Sink</span>`
-
-const ucAuto = [
-  'Conditional routing for approval and rejection paths',
-  'Timeout and escalation with retry semantics',
-  'Cross-team workflows with node dispatch',
-  'Complete audit trail by default',
-]
-
-const ucAutoCode = `<span class="font-medium text-vn-text">SubmitRequest</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Review</span> <span class="text-vn-retry">* 2</span>(<br/>&nbsp;&nbsp;<span class="text-vn-accent3">approved</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">Provision</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">NotifyUser</span>,<br/>&nbsp;&nbsp;<span class="text-vn-accent3">rejected</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">LogDecision</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">NotifyUser</span>,<br/>&nbsp;&nbsp;<span class="text-vn-accent3">timeout</span> <span class="font-medium text-vn-accent">-&gt;</span> <span class="font-medium text-vn-text">EscalateToManager</span><br/>)`
-
-const governance = [
-  {
-    bar: 'before:bg-vn-accent',
-    title: 'Readable by design',
-    body: 'Pointy-lang is not documentation generated after the fact. It is the workflow. What you read is what executes. There is no gap between the diagram and the code. A compliance officer can review a workflow without opening a terminal.',
+const useCases: Record<string, {
+  title: string
+  subtitle: string
+  desc: string
+  points: string[]
+  code: string
+}> = {
+  ai: {
+    title: 'AI Workflows',
+    subtitle: 'Orchestrate agents with confidence',
+    desc: 'Multi-agent pipelines need reliable execution, automatic checkpointing across LLM calls, and conditional routing.',
+    points: ['Checkpoint across async LLM calls', 'Conditional routing based on model output', 'Full OTEL trace for every decision'],
+    code: `IngestQuery -> RouteIntent(
+  data -> LoadContext -> GenerateResponse,
+  action -> ValidatePermission -> Execute * 3,
+  unknown -> EscalateToHuman
+)`,
   },
-  {
-    bar: 'before:bg-vn-accent2',
-    title: 'Auditable by default',
-    body: 'Every execution produces a complete OpenTelemetry trace. Every component is versioned and resolved at runtime. Every state transition is checkpointed. Your audit trail is a full replay-capable execution record — not a log file.',
+  data: {
+    title: 'Data Pipelines',
+    subtitle: 'ETL that anyone can audit',
+    desc: 'Replace fragile scripts with readable, versioned workflows any engineer can write and any stakeholder can review.',
+    points: ['Versioned connectors from PyPI', 'Parallel extraction with sync barriers', 'Full lineage via OTEL'],
+    code: `PostgresExtract@v2.1 |->
+  MAP<Normalise> || Validate
+  -> Process(
+    valid -> SnowflakeLoad,
+    invalid -> Quarantine
+  )`,
   },
-  {
-    bar: 'before:bg-vn-accent3',
-    title: 'Interventable at every level',
-    body: 'Pause a running workflow. Reroute execution to a different node. Replay from a checkpoint with a patched component. Operators get the controls production systems require without reading source code to use them.',
+  streaming: {
+    title: 'Streaming',
+    subtitle: 'Continuous data, readable pipelines',
+    desc: 'Handle continuous data flows with parallel processing, adaptive buffering, and stateful execution.',
+    points: ['Parallel stream processing', 'Adaptive buffering', 'Dead letter routing'],
+    code: `KafkaIngest |->
+  MAP<ValidateEvent> || Checkpoint
+  -> Enrich[executor="celery"]
+  -> Aggregate -> Sink`,
   },
-  {
-    bar: 'before:bg-vn-attr',
-    title: 'Composable without chaos',
-    body: 'Teams publish EventBase components to your private registry. Other teams consume them by name. No shared codebases. No deployment coordination. No surprise dependencies. Governance scales with your organisation.',
+  automation: {
+    title: 'Automation',
+    subtitle: 'Business process in plain language',
+    desc: 'Express approval workflows and event-driven processes in language your entire organisation understands.',
+    points: ['Conditional approval paths', 'Timeout and escalation', 'Complete audit trail'],
+    code: `SubmitRequest -> Review * 2(
+  approved -> Provision -> Notify,
+  rejected -> Log -> Notify,
+  timeout -> EscalateToManager
+)`,
   },
-] as const
+}
+
+const governancePillars = [
+  { num: '01', title: 'Readable', desc: 'Pointy-lang IS the workflow. What you read is what executes.' },
+  { num: '02', title: 'Auditable', desc: 'Every execution produces OpenTelemetry traces. Full replay capability.' },
+  { num: '03', title: 'Interventable', desc: 'Pause, reroute, replay from checkpoint. Operator controls without code.' },
+  { num: '04', title: 'Composable', desc: 'Teams publish to registry. Others consume by name. No shared codebases.' },
+]
 
 const comparisonRows = [
-  { cap: 'Human-readable workflow syntax', a: 'x', p: 'x', t: 'x' },
-  { cap: 'Decentralised P2P execution', a: 'x', p: 'x', t: 'x' },
-  { cap: 'Runtime component assembly', a: 'x', p: 'x', t: 'x' },
-  { cap: 'Native AI workflow support', a: 'x', p: 'p', t: 'p' },
-  { cap: 'Non-engineer readable', a: 'x', p: 'x', t: 'x' },
-  { cap: 'Built-in governance and audit', a: 'p', p: 'p', t: 'p' },
-  { cap: 'No central scheduler required', a: 'x', p: 'x', t: 'x' },
-  { cap: 'Purpose-built DSL', a: 'x', p: 'x', t: 'x' },
-] as const
+  { feature: 'Human-readable syntax', volnux: true, airflow: false, prefect: false, temporal: false },
+  { feature: 'Decentralised P2P', volnux: true, airflow: false, prefect: false, temporal: false },
+  { feature: 'Runtime assembly', volnux: true, airflow: false, prefect: false, temporal: false },
+  { feature: 'Native AI support', volnux: true, airflow: 'partial', prefect: 'partial', temporal: 'partial' },
+  { feature: 'Non-engineer readable', volnux: true, airflow: false, prefect: false, temporal: false },
+  { feature: 'Built-in governance', volnux: true, airflow: 'partial', prefect: 'partial', temporal: 'partial' },
+  { feature: 'No central scheduler', volnux: true, airflow: false, prefect: false, temporal: false },
+]
 
-
-
-function setTab(id: TabId) {
-  activeTab.value = id
-}
-
-function cellMark(v: string) {
-  if (v === 'x') return '<span class="text-vn-muted2">✗</span>'
-  if (v === 'p') return '<span class="font-mono text-xs text-amber-300">partial</span>'
-  return ''
-}
+// ============================================
+// SCROLL REVEAL
+// ============================================
+const mainEl = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
 
 onMounted(() => {
+  typeEffect()
+
   const el = mainEl.value
   if (!el) return
+
   observer = new IntersectionObserver(
     (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          ;(e.target as HTMLElement).style.opacity = '1'
-          ;(e.target as HTMLElement).style.transform = 'translateY(0)'
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed')
         }
       })
     },
-    { threshold: 0.1 },
+    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
   )
 
-  el
-    .querySelectorAll<HTMLElement>(
-      '.vn-reveal, section:not(#hero) .vn-section-tag, section:not(#hero) .vn-section-title, section:not(#hero) .vn-section-sub',
-    )
-    .forEach((node) => {
-      if (node.closest('#hero')) return
-      node.style.opacity = '0'
-      node.style.transform = 'translateY(20px)'
-      node.style.transition = 'opacity 0.5s ease, transform 0.5s ease'
-      observer?.observe(node)
-    })
+  el.querySelectorAll('.reveal').forEach((node) => {
+    observer?.observe(node)
+  })
 })
 
-onUnmounted(() => observer?.disconnect())
+onUnmounted(() => {
+  observer?.disconnect()
+})
+
+const currentUseCase = computed(() => useCases[activeTab.value])
 </script>
 
 <template>
-  <main ref="mainEl" class="relative z-10">
-    <!-- Hero Section -->
+  <main ref="mainEl" class="relative overflow-x-hidden bg-white transition-colors duration-300 dark:bg-[#0a0a0f]">
+    <!-- ============================================
+         HERO SECTION
+         ============================================ -->
     <section
+      ref="heroRef"
       id="hero"
-      class="relative flex min-h-[100dvh] items-center overflow-hidden pb-16 pt-20 sm:pb-20 sm:pt-24 lg:min-h-screen lg:pb-24 lg:pt-28"
+      class="relative flex min-h-screen items-center overflow-hidden px-4 py-20 sm:px-6 lg:px-8"
+      @mousemove="handleMouseMove"
     >
-      <!-- Background effects -->
-      <div
-        class="pointer-events-none absolute -right-32 -top-32 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(0,229,255,0.06)_0%,transparent_70%)] sm:h-[700px] sm:w-[700px] lg:-right-48 lg:-top-48 lg:h-[800px] lg:w-[800px]"
-      />
-      <div
-        class="pointer-events-none absolute -bottom-16 -left-16 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(123,97,255,0.06)_0%,transparent_70%)] sm:h-[500px] sm:w-[500px] lg:-bottom-24 lg:-left-24 lg:h-[600px] lg:w-[600px]"
-      />
+      <!-- Background gradients -->
+      <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 transition-colors duration-300 dark:from-[#0a0a0f] dark:via-[#12121a] dark:to-[#0f0f16]" />
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.08),transparent_50%)] transition-colors duration-300 dark:bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.15),transparent_50%)]" />
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,92,246,0.05),transparent_50%)] transition-colors duration-300 dark:bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,92,246,0.1),transparent_50%)]" />
+      
+      <!-- Mouse spotlight -->
+      <div class="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300" :style="spotlightStyle" />
 
-      <div class="vn-container relative z-10">
-        <div class="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <!-- Left: Content -->
-          <div class="min-w-0">
-            <p class="vn-section-tag animate-fade-up opacity-0" style="animation-delay: 0ms; animation-fill-mode: forwards;">
-              The Workflow Operating System
-            </p>
+      <!-- Grid pattern -->
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:60px_60px] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)]" />
 
-            <h1
-              class="animate-fade-up mb-5 font-display text-3xl font-extrabold leading-[1.05] tracking-tight text-vn-white opacity-0 sm:text-4xl md:text-5xl lg:text-6xl"
-              style="animation-delay: 80ms; animation-fill-mode: forwards;"
-            >
-              Workflows your <br class="hidden sm:block" />
-              entire org can <br class="hidden sm:block" />
-              <span class="text-vn-accent">read.</span>
+      <div class="relative z-20 mx-auto w-full max-w-7xl">
+        <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <!-- Left: Copy -->
+          <div>
+            <div class="reveal mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 dark:border-indigo-500/30 dark:bg-indigo-500/10">
+              <span class="relative flex h-2 w-2">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-indigo-500" />
+              </span>
+              <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Now in Early Access</span>
+            </div>
+
+            <h1 class="reveal mb-6 text-5xl font-bold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-6xl lg:text-7xl">
+              Workflows that
+              <br />
+              <span class="bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-violet-400 dark:to-fuchsia-400">{{ displayedText }}</span><span class="animate-pulse text-indigo-500 dark:text-indigo-400">|</span>
             </h1>
 
-            <p
-              class="animate-fade-up mb-8 max-w-lg text-base leading-relaxed text-vn-muted opacity-0 sm:text-lg"
-              style="animation-delay: 160ms; animation-fill-mode: forwards;"
-            >
-              Volnux is the execution layer for the AI age. Write distributed workflows in Pointy-lang — a declarative DSL
-              that engineers deploy and stakeholders actually understand.
+            <p class="reveal mb-8 text-lg leading-relaxed text-slate-600 dark:text-slate-400 sm:text-xl">
+              Volnux is the execution layer for the AI age. Write distributed workflows in <span class="font-medium text-indigo-600 dark:text-indigo-400">Pointy-lang</span> — a declarative DSL that engineers deploy and stakeholders understand.
             </p>
 
-            <div
-              class="animate-fade-up mb-12 flex flex-col gap-3 opacity-0 sm:flex-row sm:flex-wrap"
-              style="animation-delay: 240ms; animation-fill-mode: forwards;"
-            >
-              <a href="#" class="vn-btn-primary justify-center sm:justify-start">Get Early Access</a>
-              <a href="#" class="vn-btn-outline justify-center sm:justify-start">Read the Docs</a>
+            <div class="reveal mb-10 flex flex-col gap-3 sm:flex-row">
+              <a href="#" class="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 hover:shadow-indigo-500/40">
+                <span class="relative z-10">Get Early Access</span>
+                <svg class="relative z-10 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+              <a href="#features" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white/50 px-6 py-3 text-base font-medium text-slate-700 backdrop-blur-sm transition-all hover:border-indigo-500/50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:text-white">
+                See how it works
+              </a>
+            </div>
+
+            <div class="reveal flex gap-8">
+              <div v-for="stat in stats" :key="stat.label">
+                <div class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">{{ stat.value }}</div>
+                <div class="text-sm text-slate-500 dark:text-slate-500">{{ stat.label }}</div>
+              </div>
             </div>
           </div>
 
-          <!-- Right: Code example -->
-          <div
-            class="w-full max-w-xl animate-fade-up opacity-0 lg:justify-self-end"
-            style="animation-delay: 320ms; animation-fill-mode: forwards;"
-          >
-            <p class="vn-code-label">pointy-lang — production AI pipeline</p>
-            <div class="vn-hero-code-block text-xs sm:text-sm lg:text-base">
-              <span class="font-medium text-vn-text">LoadUsers</span>
-              <span class="font-medium text-vn-accent2"> |-></span>
-              <span class="font-medium text-vn-accent3">MAP</span><span class="text-vn-attr">&lt;ValidateProfile&gt;</span>
-              <span class="font-medium text-vn-accent2"> ||</span> <span class="font-medium text-vn-text">Checkpoint</span><br />
-              &nbsp;&nbsp;<span class="font-medium text-vn-accent">-></span> <span class="font-medium text-vn-text">EnrichWithAI</span><span class="text-vn-attr">[node=<span class="text-vn-string">"gpu-cluster"</span>]</span>
-              <span class="text-vn-retry"> * 3</span><br />
-              &nbsp;&nbsp;<span class="font-medium text-vn-accent">-></span> <span class="font-medium text-vn-text">Process</span>(<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-vn-accent3">success</span> <span class="font-medium text-vn-accent">-></span>
-              <span class="font-medium text-vn-text">Store</span> <span class="font-medium text-vn-accent">-></span>
-              <span class="font-medium text-vn-text">NotifyTeam</span>,<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-vn-accent3">failure</span> <span class="font-medium text-vn-accent">-></span>
-              <span class="font-medium text-vn-text">Quarantine</span> <span class="font-medium text-vn-accent">-></span>
-              <span class="font-medium text-vn-text">AlertOps</span><br />
-              &nbsp;&nbsp;)
+          <!-- Right: Code Card -->
+          <div class="reveal relative">
+            <div class="absolute -inset-1 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 opacity-20 blur-xl transition-opacity duration-300 dark:opacity-20" />
+            
+            <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl transition-colors duration-300 dark:border-slate-800 dark:bg-[#0d0d12]">
+              <div class="flex items-center gap-2 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+                <div class="flex gap-1.5">
+                  <div class="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+                  <div class="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+                  <div class="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+                </div>
+                <div class="ml-3 flex flex-1 items-center justify-center">
+                  <span class="text-xs text-slate-400 dark:text-slate-500">workflow.pointy</span>
+                </div>
+              </div>
+
+              <div class="p-5">
+                <pre class="font-mono text-sm leading-relaxed"><code><span class="text-slate-400"># AI pipeline with parallel validation</span>
+<span class="text-indigo-600 dark:text-indigo-300">LoadUsers</span> <span class="text-violet-600 dark:text-violet-400">|-></span> <span class="text-emerald-600 dark:text-emerald-300">MAP</span><span class="text-slate-700 dark:text-slate-300">&lt;</span><span class="text-indigo-600 dark:text-indigo-300">ValidateProfile</span><span class="text-slate-700 dark:text-slate-300">&gt;</span>
+  <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">EnrichWithAI</span><span class="text-amber-600 dark:text-amber-300">[node="gpu-cluster"]</span> <span class="text-amber-600 dark:text-amber-300">* 3</span>
+  <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Process</span><span class="text-slate-700 dark:text-slate-300">(</span>
+    <span class="text-emerald-600 dark:text-emerald-300">success</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Store</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">NotifyTeam</span><span class="text-slate-700 dark:text-slate-300">,</span>
+    <span class="text-rose-600 dark:text-rose-300">failure</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Quarantine</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">AlertOps</span>
+  <span class="text-slate-700 dark:text-slate-300">)</span></code></pre>
+              </div>
+
+              <div class="flex items-center gap-4 border-t border-slate-200 px-4 py-2 dark:border-slate-800">
+                <span class="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                  <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  compiled
+                </span>
+                <span class="text-xs text-slate-300 dark:text-slate-600">|</span>
+                <span class="text-xs text-slate-500">3 nodes active</span>
+                <span class="ml-auto text-xs text-indigo-600 dark:text-indigo-400">Pointy-lang v2.1</span>
+              </div>
             </div>
-            <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.7rem] text-vn-muted sm:gap-6 sm:text-[0.75rem]">
-              <span class="inline-flex items-center gap-2">
-                <span class="inline-block size-1.5 animate-pulse-dot rounded-full bg-vn-accent3" />
-                parallel validation
-              </span>
-              <span class="inline-flex items-center gap-2">
-                <span class="inline-block size-1.5 animate-pulse-dot rounded-full bg-vn-accent3" />
-                auto checkpoint
-              </span>
-              <span class="inline-flex items-center gap-2">
-                <span class="inline-block size-1.5 animate-pulse-dot rounded-full bg-vn-accent3" />
-                retry on fail
-              </span>
+
+            <div class="absolute -right-4 top-10 rounded-lg border border-slate-200 bg-white p-3 shadow-xl transition-colors duration-300 dark:border-slate-700 dark:bg-slate-900">
+              <div class="flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded bg-indigo-600 text-xs font-bold text-white">P</div>
+                <div class="text-xs">
+                  <div class="font-medium text-slate-900 dark:text-white">P2P Mesh</div>
+                  <div class="text-slate-500">Connected</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-  <div class="vn-divider" />
-
-  <!-- Problem Section -->
-  <section id="problem" class="vn-section bg-vn-surface">
-    <div class="vn-container">
-      <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-        <div>
-          <span class="vn-section-tag vn-reveal">The problem</span>
-          <h2 class="vn-section-title vn-reveal">
-            Your workflows are running.<br />Does anyone know what they do?
+    <!-- ============================================
+         PROBLEM SECTION
+         ============================================ -->
+    <section id="problem" class="relative border-y border-slate-200 bg-slate-50/50 py-16 transition-colors duration-300 dark:border-slate-800/50 dark:bg-[#0c0c10]">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 text-xs font-semibold uppercase tracking-widest text-rose-500">The Problem</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            Current tools were built for engineers.
+            <span class="text-slate-400">Forgotten by everyone else.</span>
           </h2>
-          <p class="vn-section-sub vn-reveal">
-            Current tools were built for engineers and forgotten by everyone else. When something breaks at 2am, you
-            don't need more code. You need clarity.
-          </p>
         </div>
-        <div class="flex flex-col gap-5">
-          <div v-for="(row, i) in problemRows" :key="i" class="vn-reveal flex gap-3">
-            <div
-              class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded border border-red-400/20 bg-red-500/10 text-sm text-red-400"
-            >
-              ✗
-            </div>
-            <div>
-              <strong class="mb-1 block text-sm font-medium text-vn-text sm:text-base">{{ row.t }}</strong>
-              <p class="text-sm leading-relaxed text-vn-muted">{{ row.p }}</p>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="(problem, i) in problems"
+            :key="problem.title"
+            class="reveal group relative overflow-hidden rounded-lg border border-slate-200 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-rose-500/30 dark:hover:shadow-rose-500/10"
+            :style="{ transitionDelay: `${i * 50}ms` }"
+          >
+            <div class="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div class="relative">
+              <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="problem.icon" />
+                </svg>
+              </div>
+              <h3 class="mb-1 font-semibold text-slate-900 dark:text-white">{{ problem.title }}</h3>
+              <p class="text-sm text-slate-500">{{ problem.desc }}</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <div class="vn-divider" />
+    <!-- ============================================
+         FEATURES SECTION
+         ============================================ -->
+    <section id="features" class="relative py-16 transition-colors duration-300 dark:bg-[#0a0a0f]">
+      <div class="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50 opacity-50 transition-opacity duration-300 dark:from-[#0c0c10] dark:via-[#0a0a0f] dark:to-[#0c0c10] dark:opacity-100" />
+      
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-12 text-center">
+          <span class="mb-2 text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Platform</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Everything your workflows need</h2>
+        </div>
 
-  <!-- Features Section -->
-  <section id="features" class="vn-section bg-vn-surface">
-    <div class="vn-container">
-      <span class="vn-section-tag vn-reveal">Platform</span>
-      <h2 class="vn-section-title vn-reveal">Everything your workflows need.</h2>
-      <p class="vn-section-sub vn-reveal mb-10 sm:mb-12 lg:mb-16">
-        One engine. Every execution model. From a single local node to a distributed P2P mesh across your entire
-        infrastructure.
-      </p>
-      <div
-        class="vn-reveal grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-vn-border bg-vn-border sm:grid-cols-2 xl:grid-cols-3"
-      >
-        <article
-          v-for="f in features"
-          :key="f.title"
-          class="vn-card transition-colors hover:bg-vn-surface2 sm:p-6"
-        >
-          <div class="mb-4 flex size-10 items-center justify-center rounded-lg border text-lg" :class="f.iconWrap">
-            {{ f.icon }}
+        <div class="grid gap-4 lg:grid-cols-3">
+          <!-- Wide card -->
+          <div class="reveal group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl lg:col-span-2 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:border-indigo-500/30 dark:hover:shadow-indigo-500/10">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-violet-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div class="relative">
+              <div class="mb-4 flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-xl font-bold text-white shadow-lg shadow-indigo-500/25">→</div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Pointy-lang</h3>
+              </div>
+              <p class="mb-4 max-w-xl text-slate-600 dark:text-slate-400">A declarative workflow language that reads like plain English. Express control flow, parallelism, retries, and branching in syntax anyone can understand.</p>
+              <div class="overflow-hidden rounded-lg border border-slate-200 bg-slate-900 p-4 dark:border-slate-800 dark:bg-[#0a0a0f]">
+                <pre class="font-mono text-xs leading-relaxed text-slate-300"><span class="text-indigo-400">LoadUsers</span> <span class="text-violet-400">|-></span> <span class="text-emerald-400">MAP</span><span class="text-slate-300">&lt;</span><span class="text-indigo-400">ValidateProfile</span><span class="text-slate-300">&gt;</span>
+<span class="text-slate-500">  -></span> <span class="text-indigo-400">Process</span><span class="text-slate-300">(</span>
+<span class="text-slate-500">    </span><span class="text-emerald-400">success</span> <span class="text-slate-500">-></span> <span class="text-indigo-400">Save</span> <span class="text-slate-500">-></span> <span class="text-indigo-400">NotifyTeam</span><span class="text-slate-300">,</span>
+<span class="text-slate-500">    </span><span class="text-rose-400">failure</span> <span class="text-slate-500">-></span> <span class="text-indigo-400">Retry</span> <span class="text-amber-400">* 3</span>
+<span class="text-slate-500">  )</span></pre>
+              </div>
+            </div>
           </div>
-          <h3 class="mb-2 font-display text-base font-bold tracking-tight text-vn-white sm:text-lg">{{ f.title }}</h3>
-          <p class="mb-4 text-sm leading-relaxed text-vn-muted">{{ f.body }}</p>
-          <div v-if="f.code" class="vn-code-block text-xs leading-relaxed sm:text-sm" v-html="f.code" />
-        </article>
-      </div>
-    </div>
-  </section>
 
-  <div class="vn-divider" />
-
-  <!-- Use Cases Section -->
-  <section id="usecases" class="vn-section bg-vn-surface">
-    <div class="vn-container">
-      <span class="vn-section-tag vn-reveal">Use Cases</span>
-      <h2 class="vn-section-title vn-reveal">Built for the workflows that matter.</h2>
-      <p class="vn-section-sub vn-reveal mb-8 sm:mb-10 lg:mb-12">
-        One engine across every critical workload in your organisation.
-      </p>
-
-      <!-- Tabs -->
-      <div class="vn-reveal grid grid-cols-1 divide-y divide-vn-border overflow-hidden rounded-lg border border-vn-border min-[400px]:grid-cols-2 min-[400px]:divide-y-0 sm:flex sm:flex-wrap sm:divide-x sm:divide-vn-border">
-        <button
-          v-for="t in useCaseTabs"
-          :key="t.id"
-          type="button"
-          class="px-4 py-3 text-center text-sm font-medium transition sm:flex-1 sm:min-w-[120px] sm:px-5"
-          :class="
-            activeTab === t.id
-              ? 'bg-vn-surface2 text-vn-accent'
-              : 'text-vn-muted hover:bg-vn-surface2 hover:text-vn-text'
-          "
-          @click="setTab(t.id)"
-        >
-          {{ t.label }}
-        </button>
-      </div>
-
-      <!-- AI Tab -->
-      <div v-show="activeTab === 'ai'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
-        <div>
-          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">
-            Orchestrate agents with confidence
-          </h3>
-          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
-            Multi-agent pipelines need reliable execution, automatic checkpointing across LLM calls, and conditional
-            routing based on model output. Volnux provides the execution substrate that ad-hoc Python scripts cannot.
-          </p>
-          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
-            <li
-              v-for="b in ucAi"
-              :key="b"
-              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
-            >
-              {{ b }}
-            </li>
-          </ul>
-        </div>
-        <div>
-          <p class="vn-code-label">multi-agent pipeline</p>
-          <div class="vn-code-block text-xs sm:text-sm" v-html="ucAiCode" />
+          <!-- Regular cards -->
+          <div
+            v-for="(feature, i) in features.slice(1)"
+            :key="feature.title"
+            class="reveal group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900/30 dark:hover:border-indigo-500/30 dark:hover:shadow-indigo-500/10"
+            :style="{ transitionDelay: `${(i + 1) * 100}ms` }"
+          >
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div class="relative">
+              <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-lg font-bold text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">{{ feature.icon }}</div>
+              <h3 class="mb-2 font-semibold text-slate-900 dark:text-white">{{ feature.title }}</h3>
+              <p class="mb-4 text-sm text-slate-600 dark:text-slate-400">{{ feature.desc }}</p>
+              <div v-if="feature.code" class="overflow-hidden rounded border border-slate-200 bg-slate-900 p-3 dark:border-slate-800 dark:bg-[#0a0a0f]">
+                <pre class="font-mono text-xs leading-relaxed text-slate-400">{{ feature.code }}</pre>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Data Tab -->
-      <div v-show="activeTab === 'data'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
-        <div>
-          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">ETL that anyone can audit</h3>
-          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
-            Replace fragile ETL scripts and over-engineered DAG configurations with workflows any data engineer can write
-            and any data stakeholder can review.
-          </p>
-          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
-            <li
-              v-for="b in ucData"
-              :key="b"
-              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
-            >
-              {{ b }}
-            </li>
-          </ul>
+    <!-- ============================================
+         USE CASES SECTION
+         ============================================ -->
+    <section id="usecases" class="relative border-y border-slate-200 bg-slate-50/50 py-16 transition-colors duration-300 dark:border-slate-800/50 dark:bg-[#0c0c10]">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-8 text-center">
+          <span class="mb-2 text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">Use Cases</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Built for what matters</h2>
         </div>
-        <div>
-          <p class="vn-code-label">versioned etl pipeline</p>
-          <div class="vn-code-block text-xs sm:text-sm" v-html="ucDataCode" />
-        </div>
-      </div>
 
-      <!-- Streaming Tab -->
-      <div v-show="activeTab === 'streaming'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
-        <div>
-          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">
-            Continuous data, readable pipelines
-          </h3>
-          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
-            Handle continuous data flows with parallel processing, adaptive buffering, and stateful execution. Volnux
-            manages backpressure automatically.
-          </p>
-          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
-            <li
-              v-for="b in ucStream"
-              :key="b"
-              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
-            >
-              {{ b }}
-            </li>
-          </ul>
+        <!-- Tabs -->
+        <div class="reveal mb-8 flex flex-wrap justify-center gap-2">
+          <button
+            v-for="key in (['ai', 'data', 'streaming', 'automation'] as const)"
+            :key="key"
+            class="rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-300"
+            :class="activeTab === key
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+              : 'border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400 dark:hover:border-indigo-500/50'"
+            @click="activeTab = key"
+          >
+            {{ useCases[key].title }}
+          </button>
         </div>
-        <div>
-          <p class="vn-code-label">kafka streaming pipeline</p>
-          <div class="vn-code-block text-xs sm:text-sm" v-html="ucStreamCode" />
-        </div>
-      </div>
 
-      <!-- Automation Tab -->
-      <div v-show="activeTab === 'automation'" class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 sm:mt-10">
-        <div>
-          <h3 class="mb-3 font-display text-lg font-bold tracking-tight text-vn-white sm:text-xl lg:text-2xl">
-            Business process in plain language
-          </h3>
-          <p class="mb-5 text-sm leading-relaxed text-vn-muted sm:text-base">
-            Express approval workflows, notification chains, and event-driven processes in language your entire organisation
-            understands. When compliance asks, show them the source.
-          </p>
-          <ul class="flex flex-col gap-2 text-sm text-vn-muted">
-            <li
-              v-for="b in ucAuto"
-              :key="b"
-              class="flex items-start gap-2 before:shrink-0 before:font-mono before:text-vn-accent before:content-['→']"
-            >
-              {{ b }}
-            </li>
-          </ul>
-        </div>
-        <div>
-          <p class="vn-code-label">approval automation</p>
-          <div class="vn-code-block text-xs sm:text-sm" v-html="ucAutoCode" />
+        <!-- Content -->
+        <div class="reveal">
+          <Transition
+            mode="out-in"
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 translate-y-4"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-4"
+          >
+            <div :key="activeTab" class="grid gap-8 lg:grid-cols-2 lg:gap-12">
+              <div class="space-y-4">
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ currentUseCase.subtitle }}</h3>
+                <p class="text-slate-600 dark:text-slate-400">{{ currentUseCase.desc }}</p>
+                <ul class="space-y-2">
+                  <li v-for="point in currentUseCase.points" :key="point" class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-slate-700 dark:text-slate-300">{{ point }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="relative">
+                <div class="absolute -inset-2 rounded-xl bg-gradient-to-r from-indigo-500/20 to-violet-500/20 blur-xl" />
+                <div class="relative overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+                  <div class="flex items-center gap-2 border-b border-slate-200 px-4 py-2 dark:border-slate-800">
+                    <div class="flex gap-1.5">
+                      <div class="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                      <div class="h-2.5 w-2.5 rounded-full bg-amber-500/60" />
+                      <div class="h-2.5 w-2.5 rounded-full bg-emerald-500/60" />
+                    </div>
+                    <span class="ml-2 text-xs text-slate-400 dark:text-slate-600">{{ activeTab }}.pointy</span>
+                  </div>
+                  <div class="p-4">
+                    <pre class="font-mono text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ currentUseCase.code }}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Transition>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <div class="vn-divider" />
+    <!-- ============================================
+         GOVERNANCE SECTION
+         ============================================ -->
+    <section id="governance" class="relative py-16 transition-colors duration-300 dark:bg-[#0a0a0f]">
+      <div class="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50 opacity-50 transition-opacity duration-300 dark:from-[#0c0c10] dark:via-[#0a0a0f] dark:to-[#0c0c10] dark:opacity-100" />
+      
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Governance</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            Governance is not a feature.
+            <span class="text-emerald-600 dark:text-emerald-400"> It is the foundation.</span>
+          </h2>
+        </div>
 
-  <!-- Governance Section -->
-  <section id="governance" class="vn-section">
-    <div class="vn-container">
-      <span class="vn-section-tag vn-reveal">Governance</span>
-      <h2 class="vn-section-title vn-reveal">Governance is not a feature.<br />It is the foundation.</h2>
-      <p class="vn-section-sub vn-reveal mb-10 max-w-3xl sm:mb-12">
-        Every enterprise deploying AI and automation at scale will face the same question: how do you maintain control
-        over systems that move faster than any human can review?
-      </p>
-      <div class="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2">
-        <article
-          v-for="g in governance"
-          :key="g.title"
-          class="vn-reveal vn-card relative overflow-hidden pl-6 before:absolute before:inset-y-0 before:left-0 before:w-1"
-          :class="g.bar"
-        >
-          <h3 class="mb-2 font-display text-base font-bold text-vn-white sm:text-lg">{{ g.title }}</h3>
-          <p class="text-sm leading-relaxed text-vn-muted">{{ g.body }}</p>
-        </article>
+        <div class="reveal grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="(pillar, i) in governancePillars"
+            :key="pillar.title"
+            class="group relative overflow-hidden rounded-lg border border-slate-200 bg-white p-5 transition-all duration-500 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/30 dark:hover:border-emerald-500/30 dark:hover:shadow-emerald-500/10"
+            :style="{ transitionDelay: `${i * 100}ms` }"
+          >
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div class="relative">
+              <div class="mb-2 text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ pillar.num }}</div>
+              <h3 class="mb-1 font-semibold text-slate-900 dark:text-white">{{ pillar.title }}</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-500">{{ pillar.desc }}</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <div class="vn-divider" />
+    <!-- ============================================
+         COMPARISON SECTION
+         ============================================ -->
+    <section id="comparison" class="relative border-t border-slate-200 bg-slate-50/50 py-16 transition-colors duration-300 dark:border-slate-800/50 dark:bg-[#0c0c10]">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            Not a scheduler.
+            <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-violet-400"> Something new.</span>
+          </h2>
+        </div>
 
-  <!-- Comparison Section -->
-  <section id="comparison" class="vn-section">
-    <div class="vn-container">
-      <span class="vn-section-tag vn-reveal">Comparison</span>
-      <h2 class="vn-section-title vn-reveal">Not a scheduler. Something new.</h2>
-      <p class="vn-section-sub vn-reveal mb-8 sm:mb-10">
-        Airflow schedules jobs. Prefect runs Python. Temporal manages state machines. Volnux governs operations.
-      </p>
-      <div class="vn-reveal overflow-x-auto rounded-xl border border-vn-border">
-        <table class="w-full min-w-[600px] border-collapse text-left text-sm">
-          <thead>
-            <tr class="border-b border-vn-border bg-vn-surface2">
-              <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase tracking-wide text-vn-text sm:px-6 sm:py-4 sm:text-sm">Capability</th>
-              <th class="bg-vn-accent/5 px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-accent sm:px-6 sm:py-4 sm:text-sm">
-                Volnux
-              </th>
-              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-muted sm:px-6 sm:py-4 sm:text-sm">Airflow</th>
-              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-muted sm:px-6 sm:py-4 sm:text-sm">Prefect</th>
-              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase tracking-wide text-vn-muted sm:px-6 sm:py-4 sm:text-sm">Temporal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="row in comparisonRows"
-              :key="row.cap"
-              class="border-b border-vn-border transition-colors hover:bg-vn-surface2/80 last:border-b-0"
-            >
-              <td class="px-4 py-3 text-sm font-medium text-vn-text sm:px-6 sm:py-4">{{ row.cap }}</td>
-              <td class="bg-vn-accent/[0.04] px-4 py-3 text-center text-vn-muted sm:px-6 sm:py-4"><span class="text-vn-accent3">✓</span></td>
-              <td class="px-4 py-3 text-center text-vn-muted2 sm:px-6 sm:py-4" v-html="cellMark(row.a)" />
-              <td class="px-4 py-3 text-center text-vn-muted2 sm:px-6 sm:py-4" v-html="cellMark(row.p)" />
-              <td class="px-4 py-3 text-center text-vn-muted2 sm:px-6 sm:py-4" v-html="cellMark(row.t)" />
-            </tr>
-          </tbody>
-        </table>
+        <div class="reveal overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/50">
+                <th class="p-4 font-semibold text-slate-900 dark:text-white sm:p-5">Capability</th>
+                <th class="p-4 text-center font-bold text-indigo-600 dark:text-indigo-400 sm:p-5">Volnux</th>
+                <th class="p-4 text-center text-slate-500 sm:p-5">Airflow</th>
+                <th class="p-4 text-center text-slate-500 sm:p-5">Prefect</th>
+                <th class="p-4 text-center text-slate-500 sm:p-5">Temporal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in comparisonRows" :key="row.feature" class="border-b border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-800/50 dark:hover:bg-slate-800/30">
+                <td class="p-4 font-medium text-slate-900 dark:text-white sm:p-5">{{ row.feature }}</td>
+                <td class="p-4 text-center text-indigo-600 dark:text-indigo-400 sm:p-5">
+                  <svg class="mx-auto h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </td>
+                <td class="p-4 text-center text-slate-400 sm:p-5">
+                  <span v-if="row.airflow === true">✓</span>
+                  <span v-else-if="row.airflow === 'partial'" class="text-amber-500">◐</span>
+                  <span v-else>—</span>
+                </td>
+                <td class="p-4 text-center text-slate-400 sm:p-5">
+                  <span v-if="row.prefect === true">✓</span>
+                  <span v-else-if="row.prefect === 'partial'" class="text-amber-500">◐</span>
+                  <span v-else>—</span>
+                </td>
+                <td class="p-4 text-center text-slate-400 sm:p-5">
+                  <span v-if="row.temporal === true">✓</span>
+                  <span v-else-if="row.temporal === 'partial'" class="text-amber-500">◐</span>
+                  <span v-else>—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-
+    <!-- ============================================
+         CTA SECTION
+         ============================================ -->
+    <section class="relative py-16 transition-colors duration-300 dark:bg-[#0a0a0f]">
+      <div class="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50 opacity-50 transition-opacity duration-300 dark:from-[#0c0c10] dark:via-[#0a0a0f] dark:to-[#0c0c10] dark:opacity-100" />
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.05),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.1),transparent_70%)]" />
+      
+      <div class="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
+        <div class="reveal">
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Ready to build workflows that think?</h2>
+          <p class="mb-8 text-slate-600 dark:text-slate-400">Join hundreds of teams using Volnux to orchestrate AI workflows, data pipelines, and business processes.</p>
+          <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a href="#" class="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 hover:shadow-indigo-500/40">
+              Get Early Access
+              <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a href="mailto:hello@volnux.ai" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white/50 px-6 py-3 text-base font-medium text-slate-700 backdrop-blur-sm transition-all hover:border-indigo-500/50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:text-white">
+              Talk to Sales
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
+
+<style scoped>
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: white;
+}
+</style>

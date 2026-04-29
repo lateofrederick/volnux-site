@@ -1,41 +1,63 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Core background colors
-        'vn-black': '#080a0f',
-        'vn-surface': '#0e1118',
-        'vn-surface2': '#151921',
-        'vn-surface3': '#1a1f2a',
+        // Deep dark theme
+        'vn-black': '#0a0a0f',
+        'vn-surface': '#0c0c10',
+        'vn-surface2': '#12121a',
+        'vn-surface3': '#1a1a24',
 
-        // Border colors
-        'vn-border': '#1e2530',
-        'vn-border2': '#2a3340',
-        'vn-border3': '#3a4555',
+        // Border
+        'vn-border': '#1e1e2a',
+        'vn-border2': '#2a2a3a',
+        'vn-border3': '#3a3a4a',
 
-        // Accent colors (cyberpunk theme)
-        'vn-accent': '#00e5ff',
-        'vn-accent2': '#7b61ff',
-        'vn-accent3': '#00ff94',
-        'vn-accent4': '#ff9f43',
-        'vn-accent5': '#fd79a8',
+        // Primary accent (indigo/violet)
+        'vn-accent': '#6366f1',
+        'vn-accent2': '#8b5cf6',
+        'vn-accent3': '#a855f7',
 
-        // Text colors
-        'vn-text': '#e8edf5',
-        'vn-text2': '#c5cdd8',
-        'vn-muted': '#6b7a90',
-        'vn-muted2': '#4a5568',
+        // Text
+        'vn-text': '#f8fafc',
+        'vn-text2': '#e2e8f0',
+        'vn-muted': '#94a3b8',
+        'vn-muted2': '#64748b',
         'vn-white': '#ffffff',
 
-        // Code syntax colors
-        'vn-string': '#fd79a8',
-        'vn-retry': '#fdcb6e',
-        'vn-attr': '#ff9f43',
-        'vn-keyword': '#00e5ff',
-        'vn-function': '#7b61ff',
-        'vn-comment': '#4a5568',
+        // Status colors
+        'vn-success': '#10b981',
+        'vn-warning': '#f59e0b',
+        'vn-error': '#ef4444',
+      },
+
+      animation: {
+        'fade-up': 'fade-up 0.6s ease-out forwards',
+        'fade-in': 'fade-in 0.4s ease-out forwards',
+        'pulse-slow': 'pulse 4s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+
+      keyframes: {
+        'fade-up': {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+      },
+
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       fontFamily: {
         display: ['Syne', 'ui-sans-serif', 'system-ui', 'sans-serif'],
