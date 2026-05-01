@@ -1,178 +1,200 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { useTheme } from '@/composables/useTheme'
+
+const { isDark } = useTheme()
 
 const mainEl = ref<HTMLElement | null>(null)
+const hoveredPillar = ref<number | null>(null)
 let observer: IntersectionObserver | null = null
 
-// Stats for hero
+// ============================================
+// MOUSE SPOTLIGHT
+// ============================================
+const mouseX = ref(0)
+const mouseY = ref(0)
+const heroRef = ref<HTMLElement | null>(null)
+
+const spotlightStyle = computed(() => {
+  const color = isDark.value ? '99, 102, 241' : '67, 56, 202'
+  return {
+    background: `radial-gradient(800px circle at ${mouseX.value}px ${mouseY.value}px, rgba(${color}, ${isDark.value ? '0.12' : '0.1'}), rgba(${color}, 0) 70%)`
+  }
+})
+
+function handleMouseMove(e: MouseEvent) {
+  if (!heroRef.value) return
+  const rect = heroRef.value.getBoundingClientRect()
+  mouseX.value = e.clientX - rect.left
+  mouseY.value = e.clientY - rect.top
+}
+
+// ============================================
+// DATA
+// ============================================
 const heroStats = [
-  { num: '73', suffix: '%', label: 'of compliance incidents traced to ungoverned automation' },
-  { num: '4', suffix: '×', label: 'faster incident resolution with audit-ready workflows' },
-  { num: '0', suffix: '', label: 'lines of extra code to achieve governance in Volnux' },
-  { num: '100', suffix: '%', label: 'of Volnux workflows are auditable by default' },
+  { num: '73', suffix: '%', label: 'of incidents traced to ungoverned automation' },
+  { num: '4', suffix: '\u00d7', label: 'faster resolution with audit-ready workflows' },
+  { num: '0', suffix: '', label: 'extra code to achieve governance in Volnux' },
+  { num: '100', suffix: '%', label: 'of Volnux workflows auditable by default' },
 ]
 
-// Governance pillars
 const pillars = [
   {
-    icon: 'transparency',
+    num: '01',
     title: 'Transparency',
-    description: 'Every workflow is readable by non-engineers. The definition is the documentation. No gap between intent and implementation.',
+    span: 'See through the machine',
+    desc: 'Every workflow is readable by non-engineers. The definition is the documentation. No gap between intent and implementation.',
+    icon: '\u2728',
+    gradient: 'from-indigo-500 to-violet-500',
   },
   {
-    icon: 'auditability',
+    num: '02',
     title: 'Auditability',
-    description: 'Every execution is traced. Every state transition, branch decision, and retry is recorded and replayable on demand.',
+    span: 'Every move recorded',
+    desc: 'Every execution is traced. Every state transition, branch decision, and retry is recorded and replayable on demand.',
+    icon: '\uD83D\uDCCB',
+    gradient: 'from-violet-500 to-purple-500',
   },
   {
-    icon: 'accountability',
+    num: '03',
     title: 'Accountability',
-    description: 'Every workflow has an owner. Every component has a publisher. Every change has a version. Responsibility is never ambiguous.',
+    span: 'Names on every action',
+    desc: 'Every workflow has an owner. Every component has a publisher. Every change has a version.',
+    icon: '\u2705',
+    gradient: 'from-emerald-500 to-teal-500',
   },
   {
-    icon: 'intervention',
+    num: '04',
     title: 'Interventability',
-    description: 'Running workflows can be paused, inspected, rerouted, or replayed from any checkpoint. Operators have real controls — not just read-only dashboards.',
+    span: 'Control at any moment',
+    desc: 'Running workflows can be paused, inspected, rerouted, or replayed from any checkpoint. Operators have real controls.',
+    icon: '\u26A1',
+    gradient: 'from-amber-500 to-orange-500',
   },
 ]
 
-// Cost cards
 const costCards = [
   {
-    label: 'Risk',
-    title: 'Regulatory exposure',
-    description: 'GDPR, SOC 2, HIPAA, and financial regulations increasingly require explainability of automated decisions. Ungoverned workflows cannot provide it.',
-    borderColor: 'border-vn-accent',
+    tag: 'Regulatory',
+    title: 'Compliance exposure',
+    desc: 'GDPR, SOC 2, HIPAA increasingly require explainability. Ungoverned workflows cannot provide it.',
+    icon: '\uD83D\uDEE1\uFE0F',
+    color: 'rose',
   },
   {
-    label: 'Operational',
+    tag: 'Operational',
     title: 'Black-box debugging',
-    description: 'When a workflow misbehaves and there is no audit trail, root cause analysis takes days instead of minutes. Mean time to resolution multiplies.',
-    borderColor: 'border-vn-accent2',
+    desc: 'Without an audit trail, root cause analysis takes days instead of minutes.',
+    icon: '\uD83D\uDD0D',
+    color: 'amber',
   },
   {
-    label: 'Organisational',
+    tag: 'Organisational',
     title: 'Knowledge rot',
-    description: 'Engineers leave. Documentation goes stale. Within months, critical automated systems become unmaintainable legacy — the tax on every future change.',
-    borderColor: 'border-vn-accent4',
+    desc: 'Engineers leave. Documentation goes stale. Critical automation becomes unmaintainable legacy.',
+    icon: '\uD83E\uDDE0',
+    color: 'indigo',
   },
   {
-    label: 'Strategic',
+    tag: 'Strategic',
     title: 'AI deployment risk',
-    description: 'Deploying agents without execution governance is not a technical risk — it is a business risk. What did the agent decide? Why? Who approved it?',
-    borderColor: 'border-vn-accent3',
+    desc: 'Deploying agents without governance is not a technical risk — it is a business risk.',
+    icon: '\uD83E\uDD16',
+    color: 'emerald',
   },
 ]
 
-// Volnux approach cards
 const approachCards = [
   {
     num: '01',
+    emoji: '\uD83D\uDCD6',
     title: 'Readable by design',
-    description: 'Pointy-lang is a declarative DSL that reads like plain language. Control flow, parallelism, retries, and conditional routing are all visible in the workflow definition itself.',
-    code: `<span class="pt-cm"># A compliance officer can read this</span>
-<span class="pt-nd">SubmitRequest</span>
-<span class="pt-arr"> -> </span><span class="pt-nd">Review</span> <span class="pt-rt">* 2</span>(
-  <span class="pt-meta">approved</span><span class="pt-arr"> -> </span><span class="pt-nd">Provision</span><span class="pt-arr"> -> </span><span class="pt-nd">NotifyUser</span>,
-  <span class="pt-meta">rejected</span><span class="pt-arr"> -> </span><span class="pt-nd">LogDecision</span><span class="pt-arr"> -> </span><span class="pt-nd">NotifyUser</span>,
-  <span class="pt-meta">timeout</span><span class="pt-arr"> -> </span><span class="pt-nd">EscalateToManager</span>
+    tagline: 'A language humans can read',
+    desc: 'Pointy-lang is a declarative DSL that reads like plain language. Control flow, parallelism, retries, and conditional routing are all visible in the workflow definition itself.',
+    file: 'approval-flow.pointy',
+    code: `<span class="text-slate-400 dark:text-slate-500 italic dark:italic"># A compliance officer can read this</span>
+<span class="text-indigo-600 dark:text-indigo-300">SubmitRequest</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Review</span> <span class="text-amber-600 dark:text-amber-300">* 2</span>(
+  <span class="text-emerald-600 dark:text-emerald-300">approved</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Provision</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Notify</span>,
+  <span class="text-rose-600 dark:text-rose-300">rejected</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">LogDecision</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">Notify</span>,
+  <span class="text-amber-600 dark:text-amber-300">timeout</span> <span class="text-violet-600 dark:text-violet-400">-></span> <span class="text-indigo-600 dark:text-indigo-300">EscalateToManager</span>
 )`,
-    accent: 'bg-vn-accent',
   },
   {
     num: '02',
+    emoji: '\uD83D\uDD14',
     title: 'Auditable by default',
-    description: 'Every Volnux execution emits a complete OpenTelemetry trace automatically. Every state transition, every branch taken, every retry attempt, every checkpoint is recorded.',
-    code: `<span class="pt-cm"># Every node emits a trace span</span>
-<span class="pt-ann">[otel.trace_id = "4bf92f3577b34da6"]</span>
-<span class="pt-ann">[otel.span_id = "00f067aa0ba902b7"]</span>
-<span class="pt-ann">[checkpoint = "review:attempt_2"]</span>
-<span class="pt-ann">[branch_taken = "approved"]</span>
-<span class="pt-ann">[duration_ms = 142]</span>`,
-    accent: 'bg-vn-accent2',
+    tagline: 'You get this for free',
+    desc: 'Every Volnux execution emits a complete OpenTelemetry trace automatically. Every state transition, every retry attempt, every checkpoint is recorded without extra code.',
+    file: 'audit-trail.otel',
+    code: `<span class="text-slate-400 dark:text-slate-500 italic"># Every node emits a trace span</span>
+<span class="text-cyan-700 dark:text-cyan-400">otel.trace_id</span> <span class="text-slate-500">=</span> <span class="text-pink-600 dark:text-pink-400">"4bf92f3577b34da6"</span>
+<span class="text-cyan-700 dark:text-cyan-400">otel.span_id</span>  <span class="text-slate-500">=</span> <span class="text-pink-600 dark:text-pink-400">"00f067aa0ba902b7"</span>
+<span class="text-cyan-700 dark:text-cyan-400">checkpoint</span>    <span class="text-slate-500">=</span> <span class="text-pink-600 dark:text-pink-400">"review:attempt_2"</span>
+<span class="text-cyan-700 dark:text-cyan-400">branch_taken</span>  <span class="text-slate-500">=</span> <span class="text-pink-600 dark:text-pink-400">"approved"</span>
+<span class="text-cyan-700 dark:text-cyan-400">duration_ms</span>   <span class="text-slate-500">=</span> <span class="text-amber-600 dark:text-amber-400">142</span>`,
   },
   {
     num: '03',
+    emoji: '\uD83C\uDFAE',
     title: 'Interventable at runtime',
-    description: 'Volnux workflows can be paused mid-execution, inspected at any checkpoint, rerouted to a different node, or replayed from a known-good state.',
-    code: `<span class="pt-cm"># Runtime intervention via CLI</span>
-<span style="color:#7ee8b4">$</span> <span style="color:#f0ece4">volnux pause</span> <span style="color:#f5c270">--workflow etl-daily</span>
-<span style="color:#7ee8b4">$</span> <span style="color:#f0ece4">volnux inspect</span> <span style="color:#f5c270">--checkpoint last</span>
-<span style="color:#7ee8b4">$</span> <span style="color:#f0ece4">volnux replay</span> <span style="color:#f5c270">--from review:attempt_1</span>
-<span style="color:#7ee8b4">$</span> <span style="color:#f0ece4">volnux reroute</span> <span style="color:#f5c270">--node Transform</span>`,
-    accent: 'bg-vn-accent3',
+    tagline: 'Pause. Breathe. Fix.',
+    desc: 'Volnux workflows can be paused mid-execution, inspected at any checkpoint, rerouted to a different node, or replayed from a known-good state.',
+    file: 'runtime-control.sh',
+    code: `<span class="text-indigo-600 dark:text-indigo-300">volnux pause</span>   <span class="text-violet-600 dark:text-violet-400">--workflow</span> <span class="text-emerald-600 dark:text-emerald-300">etl-daily</span>
+<span class="text-indigo-600 dark:text-indigo-300">volnux inspect</span> <span class="text-violet-600 dark:text-violet-400">--checkpoint</span> <span class="text-emerald-600 dark:text-emerald-300">last</span>
+<span class="text-indigo-600 dark:text-indigo-300">volnux replay</span>  <span class="text-violet-600 dark:text-violet-400">--from</span> <span class="text-emerald-600 dark:text-emerald-300">review:attempt_1</span>
+<span class="text-indigo-600 dark:text-indigo-300">volnux reroute</span> <span class="text-violet-600 dark:text-violet-400">--node</span> <span class="text-emerald-600 dark:text-emerald-300">Transform</span>`,
   },
 ]
 
-// Features list
 const features = [
-  { dot: 'bg-vn-accent', title: 'Pointy-lang readability', strong: 'Workflows readable by any stakeholder', description: 'Pointy-lang\'s arrow-based syntax expresses the full control flow — including parallelism, retries, and conditional branching — in plain readable syntax.' },
-  { dot: 'bg-vn-accent2', title: 'OpenTelemetry traces', strong: 'Full distributed trace per execution', description: 'Every run emits a complete OTEL trace covering all nodes, edges, branches, retries, and checkpoints. Traces are queryable, exportable, and compatible with your existing observability stack.' },
-  { dot: 'bg-vn-accent3', title: 'Checkpointing', strong: 'Replay-capable execution state', description: 'Every workflow is checkpointed at execution boundaries. Checkpoints are not just failure recovery — they are governance records. Any execution can be replayed from any checkpoint.' },
-  { dot: 'bg-vn-accent4', title: 'Versioned components', strong: 'Immutable, auditable execution manifests', description: 'Every EventBase component pulled from PyPI, Git, or EventHub is version-pinned. The execution record captures the exact resolved version of every component.' },
-  { dot: 'bg-vn-accent', title: 'Runtime intervention', strong: 'Pause, reroute, replay — without code changes', description: 'The Volnux CLI and API expose full runtime control. Running workflows can be paused, inspected at any checkpoint, and rerouted to a different execution node.' },
-  { dot: 'bg-vn-accent2', title: 'P2P mesh accountability', strong: 'Every node in the execution mesh is identifiable', description: 'Node annotations in Pointy-lang create an explicit execution topology record. Every task is traceable to the specific node and process that ran it.' },
-  { dot: 'bg-vn-accent3', title: 'EventHub manifests', strong: 'Published components carry governance metadata', description: 'Every EventHub package requires a volnux.manifest.json with structured version history, deprecation notices, parameter schemas, and evaluation strategies.' },
+  { dot: 'indigo', title: 'Pointy-lang readability', desc: 'Arrow-based syntax that expresses full control flow — parallelism, retries, and conditional branching.' },
+  { dot: 'violet', title: 'OpenTelemetry traces', desc: 'Complete OTEL trace per execution covering all nodes, edges, branches, retries, and checkpoints.' },
+  { dot: 'emerald', title: 'Automatic checkpointing', desc: 'Execution is checkpointed at every boundary. Checkpoints are governance records — replayable on demand.' },
+  { dot: 'amber', title: 'Versioned components', desc: 'Every EventBase component is version-pinned. The execution record captures the exact resolved version.' },
+  { dot: 'indigo', title: 'Runtime intervention', desc: 'Pause, inspect, reroute, replay — without modifying code or redeploying.' },
+  { dot: 'violet', title: 'P2P mesh accountability', desc: 'Node annotations create an explicit execution topology. Every task is traceable to its node.' },
+  { dot: 'emerald', title: 'EventHub manifests', desc: 'Structured version history, deprecation notices, parameter schemas, and evaluation strategies.' },
 ]
 
-// Business outcomes
-const businessOutcomes = [
+const outcomes = [
   'Pass regulatory audits with execution traces, not narratives',
-  'Reduce MTTR by tracing any incident to its root cause in minutes',
+  'Reduce MTTR by tracing incidents to root cause in minutes',
   'Deploy AI agents with explainability built in from day one',
-  'Onboard engineers in days, not months, with self-documenting workflows',
-  'Scale automation safely without accumulating governance debt',
-  'Replace tribal knowledge with versioned, auditable process definitions',
+  'Onboard engineers in days with self-documenting workflows',
+  'Scale automation without accumulating governance debt',
+  'Replace tribal knowledge with auditable process definitions',
 ]
 
-// Use case cards
-const useCases = [
+const useCaseItems = [
   {
+    icon: '\uD83C\uDFDB\uFE0F',
     title: 'Regulatory compliance',
-    subtitle: 'Finance, healthcare, insurance',
-    description: 'Regulated industries must demonstrate that automated decisions follow approved processes. With Volnux, every execution is a compliance record — the workflow definition is the policy, the OTEL trace is the evidence, and the checkpoint history is the audit trail.',
-    tags: ['GDPR', 'SOC 2', 'HIPAA', 'Basel III', 'audit trail', 'explainability'],
-    iconColor: 'border-vn-accent/20 bg-vn-accent/10 text-vn-accent',
+    subtitle: 'Finance \u00b7 Healthcare \u00b7 Insurance',
+    desc: 'Every execution is a compliance record. The workflow definition is the policy. The OTEL trace is the evidence.',
+    tags: ['GDPR', 'SOC 2', 'HIPAA', 'Audit Trail'],
   },
   {
+    icon: '\uD83D\uDEE1\uFE0F',
     title: 'Operational resilience',
-    subtitle: 'Platform engineering, SRE',
-    description: 'When a production pipeline fails at 2am, the SRE needs to understand immediately what the workflow was doing, where it failed, and what state it left downstream systems in. Volnux checkpoints and traces give operators a precise replay of every execution.',
-    tags: ['incident response', 'root cause', 'MTTR', 'checkpointing', 'replay'],
-    iconColor: 'border-vn-accent2/20 bg-vn-accent2/10 text-vn-accent2',
+    subtitle: 'Platform engineering \u00b7 SRE',
+    desc: 'When a pipeline fails at 2am, Volnux gives operators a precise replay of every execution.',
+    tags: ['Incident Response', 'Root Cause', 'Checkpointing'],
   },
   {
+    icon: '\uD83E\uDD16',
     title: 'AI governance',
-    subtitle: 'ML engineering, AI product teams',
-    description: 'Every LLM call, every agent decision, every model output can be traced back to the input that produced it. Volnux provides the execution substrate that makes AI systems explainable and auditable without custom instrumentation.',
-    tags: ['LLM tracing', 'agent decisions', 'explainability', 'audit trail', 'compliance'],
-    iconColor: 'border-vn-accent3/20 bg-vn-accent3/10 text-vn-accent3',
+    subtitle: 'ML engineering \u00b7 AI products',
+    desc: 'Every LLM call traced back to its input. AI that is explainable without custom instrumentation.',
+    tags: ['LLM Tracing', 'Agent Decisions', 'Explainability'],
   },
   {
+    icon: '\uD83D\uDEE0\uFE0F',
     title: 'Workflow engineering',
-    subtitle: 'Data engineering, platform teams',
-    description: 'Build pipelines that any engineer can understand and any auditor can review. Versioned components, readable definitions, and complete execution traces mean no more "what does this script do?" at 2am.',
-    tags: ['self-documenting', 'version control', 'team onboarding', 'knowledge transfer'],
-    iconColor: 'border-vn-accent4/20 bg-vn-accent4/10 text-vn-accent4',
-  },
-]
-
-// Principles
-const principles = [
-  {
-    num: '01',
-    title: 'Governance is not a feature',
-    description: 'It is the foundation. Every system is designed so that governance is the path of least resistance, not an add-on.',
-  },
-  {
-    num: '02',
-    title: 'Auditability is structural',
-    description: 'You cannot opt out. Every execution produces a complete trace. Every state transition is recorded.',
-  },
-  {
-    num: '03',
-    title: 'Intervention is a first-class operation',
-    description: 'Pause, inspect, reroute, replay — without modifying code or redeploying.',
+    subtitle: 'Data engineering \u00b7 Platforms',
+    desc: 'Build pipelines any engineer can understand and any auditor can review.',
+    tags: ['Self-Documenting', 'Version Control', 'Onboarding'],
   },
 ]
 
@@ -183,372 +205,477 @@ onMounted(() => {
   observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) {
-          ;(e.target as HTMLElement).classList.add('on')
-        }
+        if (e.isIntersecting) e.target.classList.add('revealed')
       })
     },
-    { threshold: 0.1 },
+    { threshold: 0.08, rootMargin: '0px 0px -50px 0px' }
   )
 
-  el.querySelectorAll<HTMLElement>('.vn-reveal, .reveal-stagger').forEach((node) => {
-    observer?.observe(node)
-  })
+  el.querySelectorAll('.reveal').forEach((node) => observer?.observe(node))
 })
 
 onUnmounted(() => observer?.disconnect())
 </script>
 
 <template>
-  <main ref="mainEl" class="relative z-10">
-    <!-- Hero Section -->
-    <section id="hero" class="relative min-h-screen border-b border-vn-border">
-      <!-- Background text -->
-      <div class="pointer-events-none absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 select-none whitespace-nowrap font-display text-[12rem] font-black italic leading-none text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.06)] lg:block lg:text-[16rem] xl:text-[22rem]">
-        Govern
-      </div>
+  <main ref="mainEl" class="relative overflow-x-hidden bg-white transition-colors duration-300 dark:bg-[#0a0a0f]">
+    <!-- ============================================
+         HERO  Stripe-style animated headline
+         ============================================ -->
+    <section
+      ref="heroRef"
+      class="relative min-h-[90vh] flex items-center overflow-hidden px-4 pt-20 pb-16 sm:px-6 lg:px-8"
+      @mousemove="handleMouseMove"
+    >
+      <!-- Background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 dark:from-[#0a0a0f] dark:via-[#12121a] dark:to-[#0f0f16]" />
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.06),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.12),transparent_50%)]" />
+      <div class="pointer-events-none absolute inset-0 z-10" :style="spotlightStyle" />
 
-      <div class="vn-container relative z-10 py-24 sm:py-32 lg:py-40">
-        <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
-          <!-- Left content -->
-          <div class="vn-reveal">
-            <p class="vn-section-tag mb-6">Volnux — Workflow Governance</p>
-            <h1 class="mb-6 font-display text-3xl font-bold leading-tight tracking-tight text-vn-white sm:text-4xl md:text-5xl lg:text-6xl">
-              The systems that run<br />
-              your business deserve<br />
-              to be <span class="text-vn-accent italic">understood.</span>
+      <!-- Dots pattern -->
+      <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]" style="background-image: radial-gradient(circle, currentColor 1px, transparent 1px); background-size: 24px 24px;" />
+
+      <div class="relative z-20 mx-auto w-full max-w-6xl">
+        <div class="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+          <!-- Left -->
+          <div class="reveal">
+            <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50/80 px-3 py-1.5 backdrop-blur-sm dark:border-indigo-500/30 dark:bg-indigo-500/10">
+              <span class="relative flex h-2 w-2">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-indigo-500" />
+              </span>
+              <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Volnux — Workflow Governance</span>
+            </div>
+
+            <h1 class="mb-6 text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+              The systems that run your business<br />
+              <span class="relative">
+                <span class="bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-violet-400 dark:to-fuchsia-400">deserve to be understood.</span>
+                <svg class="absolute -bottom-1 left-0 h-3 w-full text-indigo-400/20 dark:text-indigo-500/20" viewBox="0 0 100 8" preserveAspectRatio="none">
+                  <path d="M0,4 Q25,0 50,4 T100,4" stroke="currentColor" stroke-width="3" fill="none" />
+                </svg>
+              </span>
             </h1>
-            <p class="mb-8 max-w-lg text-base leading-relaxed text-vn-text2 sm:text-lg">
-              Workflow governance is the practice of making every automated process readable, auditable, and controllable by everyone with a stake in it — not just the engineers who built it. Volnux makes this the default.
+
+            <p class="mb-8 max-w-lg text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+              Workflow governance is the practice of making every automated process readable, auditable, and controllable by everyone with a stake in it — not just the engineers who built it. <span class="font-semibold text-indigo-600 dark:text-indigo-400">Volnux makes this the default.</span>
             </p>
+
             <div class="flex flex-wrap gap-3">
-              <a href="#volnux-approach" class="vn-btn-primary">See how Volnux does it</a>
-              <a href="/" class="vn-btn-outline">Back to home</a>
+              <a href="#volnux-approach" class="group inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 hover:shadow-indigo-500/40 hover:-translate-y-0.5">
+                See how it works
+                <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+              <a href="/" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/50 px-6 py-3 text-base font-medium text-slate-700 backdrop-blur-sm transition-all hover:border-indigo-500/50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:text-white">
+                ← Back to home
+              </a>
             </div>
           </div>
 
-          <!-- Right: Pull quote -->
-          <div class="vn-reveal hidden lg:block">
-            <div class="border-l-4 border-vn-accent pl-6">
-              <blockquote class="mb-4 font-display text-lg font-medium italic leading-relaxed text-vn-text2 sm:text-xl">
-                "Governance is not a feature you add to workflows. It is the quality that makes a workflow trustworthy enough to run unsupervised at scale."
-              </blockquote>
-              <cite class="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-vn-muted not-italic">
-                <span class="h-px w-4 bg-vn-muted"></span>
-                Volnux Design Principles
-              </cite>
-            </div>
-          </div>
-        </div>
+          <!-- Right: Floating visual card -->
+          <div class="reveal relative">
+            <!-- Glow -->
+            <div class="absolute -inset-2 rounded-2xl bg-gradient-to-br from-indigo-500/20 via-violet-500/20 to-fuchsia-500/20 blur-xl" />
 
-        <!-- Stats -->
-        <div class="vn-reveal mt-16 grid grid-cols-2 gap-0 border-t border-vn-border pt-8 sm:mt-20 lg:grid-cols-4">
-          <div
-            v-for="(stat, i) in heroStats"
-            :key="i"
-            class="border-r border-vn-border px-4 py-4 text-center last:border-r-0 sm:px-6 sm:py-6"
-          >
-            <div class="font-display text-3xl font-bold text-vn-white sm:text-4xl">
-              {{ stat.num }}<span class="text-vn-accent">{{ stat.suffix }}</span>
-            </div>
-            <div class="mt-2 font-mono text-xs uppercase tracking-wider text-vn-muted">{{ stat.label }}</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- What is Governance Section -->
-    <section id="what" class="vn-section border-b border-vn-border bg-vn-surface">
-      <div class="vn-container">
-        <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <!-- Left: Text -->
-          <div class="vn-reveal">
-            <p class="vn-section-tag">Definition</p>
-            <h2 class="vn-section-title">What is workflow <span class="text-vn-accent">governance?</span></h2>
-
-            <div class="mt-8 space-y-6">
-              <h3 class="font-display text-lg font-bold text-vn-white sm:text-xl">Control over automated processes</h3>
-              <p class="text-sm leading-relaxed text-vn-text2 sm:text-base">
-                Workflow governance is the set of policies, practices, and tools that give an organisation visibility and control over its automated processes. It answers three fundamental questions: what is this workflow doing, why did it make each decision, and who is accountable if something goes wrong.
-              </p>
-              <p class="text-sm leading-relaxed text-vn-text2 sm:text-base">
-                Without governance, workflows become black boxes. Engineers leave, documentation rots, and eventually nobody can explain to a regulator, a customer, or a board what a critical automated system actually does. Governance prevents that accumulation of technical and organisational debt.
-              </p>
-              <p class="text-sm leading-relaxed text-vn-text2 sm:text-base">
-                Governance is not the same as monitoring. Monitoring tells you when something fails. Governance tells you what the system was authorised to do, whether it stayed within bounds, and how to trace every output back to its input.
-              </p>
-
-              <h3 class="mt-8 font-display text-lg font-bold text-vn-white sm:text-xl">The four governance questions</h3>
-              <p class="text-sm leading-relaxed text-vn-text2 sm:text-base">
-                Every governed workflow must be able to answer: <em>What</em> is it authorised to do? <em>Who</em> approved it? <em>What</em> did it actually do on each run? And <em>how</em> do we intervene when it behaves unexpectedly? Volnux builds the answers into the workflow itself — they are not afterthoughts.
-              </p>
-            </div>
-          </div>
-
-          <!-- Right: Pillars -->
-          <div class="vn-reveal">
-            <div class="flex flex-col gap-px overflow-hidden rounded-lg border border-vn-border bg-vn-border">
-              <div
-                v-for="(pillar, i) in pillars"
-                :key="i"
-                class="flex gap-4 bg-vn-surface p-5 transition-colors hover:bg-vn-surface2 sm:gap-5 sm:p-6"
-              >
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-vn-border2 bg-vn-surface2">
-                  <span class="text-lg">{{ ['🔍', '📋', '✓', '⚡'][i] }}</span>
-                </div>
+            <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-2xl backdrop-blur transition-colors dark:border-slate-800 dark:bg-slate-900/90">
+              <div class="mb-5 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-sm dark:bg-indigo-500/20">\uD83D\uDEE1\uFE0F</span>
                 <div>
-                  <h4 class="mb-1 font-mono text-sm font-medium text-vn-white sm:text-base">{{ pillar.title }}</h4>
-                  <p class="text-sm leading-relaxed text-vn-muted">{{ pillar.description }}</p>
+                  <div class="text-sm font-semibold text-slate-900 dark:text-white">Governance guarantees</div>
+                  <div class="text-xs text-slate-500">Built into every Volnux workflow</div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div v-for="item in [
+                  { label: 'Readability', desc: 'Any stakeholder can understand', color: 'indigo' },
+                  { label: 'Auditability', desc: 'Full replay capability', color: 'violet' },
+                  { label: 'Traceability', desc: 'Every decision recorded', color: 'emerald' },
+                  { label: 'Interventability', desc: 'Pause, reroute, replay', color: 'amber' },
+                ]" :key="item.label" class="group/pill">
+                  <div class="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 px-4 py-3 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-800/50">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="h-2 w-2 rounded-full"
+                        :class="{
+                          'bg-indigo-500': item.color === 'indigo',
+                          'bg-violet-500': item.color === 'violet',
+                          'bg-emerald-500': item.color === 'emerald',
+                          'bg-amber-500': item.color === 'amber',
+                        }"
+                      />
+                      <div>
+                        <div class="text-sm font-medium text-slate-900 dark:text-white">{{ item.label }}</div>
+                        <div class="text-xs text-slate-500">{{ item.desc }}</div>
+                      </div>
+                    </div>
+                    <svg class="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Stats  bordered grid -->
+        <div class="reveal mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200 dark:border-slate-800 dark:bg-slate-800 sm:grid-cols-4">
+          <div v-for="stat in heroStats" :key="stat.label" class="bg-white p-4 text-center dark:bg-slate-900 sm:p-5">
+            <div class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+              {{ stat.num }}<span class="text-indigo-600 dark:text-indigo-400">{{ stat.suffix }}</span>
+            </div>
+            <div class="text-xs text-slate-500">{{ stat.label }}</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Why It Matters Section -->
-    <section id="why" class="vn-section border-b border-vn-border">
-      <div class="vn-container">
-        <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <!-- Left: Prose -->
-          <div class="vn-reveal">
-            <p class="vn-section-tag">Importance</p>
-            <h2 class="vn-section-title">The cost of <span class="text-vn-accent">ungoverned</span><br>automation</h2>
+    <!-- ============================================
+         PILLARS — Animated Cards
+         ============================================ -->
+    <section class="relative border-y border-slate-200 bg-slate-50/50 py-16 transition-colors dark:border-slate-800/50 dark:bg-[#0c0c10] sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">The four pillars</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            What every governed workflow needs
+          </h2>
+        </div>
 
-            <div class="mt-8 space-y-5 text-sm leading-relaxed text-vn-text2 sm:text-base">
-              <p>
-                The moment a workflow is deployed and left without governance, it begins accumulating risk. At first invisibly — the system runs, results arrive, no alarms fire. Then something changes. A dependency updates, a data schema shifts, an edge case appears that was never tested. And nobody can explain what the workflow was supposed to do, let alone what went wrong.
-              </p>
-              <p>
-                In regulated industries the cost is direct: fines, failed audits, and mandatory remediation. In non-regulated industries the cost is subtler but equally real: customer trust eroded by unexplained errors, engineers paralysed by fear of touching brittle systems, and product velocity that grinds to a halt.
-              </p>
-              <p>
-                The AI age accelerates this problem dramatically. Agents make decisions faster and in more contexts than any human-authored automation. Without governance infrastructure beneath them, agent workflows are not just risky — they are impossible to explain.
-              </p>
-              <p>
-                Volnux treats governance as a foundational concern, not a feature release. Every workflow is governed by construction, before any compliance team asks, before any auditor arrives.
-              </p>
-            </div>
-          </div>
-
-          <!-- Right: Cost cards -->
-          <div class="vn-reveal flex flex-col gap-4">
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div
+            v-for="(pillar, i) in pillars"
+            :key="pillar.title"
+            class="reveal group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900/50 sm:p-8"
+            :style="{ transitionDelay: `${i * 100}ms` }"
+            @mouseenter="hoveredPillar = i"
+            @mouseleave="hoveredPillar = null"
+          >
+            <!-- Gradient overlay on hover -->
             <div
-              v-for="(card, i) in costCards"
-              :key="i"
-              class="vn-card relative overflow-hidden border-l-4 pl-5"
-              :class="card.borderColor"
-            >
-              <div class="mb-1 font-mono text-xs uppercase tracking-wider text-vn-muted">{{ card.label }}</div>
-              <h3 class="mb-2 font-display text-base font-bold text-vn-white sm:text-lg">{{ card.title }}</h3>
-              <p class="text-sm leading-relaxed text-vn-muted">{{ card.description }}</p>
+              class="absolute inset-0 transition-opacity duration-500"
+              :class="{
+                'bg-gradient-to-br from-indigo-500/[0.04] to-violet-500/[0.04]': true,
+                'opacity-100': hoveredPillar === i,
+                'opacity-0': hoveredPillar !== i,
+              }"
+            />
+
+            <!-- Top gradient bar -->
+            <div
+              class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              :class="pillar.gradient.replace('from-', 'from-')"
+            />
+
+            <div class="relative">
+              <div class="mb-5 flex items-center gap-4">
+                <div
+                  class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br text-2xl shadow-lg transition-transform duration-300 group-hover:scale-110"
+                  :class="pillar.gradient"
+                >
+                  <span class="opacity-90">{{ pillar.icon }}</span>
+                </div>
+                <div class="flex-1">
+                  <div class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ pillar.num }}</div>
+                  <div class="text-lg font-bold text-slate-900 dark:text-white">{{ pillar.title }}</div>
+                </div>
+              </div>
+
+              <p class="text-sm italic text-indigo-600/70 dark:text-indigo-400/70 sm:text-base">{{ pillar.span }}</p>
+              <p class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ pillar.desc }}</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Volnux Approach Section -->
-    <section id="volnux-approach" class="vn-section border-b border-vn-border bg-vn-surface">
-      <div class="vn-container">
-        <div class="vn-reveal mb-12 text-center">
-          <p class="vn-section-tag justify-center">How Volnux does it</p>
-          <h2 class="vn-section-title">Governance built into the<br><span class="text-vn-accent">language itself.</span></h2>
-          <p class="vn-section-sub mx-auto mt-4">
-            Volnux does not add governance on top of workflows. Pointy-lang makes governance inescapable — a workflow that cannot be read, traced, and intervened upon cannot be expressed.
-          </p>
+    <!-- ============================================
+         COST  Tag Cards
+         ============================================ -->
+    <section id="why" class="relative py-16 sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-rose-500">The cost</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            The cost of <span class="text-rose-600 dark:text-rose-400">ungoverned</span> automation
+          </h2>
         </div>
 
-        <div class="reveal-stagger grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="(card, i) in costCards"
+            :key="card.title"
+            class="reveal group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50 sm:p-7"
+            :style="{ transitionDelay: `${i * 80}ms` }"
+          >
+            <!-- Top gradient bar -->
+            <div
+              class="absolute inset-x-0 top-0 h-1"
+              :class="{
+                'bg-rose-500': card.color === 'rose',
+                'bg-amber-500': card.color === 'amber',
+                'bg-indigo-500': card.color === 'indigo',
+                'bg-emerald-500': card.color === 'emerald',
+              }"
+            />
+
+            <div class="relative">
+              <div class="mb-4 flex items-center gap-3">
+                <div
+                  class="flex h-10 w-10 items-center justify-center rounded-xl text-lg transition-transform group-hover:scale-110"
+                  :class="{
+                    'bg-rose-100 dark:bg-rose-500/20': card.color === 'rose',
+                    'bg-amber-100 dark:bg-amber-500/20': card.color === 'amber',
+                    'bg-indigo-100 dark:bg-indigo-500/20': card.color === 'indigo',
+                    'bg-emerald-100 dark:bg-emerald-500/20': card.color === 'emerald',
+                  }"
+                >
+                  {{ card.icon }}
+                </div>
+                <span
+                  class="rounded px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider"
+                  :class="{
+                    'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400': card.color === 'rose',
+                    'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400': card.color === 'amber',
+                    'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400': card.color === 'indigo',
+                    'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400': card.color === 'emerald',
+                  }"
+                >{{ card.tag }}</span>
+              </div>
+              <h3 class="mb-2 font-semibold text-slate-900 dark:text-white">{{ card.title }}</h3>
+              <p class="text-sm leading-relaxed text-slate-500">{{ card.desc }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         APPROACH  Terminal-style cards
+         ============================================ -->
+    <section id="volnux-approach" class="relative border-y border-slate-200 bg-slate-50/50 py-16 transition-colors dark:border-slate-800/50 dark:bg-[#0c0c10] sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">How it works</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            Governance built into the <span class="text-violet-600 dark:text-violet-400">language itself.</span>
+          </h2>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
           <div
             v-for="(card, i) in approachCards"
-            :key="i"
-            class="vn-card-featured relative overflow-hidden"
+            :key="card.num"
+            class="reveal group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-500 hover:-translate-y-0.5 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900/50"
+            :style="{ transitionDelay: `${i * 100}ms` }"
           >
-            <div class="absolute inset-x-0 top-0 h-1" :class="card.accent"></div>
-            <div class="mb-4 font-display text-5xl font-black text-vn-border2/50 sm:text-6xl">{{ card.num }}</div>
-            <h3 class="mb-3 font-display text-base font-bold text-vn-white sm:text-lg">{{ card.title }}</h3>
-            <p class="mb-5 text-sm leading-relaxed text-vn-muted">{{ card.description }}</p>
-            <div class="vn-code-block text-xs">
-              <div class="font-mono leading-relaxed" v-html="card.code"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+            <div class="p-6">
+              <div class="mb-4 flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-lg dark:bg-violet-500/20">{{ card.emoji }}</div>
+                <div>
+                  <div class="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">{{ card.num }}</div>
+                  <div class="text-base font-bold text-slate-900 dark:text-white">{{ card.title }}</div>
+                </div>
+              </div>
 
-    <!-- Features Section -->
-    <section id="features" class="vn-section border-b border-vn-border bg-vn-surface">
-      <div class="vn-container">
-        <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16 lg:items-start mb-12">
-          <div class="vn-reveal">
-            <p class="vn-section-tag">Platform features</p>
-            <h2 class="vn-section-title">Every governance<br>capability, <span class="text-vn-accent">built in.</span></h2>
-          </div>
-          <div class="vn-reveal">
-            <p class="text-sm leading-relaxed text-vn-text2 sm:text-base">
-              Governance in Volnux is not a dashboard you bolt on. It is expressed through versioned components, immutable execution records, structured checkpoints, and a deployment model that separates who writes the workflow from who runs the infrastructure.
-            </p>
-          </div>
-        </div>
+              <p class="mb-1 text-sm font-medium text-violet-600/70 dark:text-violet-400/70">{{ card.tagline }}</p>
+              <p class="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ card.desc }}</p>
 
-        <div class="vn-reveal flex flex-col gap-px overflow-hidden rounded-lg border border-vn-border bg-vn-border">
-          <div
-            v-for="(feature, i) in features"
-            :key="i"
-            class="grid grid-cols-1 gap-0 bg-vn-surface transition-colors hover:bg-vn-surface2 sm:grid-cols-[200px_1fr]"
-          >
-            <div class="flex items-start gap-2 border-r-0 border-b border-vn-border p-4 font-mono text-xs font-medium text-vn-muted sm:border-b-0 sm:border-r sm:p-5">
-              <div class="mt-1 h-2 w-2 shrink-0 rounded-full" :class="feature.dot"></div>
-              {{ feature.title }}
-            </div>
-            <div class="p-4 sm:p-5">
-              <strong class="mb-1 block text-sm font-medium text-vn-text">{{ feature.strong }}</strong>
-              <p class="text-sm leading-relaxed text-vn-muted">{{ feature.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Business Section -->
-    <section id="business" class="vn-section border-b border-vn-border">
-      <div class="vn-container">
-        <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <!-- Left: Content -->
-          <div class="vn-reveal">
-            <p class="vn-section-tag">Business value</p>
-            <h2 class="vn-section-title">Governance as a<br><span class="text-vn-accent">business capability.</span></h2>
-            <div class="mt-8 space-y-5 text-sm leading-relaxed text-vn-text2 sm:text-base">
-              <p>
-                Workflow governance is not an IT concern. It is a business capability that determines how confidently an organisation can operate at scale, respond to audits, deploy AI, and hold its automated systems accountable.
-              </p>
-              <p>
-                The organisations that win the next decade of digital operations will not be the ones that automate the most — they will be the ones that can explain, audit, and govern what their automation is doing. Governance is the difference between automation as a liability and automation as a defensible competitive asset.
-              </p>
-              <p>
-                Volnux makes governance the default for every workflow in your organisation, from a three-node ETL pipeline to a thousand-agent AI orchestration running across a global mesh.
-              </p>
-            </div>
-          </div>
-
-          <!-- Right: Outcomes -->
-          <div class="vn-reveal">
-            <div class="vn-card-featured border-t-4 border-t-vn-accent4">
-              <div class="mb-4 font-mono text-xs uppercase tracking-wider text-vn-accent4">Business outcomes</div>
-              <div class="flex flex-col gap-4">
-                <div v-for="(outcome, i) in businessOutcomes" :key="i" class="flex items-start gap-3">
-                  <span class="mt-1 text-vn-accent3">✓</span>
-                  <span class="text-sm text-vn-text2">{{ outcome }}</span>
+              <!-- Terminal window -->
+              <div class="overflow-hidden rounded-lg border border-slate-200 bg-slate-950 shadow-inner dark:border-slate-800">
+                <div class="flex items-center gap-2 border-b border-slate-800/50 px-4 py-2">
+                  <div class="flex gap-1.5">
+                    <div class="h-2 w-2 rounded-full bg-red-500/60" />
+                    <div class="h-2 w-2 rounded-full bg-amber-500/60" />
+                    <div class="h-2 w-2 rounded-full bg-emerald-500/60" />
+                  </div>
+                  <span class="text-xs text-slate-600">{{ card.file }}</span>
+                </div>
+                <div class="p-4">
+                  <pre class="font-mono text-xs leading-relaxed text-slate-600 dark:text-slate-400" v-html="card.code"></pre>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Use case cards -->
-        <div class="reveal-stagger mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- ============================================
+         FEATURES  Clean list
+         ============================================ -->
+    <section id="features" class="relative py-16 sm:py-20">
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Capabilities</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+            Every governance capability, <span class="text-indigo-600 dark:text-indigo-400">built in.</span>
+          </h2>
+        </div>
+
+        <div class="reveal rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/50">
           <div
-            v-for="(useCase, i) in useCases"
-            :key="i"
-            class="vn-card"
+            v-for="feature in features"
+            :key="feature.title"
+            class="flex items-start gap-4 border-b border-slate-100 p-5 transition-colors hover:bg-slate-50 last:border-b-0 dark:border-slate-800/50 dark:hover:bg-slate-800/30"
+          >
+            <div
+              class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
+              :class="{
+                'bg-indigo-500': feature.dot === 'indigo',
+                'bg-violet-500': feature.dot === 'violet',
+                'bg-emerald-500': feature.dot === 'emerald',
+                'bg-amber-500': feature.dot === 'amber',
+              }"
+            />
+            <div>
+              <div class="font-medium text-slate-900 dark:text-white">{{ feature.title }}</div>
+              <div class="mt-0.5 text-sm text-slate-500">{{ feature.desc }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         BUSINESS VALUE + OUTCOMES
+         ============================================ -->
+    <section id="business" class="relative border-y border-slate-200 bg-slate-50/50 py-16 transition-colors dark:border-slate-800/50 dark:bg-[#0c0c10] sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-2 lg:gap-20">
+          <div class="reveal">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Business value</span>
+            <h2 class="mb-6 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+              Governance as a<br />
+              <span class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-400 dark:to-teal-400">business capability.</span>
+            </h2>
+            <p class="mb-4 text-slate-600 dark:text-slate-400">
+              Workflow governance is not an IT concern. It is a business capability that determines how confidently an organisation can operate at scale, respond to audits, deploy AI, and hold its automated systems accountable.
+            </p>
+            <p class="text-slate-600 dark:text-slate-400">
+              The organisations that win the next decade will not be the ones that automate the most — they will be the ones that can explain, audit, and govern what their automation is doing.
+            </p>
+          </div>
+
+          <div class="reveal">
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/50 sm:p-8">
+              <div class="mb-6 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-sm dark:bg-emerald-500/20">\u2705</span>
+                <span class="text-sm font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Outcomes</span>
+              </div>
+              <ul class="space-y-4">
+                <li
+                  v-for="outcome in outcomes"
+                  :key="outcome"
+                  class="flex items-start gap-3"
+                >
+                  <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-sm text-slate-700 dark:text-slate-300">{{ outcome }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         USE CASES  Compact emoji cards
+         ============================================ -->
+    <section class="relative py-16 sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">Applications</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Where it matters most</h2>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="(item, i) in useCaseItems"
+            :key="item.title"
+            class="reveal group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-indigo-500/30"
+            :style="{ transitionDelay: `${i * 80}ms` }"
+          >
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.02] to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <div class="relative">
+              <div class="mb-4 text-2xl">{{ item.icon }}</div>
+              <h3 class="mb-0.5 font-semibold text-slate-900 dark:text-white">{{ item.title }}</h3>
+              <p class="mb-3 text-xs text-slate-500">{{ item.subtitle }}</p>
+              <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ item.desc }}</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  v-for="tag in item.tags"
+                  :key="tag"
+                  class="rounded border border-slate-200 px-2 py-0.5 text-[0.65rem] text-slate-500 dark:border-slate-700 dark:text-slate-500"
+                >{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         PRINCIPLES
+         ============================================ -->
+    <section id="principles" class="relative border-y border-slate-200 bg-slate-50/50 py-16 transition-colors dark:border-slate-800/50 dark:bg-[#0c0c10] sm:py-20">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="reveal mb-10 text-center">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Design</span>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Governance <span class="text-indigo-600 dark:text-indigo-400">principles.</span></h2>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-3">
+          <div
+            v-for="(principle, i) in [
+              { num: '01', title: 'Governance is not a feature', desc: 'It is the foundation. Every system is designed so that governance is the path of least resistance, not an add-on.' },
+              { num: '02', title: 'Auditability is structural', desc: 'You cannot opt out. Every execution produces a complete trace. Every state transition is recorded. Compliance is the default state.' },
+              { num: '03', title: 'Intervention is first-class', desc: 'Pause, inspect, reroute, replay — without modifying code or redeploying. Operators are not passengers.' },
+            ]"
+            :key="principle.num"
+            class="reveal group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-indigo-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-indigo-500/30"
+            :style="{ transitionDelay: `${i * 100}ms` }"
           >
             <div class="mb-4 flex items-center gap-3">
-              <div class="flex h-11 w-11 items-center justify-center rounded border text-xl" :class="useCase.iconColor">
-                <span>◆</span>
+              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-sm font-bold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400">
+                {{ principle.num }}
               </div>
-              <div>
-                <h3 class="font-display text-base font-bold tracking-tight text-vn-white">{{ useCase.title }}</h3>
-                <p class="font-mono text-xs text-vn-muted">{{ useCase.subtitle }}</p>
-              </div>
+              <div class="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
             </div>
-            <p class="mb-4 text-sm leading-relaxed text-vn-muted">{{ useCase.description }}</p>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="tag in useCase.tags"
-                :key="tag"
-                class="rounded border border-vn-border2 px-2 py-1 font-mono text-xs text-vn-muted"
-              >
-                {{ tag }}
-              </span>
-            </div>
+            <h3 class="mb-2 font-bold text-slate-900 dark:text-white">{{ principle.title }}</h3>
+            <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ principle.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Principles Section -->
-    <section id="principles" class="vn-section border-b border-vn-border bg-vn-surface">
-      <div class="vn-container">
-        <div class="vn-reveal mb-12 text-center">
-          <p class="vn-section-tag justify-center">Design</p>
-          <h2 class="vn-section-title">Governance <span class="text-vn-accent">principles.</span></h2>
-        </div>
-
-        <div class="reveal-stagger grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div
-            v-for="(principle, i) in principles"
-            :key="i"
-            class="border-t-2 border-vn-border2 pt-6 transition-colors hover:border-vn-accent"
-          >
-            <div class="mb-3 font-display text-4xl font-black text-vn-border2/30 sm:text-5xl">{{ principle.num }}</div>
-            <h3 class="mb-2 font-display text-base font-bold text-vn-white sm:text-lg">{{ principle.title }}</h3>
-            <p class="text-sm leading-relaxed text-vn-muted">{{ principle.description }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="relative overflow-hidden border-b border-vn-border bg-vn-accent py-20 sm:py-28">
-      <!-- Background text -->
-      <div class="pointer-events-none absolute inset-0 flex items-center justify-center select-none">
-        <span class="font-display text-[8rem] font-black italic tracking-tight text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.08)] sm:text-[12rem] lg:text-[18rem]">
-          Govern
-        </span>
-      </div>
-
-      <div class="vn-container relative z-10 text-center">
-        <div class="vn-reveal mx-auto max-w-2xl">
-          <p class="mb-4 font-mono text-xs uppercase tracking-wider text-vn-black/60">Start governing</p>
-          <h2 class="mb-6 font-display text-3xl font-black leading-tight tracking-tight text-vn-black sm:text-4xl lg:text-5xl">
-            Ready to make your<br>workflows <span class="italic">governable?</span>
-          </h2>
-          <p class="mb-8 text-sm leading-relaxed text-vn-black/80 sm:text-base">
-            Join the early access program and start building workflows that are readable, auditable, and controllable from day one.
-          </p>
-          <div class="flex flex-wrap justify-center gap-3">
-            <a href="/" class="inline-flex items-center gap-2 rounded-md bg-vn-white px-6 py-3 font-sans text-sm font-semibold text-vn-accent transition hover:bg-vn-text hover:shadow-lg">Get early access</a>
-            <a href="/docs" class="inline-flex items-center gap-2 rounded-md border border-vn-black/30 bg-transparent px-6 py-3 font-sans text-sm font-medium text-vn-black/80 transition hover:border-vn-black hover:text-vn-black">Read the docs</a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- CTA removed per request -->
   </main>
 </template>
 
 <style scoped>
-/* Scroll reveal animations */
-.vn-reveal {
+.reveal {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.vn-reveal.on {
+.reveal.revealed {
   opacity: 1;
   transform: translateY(0);
 }
 
-.reveal-stagger > * {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
 }
 
-.reveal-stagger.on > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0s; }
-.reveal-stagger.on > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.08s; }
-.reveal-stagger.on > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.16s; }
-.reveal-stagger.on > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.24s; }
+.animate-pulse {
+  animation: pulse 6s ease-in-out infinite;
+}
 </style>

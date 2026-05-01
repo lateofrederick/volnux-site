@@ -52,6 +52,19 @@
   .vn-card-wide {
     @apply lg:col-span-2;
   }
+
+  .vn-section-tag {
+    @apply flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-vn-muted;
+  }
+
+  .vn-section-tag::before {
+    content: '';
+    @apply h-px w-4 bg-vn-border2;
+  }
+
+  .vn-btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-vn-border2 bg-transparent px-5 py-2.5 text-sm font-medium text-vn-text2 backdrop-blur-sm transition-all hover:border-vn-accent/50 hover:text-vn-white;
+  }
 }
 
 @layer utilities {

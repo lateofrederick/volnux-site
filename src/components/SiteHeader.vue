@@ -60,8 +60,8 @@ onUnmounted(() => {
   <header
     class="fixed left-0 right-0 top-0 z-50 transition-all duration-300"
     :class="isScrolled 
-      ? 'border-b border-slate-200/50 bg-white/95 backdrop-blur-xl dark:border-slate-800/50 dark:bg-[#0a0a0f]/95' 
-      : 'bg-white/50 dark:bg-transparent'"
+      ? 'border-b border-slate-200/80 bg-white/95 backdrop-blur-xl dark:border-slate-800/50 dark:bg-[#0a0a0f]/95' 
+      : 'bg-white/80 backdrop-blur-sm dark:bg-transparent dark:backdrop-blur-none'"
   >
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <nav class="flex h-16 items-center justify-between">
