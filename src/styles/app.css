@@ -1,4 +1,5 @@
 @import './site-header-extras.css';
+@import './docs-styles.css';
 
 @tailwind base;
 @tailwind components;
