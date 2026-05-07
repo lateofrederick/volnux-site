@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy & Terms of Service — Volnux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════
+   DESIGN: Legal documents deserve weight.
+   This is a formal, institutional page —
+   like a printed law review laid out for
+   the digital age. Cream paper + near-black
+   ink + amber accent for Volnux identity.
+   Instrument Serif for section headings
+   (authoritative, old-world gravitas).
+   DM Mono for definitions, labels, dates.
+   DM Sans for body (crisp, readable).
+   One unforgettable detail: the sticky
+   side-rail table of contents that acts
+   as a progress meter as you scroll.
+══════════════════════════════════════ */
+
+:root {
+  --paper:    #f6f3ed;
+  --paper2:   #ede9e1;
+  --paper3:   #e4dfd4;
+  --ink:      #1a1710;
+  --ink2:     #2e2b22;
+  --ink3:     #4a4638;
+  --muted:    #8a8270;
+  --rule:     #d0cbbf;
+  --rule2:    #b8b3a6;
+  --white:    #ffffff;
+  --amber:    #c8650a;    /* Volnux brand warmth */
+  --amber2:   #a84f05;
+  --cyan-dim: #0a7a8c;   /* muted for legal context */
+  --red:      #9a1a1a;
+  --max-w:    1100px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* Paper grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+  background-size: 250px 250px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.z1 { position: relative; z-index: 1; }
+
+/* ══ NAV ══ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: 52px;
+  display: flex;
+  align-items: stretch;
+  background: rgba(246,243,237,0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  border-right: 1px solid var(--rule);
+  padding-right: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.nav-logo { width: 20px; height: 20px; }
+
+.nav-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.nav-name span { color: var(--amber); }
+
+.nav-crumb {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.nav-crumb strong { color: var(--ink3); font-weight: 500; }
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nav-home {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-home:hover { color: var(--amber); }
+
+/* ══════════════════════════════════════
+   HERO / PAGE HEADER
+══════════════════════════════════════ */
+.page-header {
+  padding: 7rem 0 4rem;
+  border-bottom: 2px solid var(--ink);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* large watermark */
+.header-watermark {
+  position: absolute;
+  bottom: -0.15em;
+  right: -0.02em;
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(7rem, 16vw, 14rem);
+  font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(26,23,16,0.055);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+.header-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.header-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--amber);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+.header-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--amber); }
+
+.header-h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.header-h1 em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.header-meta {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.35s both;
+}
+
+.hm-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.hm-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.hm-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--ink3);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════
+   TABS — switch between Privacy & Terms
+══════════════════════════════════════ */
+.doc-tabs {
+  position: sticky;
+  top: 52px;
+  z-index: 100;
+  background: rgba(246,243,237,0.97);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.tabs-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 2rem;
+  height: 52px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.tab-btn:hover { color: var(--ink); }
+
+.tab-btn.active {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+}
+
+.tab-num {
+  font-size: 0.62rem;
+  opacity: 0.6;
+}
+
+.tab-divider {
+  width: 1px;
+  background: var(--rule);
+  margin: 12px 0;
+  align-self: stretch;
+}
+
+.tab-spacer { flex: 1; }
+
+.tab-updated {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  letter-spacing: 0.06em;
+}
+
+/* ══════════════════════════════════════
+   MAIN LAYOUT — sidebar + content
+══════════════════════════════════════ */
+.doc-layout {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* ── Sidebar ToC ── */
+.doc-toc {
+  position: sticky;
+  top: 120px;
+  padding: 2rem 0;
+}
+
+.toc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.toc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.toc-item {
+  border-left: 2px solid var(--rule2);
+  transition: border-color 0.2s;
+}
+
+.toc-item.active { border-left-color: var(--amber); }
+
+.toc-item a {
+  display: block;
+  padding: 0.45rem 0.85rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.5;
+  transition: color 0.2s;
+}
+
+.toc-item:hover a,
+.toc-item.active a { color: var(--ink); }
+.toc-item.active a { color: var(--amber); font-weight: 500; }
+
+.toc-sub a {
+  padding-left: 1.5rem;
+  font-size: 0.65rem;
+  color: var(--rule2);
+}
+.toc-sub:hover a { color: var(--muted); }
+
+/* ── Document content ── */
+.doc-content {
+  padding: 3rem 0 6rem;
+}
+
+.doc-panel {
+  display: none;
+}
+.doc-panel.active { display: block; }
+
+/* Section blocks */
+.doc-section {
+  margin-bottom: 3.5rem;
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.doc-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Section heading */
+.sec-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.sec-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--amber);
+  background: rgba(200,101,10,0.08);
+  border: 1px solid rgba(200,101,10,0.2);
+  border-radius: 2px;
+  padding: 0.2rem 0.5rem;
+  flex-shrink: 0;
+  margin-top: 0.45rem;
+  letter-spacing: 0.06em;
+}
+
+.sec-h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Body text */
+.doc-content p {
+  font-size: 0.95rem;
+  color: var(--ink3);
+  line-height: 1.85;
+  margin-bottom: 1.1rem;
+  font-weight: 300;
+}
+
+.doc-content p:last-child { margin-bottom: 0; }
+
+.doc-content p strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Sub-headings */
+.doc-content h3 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 1.75rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Lists */
+.doc-content ul, .doc-content ol {
+  margin: 0.75rem 0 1.1rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.doc-content ul li, .doc-content ol li {
+  font-size: 0.93rem;
+  color: var(--ink3);
+  line-height: 1.8;
+  font-weight: 300;
+  padding: 0.3rem 0 0.3rem 1.5rem;
+  position: relative;
+  border-bottom: 1px solid rgba(208,203,191,0.4);
+}
+
+.doc-content ul li::before {
+  content: '·';
+  position: absolute;
+  left: 0.45rem;
+  color: var(--amber);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.doc-content ol {
+  counter-reset: item;
+}
+
+.doc-content ol li {
+  counter-increment: item;
+}
+
+.doc-content ol li::before {
+  content: counter(item) ".";
+  position: absolute;
+  left: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--amber);
+  font-weight: 500;
+  top: 0.5rem;
+}
+
+/* Definition callout */
+.def-box {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+}
+
+.def-box .def-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+  margin-bottom: 0.4rem;
+}
+
+.def-box p {
+  font-size: 0.88rem !important;
+  color: var(--ink3) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Warning box */
+.warn-box {
+  background: rgba(154,26,26,0.04);
+  border: 1px solid rgba(154,26,26,0.18);
+  border-left: 3px solid var(--red);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.warn-icon {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--red);
+  font-weight: 500;
+  flex-shrink: 0;
+  padding-top: 0.15rem;
+  letter-spacing: 0.06em;
+}
+
+.warn-box p {
+  font-size: 0.88rem !important;
+  color: var(--ink3) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Info box */
+.info-box {
+  background: rgba(10,122,140,0.04);
+  border: 1px solid rgba(10,122,140,0.18);
+  border-left: 3px solid var(--cyan-dim);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+}
+
+.info-box p {
+  font-size: 0.88rem !important;
+  color: var(--ink3) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Contact card */
+.contact-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.cc-icon {
+  width: 40px; height: 40px;
+  background: rgba(200,101,10,0.08);
+  border: 1px solid rgba(200,101,10,0.2);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.cc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.cc-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--amber);
+  font-weight: 500;
+}
+
+/* Data table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.85rem;
+}
+
+.data-table th {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 400;
+  text-align: left;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 2px solid var(--rule);
+  background: var(--paper2);
+}
+
+.data-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink3);
+  vertical-align: top;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(208,203,191,0.2); }
+
+.data-table td:first-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Summary block at top of each document */
+.doc-summary {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--amber);
+  border-radius: 0 0 4px 4px;
+  padding: 1.75rem;
+  margin-bottom: 3rem;
+}
+
+.ds-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+  margin-bottom: 0.85rem;
+}
+
+.ds-text {
+  font-size: 0.92rem;
+  color: var(--ink3);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* Version badge */
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  border: 1px solid var(--rule2);
+  padding: 0.2rem 0.55rem;
+  border-radius: 2px;
+  margin-left: 0.75rem;
+  vertical-align: middle;
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  background: var(--ink);
+  padding: 3rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-row {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.footer-brand {
+  display: flex; align-items: center; gap: 0.55rem;
+  text-decoration: none;
+}
+
+.footer-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--paper);
+}
+.footer-name span { color: rgba(200,101,10,0.9); }
+
+.footer-links {
+  display: flex; gap: 2rem; list-style: none;
+}
+.footer-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(246,243,237,0.35);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: rgba(246,243,237,0.8); }
+
+.footer-legal {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(246,243,237,0.25);
+}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.on { opacity: 1; transform: none; }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 900px) {
+  .doc-layout { grid-template-columns: 1fr; }
+  .doc-toc { display: none; }
+}
+@media (max-width: 600px) {
+  nav .nav-right { display: none; }
+  .header-h1 { font-size: 2.5rem; }
+  .tab-num { display: none; }
+  .tab-btn { padding: 0 1rem; font-size: 0.72rem; }
+}
+
+/* Print */
+@media print {
+  nav, .doc-tabs, .doc-toc, footer { display: none !important; }
+  body { background: white; color: black; }
+  .page-header { padding-top: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="z1">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <svg class="nav-logo" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="10" fill="#1a1710"/>
+        <path d="M10 10L10 1.5A8.5 8.5 0 0 1 17.9 13Z" fill="#00c8e0"/>
+        <path d="M10 10L17.9 13A8.5 8.5 0 0 1 2.1 13Z" fill="#6b4fff"/>
+        <path d="M10 10L2.1 13A8.5 8.5 0 0 1 10 1.5Z" fill="#00e87a"/>
+        <path d="M8 2.2C7.6 4.4 7.4 7 7.8 10A2.2 2.2 0 0 0 10 12.2A2.2 2.2 0 0 0 12.2 10C12.6 7 12.4 4.4 12 2.2C11.6 1.7 8.4 1.7 8 2.2Z" fill="#1a1710"/>
+        <path d="M2.1 12C4 9.8 6.6 8.8 9.8 8.2A2.2 2.2 0 0 0 8.7 6.3A2.2 2.2 0 0 0 7.6 5.9C4.8 6.5 2.9 8.3 2.1 10.5C1.9 11.1 2 12.5 2.1 12Z" fill="#1a1710"/>
+        <path d="M17.9 12C16 9.8 13.4 8.8 10.2 8.2A2.2 2.2 0 0 0 11.3 6.3A2.2 2.2 0 0 0 12.4 5.9C15.2 6.5 17.1 8.3 17.9 10.5C18.1 11.1 18 12.5 17.9 12Z" fill="#1a1710"/>
+        <circle cx="10" cy="10" r="1.6" fill="#1a1710"/>
+        <circle cx="10" cy="10" r="0.8" fill="#00e5ff"/>
+      </svg>
+      <span class="nav-name">vol<span>nux</span></span>
+    </a>
+    <span class="nav-crumb"><strong>Legal</strong></span>
+    <div class="nav-right">
+      <span class="nav-date">Effective: 1 January 2025</span>
+      <a href="index.html" class="nav-home">← Back to home</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ══ -->
+<div class="page-header z1">
+  <div class="header-watermark">Legal</div>
+  <div class="header-inner">
+    <p class="header-eyebrow">Volnux — Legal Documents</p>
+    <h1 class="header-h1">
+      Privacy &amp; <em>Terms</em><br>
+      of Service
+    </h1>
+    <div class="header-meta">
+      <div class="hm-item">
+        <span class="hm-label">Version</span>
+        <span class="hm-value">1.0.0</span>
+      </div>
+      <div class="hm-item">
+        <span class="hm-label">Effective date</span>
+        <span class="hm-value">1 January 2025</span>
+      </div>
+      <div class="hm-item">
+        <span class="hm-label">Last updated</span>
+        <span class="hm-value">28 April 2026</span>
+      </div>
+      <div class="hm-item">
+        <span class="hm-label">Jurisdiction</span>
+        <span class="hm-value">Ghana / International</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TABS ══ -->
+<div class="doc-tabs z1">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('privacy', this)">
+      <span class="tab-num">01 /</span> Privacy Policy
+    </button>
+    <div class="tab-divider"></div>
+    <button class="tab-btn" onclick="switchTab('terms', this)">
+      <span class="tab-num">02 /</span> Terms of Service
+    </button>
+    <div class="tab-spacer"></div>
+    <span class="tab-updated">Updated 28 Apr 2026</span>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="doc-layout z1">
+
+  <!-- ── ToC sidebar ── -->
+  <aside class="doc-toc" id="toc-sidebar">
+    <p class="toc-label" id="toc-label">Contents</p>
+    <ul class="toc-list" id="toc-list">
+      <!-- populated by JS -->
+    </ul>
+  </aside>
+
+  <!-- ── Content ── -->
+  <main>
+
+    <!-- ════════════════════════════════
+         PRIVACY POLICY
+    ════════════════════════════════ -->
+    <div id="panel-privacy" class="doc-panel active">
+
+      <div class="doc-summary reveal">
+        <p class="ds-title">Plain-language summary</p>
+        <p class="ds-text">Volnux collects the minimum data necessary to operate our platform. We do not sell your personal data. We do not display advertising. Your workflow definitions, execution traces, and component code are yours. You can request deletion of your data at any time.</p>
+      </div>
+
+      <!-- 1 -->
+      <div class="doc-section reveal" id="priv-1">
+        <div class="sec-header">
+          <span class="sec-num">§ 01</span>
+          <h2 class="sec-h2">Who we are and how to contact us</h2>
+        </div>
+        <p>Volnux is a software company that builds workflow orchestration infrastructure, including the Volnux Platform, Pointy-lang, EventHub registry, and associated developer tooling. Our registered address and data controller contact are:</p>
+
+        <div class="contact-card">
+          <div class="cc-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="#c8650a" stroke-width="1.4"/><path d="M2 6l7 5 7-5" stroke="#c8650a" stroke-width="1.4"/></svg>
+          </div>
+          <div>
+            <div class="cc-label">Data Controller</div>
+            <div class="cc-value">privacy@volnux.dev</div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="cc-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9 5 9s5-5 5-9c0-2.8-2.2-5-5-5z" stroke="#c8650a" stroke-width="1.4"/><circle cx="9" cy="7" r="1.5" stroke="#c8650a" stroke-width="1.4"/></svg>
+          </div>
+          <div>
+            <div class="cc-label">Registered address</div>
+            <div class="cc-value">Accra, Greater Accra Region, Ghana</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="doc-section reveal" id="priv-2">
+        <div class="sec-header">
+          <span class="sec-num">§ 02</span>
+          <h2 class="sec-h2">What data we collect</h2>
+        </div>
+        <p>We collect only the data required to provide, operate, and improve our services. The following table describes each category of personal data we process.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Data elements</th>
+              <th>Purpose</th>
+              <th>Retention</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Account identity</td>
+              <td>Name, email address, organisation name, profile photo (optional)</td>
+              <td>Authentication, account management, communications</td>
+              <td>Duration of account + 90 days post-deletion</td>
+            </tr>
+            <tr>
+              <td>Authentication credentials</td>
+              <td>Hashed passwords, SSO tokens, session identifiers</td>
+              <td>Secure login and session management</td>
+              <td>Duration of session; passwords until changed</td>
+            </tr>
+            <tr>
+              <td>Billing data</td>
+              <td>Payment method tokens (via Stripe), billing address, invoice history</td>
+              <td>Subscription processing; fraud prevention</td>
+              <td>7 years (statutory requirement)</td>
+            </tr>
+            <tr>
+              <td>Usage telemetry</td>
+              <td>Feature interactions, API call counts, error rates (anonymised)</td>
+              <td>Product improvement; capacity planning</td>
+              <td>24 months rolling, then aggregated</td>
+            </tr>
+            <tr>
+              <td>Workflow content</td>
+              <td>Pointy-lang definitions, execution results, checkpoint data, OTEL traces</td>
+              <td>Workflow execution and governance</td>
+              <td>Duration of subscription + 30 days</td>
+            </tr>
+            <tr>
+              <td>Support communications</td>
+              <td>Email content, ticket descriptions, attachments</td>
+              <td>Support resolution; quality improvement</td>
+              <td>3 years from ticket closure</td>
+            </tr>
+            <tr>
+              <td>Security logs</td>
+              <td>IP addresses, login events, access patterns, audit log entries</td>
+              <td>Security monitoring; incident response</td>
+              <td>12 months rolling</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Data we do not collect</h3>
+        <ul>
+          <li>We do not collect data from children under 13. Our services are not directed at children.</li>
+          <li>We do not collect racial or ethnic origin, political opinions, health data, or biometric data.</li>
+          <li>We do not track you across third-party websites. We have no advertising trackers.</li>
+          <li>We do not read the content of your Pointy-lang workflows for any purpose other than execution and displaying them to you.</li>
+        </ul>
+      </div>
+
+      <!-- 3 -->
+      <div class="doc-section reveal" id="priv-3">
+        <div class="sec-header">
+          <span class="sec-num">§ 03</span>
+          <h2 class="sec-h2">Legal basis for processing</h2>
+        </div>
+        <p>Where data protection law requires us to identify a legal basis for processing personal data, we rely on the following:</p>
+
+        <ul>
+          <li><strong>Contract performance:</strong> processing necessary to provide the Volnux Platform services you have subscribed to, including running workflows, managing your account, and processing billing.</li>
+          <li><strong>Legitimate interests:</strong> security monitoring, fraud prevention, product analytics, and improving our services — where our interests do not override your privacy rights.</li>
+          <li><strong>Legal obligation:</strong> retaining billing records and responding to lawful regulatory requests.</li>
+          <li><strong>Consent:</strong> marketing emails and optional feature research programmes. You may withdraw consent at any time.</li>
+        </ul>
+      </div>
+
+      <!-- 4 -->
+      <div class="doc-section reveal" id="priv-4">
+        <div class="sec-header">
+          <span class="sec-num">§ 04</span>
+          <h2 class="sec-h2">How we use your data</h2>
+        </div>
+        <p>We use personal data strictly for the purposes stated at collection. The primary uses are:</p>
+        <ul>
+          <li>Providing, maintaining, and improving the Volnux Platform and related products</li>
+          <li>Processing your subscription and managing billing</li>
+          <li>Sending transactional communications — account confirmations, security alerts, billing notifications</li>
+          <li>Responding to support requests and communicating about your account</li>
+          <li>Detecting and preventing fraud, abuse, and security incidents</li>
+          <li>Complying with legal obligations and responding to lawful government requests</li>
+          <li>Conducting anonymised product analytics to improve the platform</li>
+        </ul>
+
+        <div class="warn-box">
+          <span class="warn-icon">IMPORTANT</span>
+          <p>We do not sell your personal data to third parties. We do not share your workflow definitions, execution traces, or EventHub components with any third party except as required to operate the platform (e.g. cloud infrastructure providers under data processing agreements) or as required by law.</p>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="doc-section reveal" id="priv-5">
+        <div class="sec-header">
+          <span class="sec-num">§ 05</span>
+          <h2 class="sec-h2">Data sharing and sub-processors</h2>
+        </div>
+        <p>To provide our services we engage trusted third-party sub-processors. Each sub-processor is bound by a data processing agreement consistent with applicable data protection law.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Sub-processor</th>
+              <th>Purpose</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AWS / GCP</td>
+              <td>Cloud infrastructure, storage, and compute for the execution mesh</td>
+              <td>EU, US (configurable by organisation)</td>
+            </tr>
+            <tr>
+              <td>Stripe</td>
+              <td>Payment processing and subscription management</td>
+              <td>United States</td>
+            </tr>
+            <tr>
+              <td>PostHog</td>
+              <td>Self-hosted product analytics (anonymised)</td>
+              <td>EU (self-hosted on our infrastructure)</td>
+            </tr>
+            <tr>
+              <td>Resend</td>
+              <td>Transactional email delivery</td>
+              <td>United States</td>
+            </tr>
+            <tr>
+              <td>Sentry</td>
+              <td>Error monitoring and crash reporting</td>
+              <td>United States</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>We do not share personal data with any other third parties except where required by applicable law, court order, or a government authority with lawful jurisdiction.</p>
+      </div>
+
+      <!-- 6 -->
+      <div class="doc-section reveal" id="priv-6">
+        <div class="sec-header">
+          <span class="sec-num">§ 06</span>
+          <h2 class="sec-h2">Your rights</h2>
+        </div>
+        <p>Depending on your location you may have the following rights with respect to your personal data. To exercise any of these rights, contact us at <strong>privacy@volnux.dev</strong>. We will respond within 30 days.</p>
+
+        <ul>
+          <li><strong>Access:</strong> request a copy of the personal data we hold about you</li>
+          <li><strong>Rectification:</strong> request correction of inaccurate or incomplete data</li>
+          <li><strong>Erasure:</strong> request deletion of your personal data where we have no overriding legal obligation to retain it</li>
+          <li><strong>Restriction:</strong> request that we restrict processing of your data in certain circumstances</li>
+          <li><strong>Portability:</strong> receive your personal data in a structured, machine-readable format</li>
+          <li><strong>Objection:</strong> object to processing based on legitimate interests</li>
+          <li><strong>Withdraw consent:</strong> where processing is based on consent, withdraw it at any time without affecting the lawfulness of prior processing</li>
+          <li><strong>Lodge a complaint:</strong> file a complaint with your national data protection authority</li>
+        </ul>
+
+        <div class="info-box">
+          <p>Deleting your account triggers an automated data deletion process. Your personal data is removed within 30 days. Workflow content is removed within 30 days. Billing records are retained for 7 years as required by law. Anonymised aggregate analytics are retained indefinitely.</p>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="doc-section reveal" id="priv-7">
+        <div class="sec-header">
+          <span class="sec-num">§ 07</span>
+          <h2 class="sec-h2">Cookies and tracking technologies</h2>
+        </div>
+        <p>We use a minimal set of cookies necessary to operate the platform. We do not use advertising cookies, cross-site tracking, or third-party analytics cookies.</p>
+
+        <table class="data-table">
+          <thead><tr><th>Cookie</th><th>Purpose</th><th>Duration</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>session_id</td>
+              <td>Maintains your authenticated session</td>
+              <td>Session</td>
+              <td>Strictly necessary</td>
+            </tr>
+            <tr>
+              <td>csrf_token</td>
+              <td>Prevents cross-site request forgery</td>
+              <td>Session</td>
+              <td>Strictly necessary</td>
+            </tr>
+            <tr>
+              <td>theme_pref</td>
+              <td>Remembers your UI theme preference</td>
+              <td>1 year</td>
+              <td>Functional</td>
+            </tr>
+            <tr>
+              <td>posthog_anon</td>
+              <td>Anonymised product analytics (no PII)</td>
+              <td>1 year</td>
+              <td>Analytics (opt-out available)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>You can opt out of analytics cookies in your account settings at any time. Disabling strictly necessary cookies will prevent the platform from functioning.</p>
+      </div>
+
+      <!-- 8 -->
+      <div class="doc-section reveal" id="priv-8">
+        <div class="sec-header">
+          <span class="sec-num">§ 08</span>
+          <h2 class="sec-h2">International data transfers</h2>
+        </div>
+        <p>Volnux is incorporated in Ghana. If you are located in the European Economic Area, United Kingdom, or another jurisdiction with data transfer restrictions, we ensure that any transfer of your personal data outside that jurisdiction is protected by appropriate safeguards, including:</p>
+        <ul>
+          <li>Standard Contractual Clauses (SCCs) approved by the European Commission</li>
+          <li>Data processing agreements with all sub-processors specifying transfer safeguards</li>
+          <li>Technical measures including encryption in transit and at rest</li>
+        </ul>
+        <p>Enterprise customers on the managed cloud tier can request data residency within a specific region. Contact us at <strong>privacy@volnux.dev</strong> to configure this.</p>
+      </div>
+
+      <!-- 9 -->
+      <div class="doc-section reveal" id="priv-9">
+        <div class="sec-header">
+          <span class="sec-num">§ 09</span>
+          <h2 class="sec-h2">Security</h2>
+        </div>
+        <p>We implement technical and organisational security measures appropriate to the risk of processing personal data. These include:</p>
+        <ul>
+          <li>Encryption of all data in transit (TLS 1.3) and at rest (AES-256)</li>
+          <li>mTLS mutual authentication for all inter-node communications in the execution mesh</li>
+          <li>Role-based access controls and principle of least privilege for all staff access</li>
+          <li>Immutable audit logs for all administrative actions on personal data</li>
+          <li>Regular third-party security assessments and penetration testing</li>
+          <li>Incident response procedures with breach notification within 72 hours to affected parties and regulators where required</li>
+        </ul>
+        <p>No system is completely secure. In the event of a security incident that affects your personal data, we will notify you promptly in accordance with applicable law.</p>
+      </div>
+
+      <!-- 10 -->
+      <div class="doc-section reveal" id="priv-10">
+        <div class="sec-header">
+          <span class="sec-num">§ 10</span>
+          <h2 class="sec-h2">Changes to this policy</h2>
+        </div>
+        <p>We may update this Privacy Policy from time to time. We will notify you of material changes by email to the address associated with your account at least 14 days before the changes take effect. The updated version will be identified by the revision date shown at the top of this page.</p>
+        <p>Continued use of the Volnux Platform after the effective date of any changes constitutes acceptance of the updated Privacy Policy. If you do not accept the changes you may close your account before the effective date.</p>
+      </div>
+
+    </div><!-- end privacy panel -->
+
+
+    <!-- ════════════════════════════════
+         TERMS OF SERVICE
+    ════════════════════════════════ -->
+    <div id="panel-terms" class="doc-panel">
+
+      <div class="doc-summary reveal">
+        <p class="ds-title">Plain-language summary</p>
+        <p class="ds-text">By using Volnux you agree to use our services lawfully, not to abuse the platform, and to pay for what you use. We provide the platform as-is with the service levels described in your plan. You own your workflows and data. We own the platform. Both parties may terminate, subject to the notice periods below.</p>
+      </div>
+
+      <!-- 1 -->
+      <div class="doc-section reveal" id="terms-1">
+        <div class="sec-header">
+          <span class="sec-num">§ 01</span>
+          <h2 class="sec-h2">Acceptance of terms</h2>
+        </div>
+        <p>These Terms of Service ("Terms") constitute a legally binding agreement between you (individually, or on behalf of your organisation) ("Customer") and Volnux ("we", "us", "Volnux") governing your use of the Volnux Platform, Pointy-lang tooling, EventHub registry, and all associated software and services (collectively, the "Service").</p>
+        <p>By creating an account, clicking "I agree", or using any part of the Service you confirm that you have read, understood, and agree to be bound by these Terms. If you are using the Service on behalf of an organisation, you represent that you have the authority to bind that organisation to these Terms.</p>
+
+        <div class="warn-box">
+          <span class="warn-icon">NOTE</span>
+          <p>If you do not agree to these Terms, you may not use the Service. If you are under 18 years of age you may only use the Service with the involvement and consent of a parent or legal guardian.</p>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="doc-section reveal" id="terms-2">
+        <div class="sec-header">
+          <span class="sec-num">§ 02</span>
+          <h2 class="sec-h2">Definitions</h2>
+        </div>
+
+        <div class="def-box">
+          <p class="def-label">Service</p>
+          <p>The Volnux Platform, Pointy-lang compiler and wizard, EventHub registry, Mesh Runtime, CLI tooling, APIs, and all documentation and support services provided by Volnux.</p>
+        </div>
+
+        <div class="def-box">
+          <p class="def-label">Customer Content</p>
+          <p>All Pointy-lang workflow definitions, EventBase components, execution data, configuration files, and any other data or materials submitted by you to the Service.</p>
+        </div>
+
+        <div class="def-box">
+          <p class="def-label">Account</p>
+          <p>The account created by registering for the Service, including all associated organisations, teams, users, and subscription data.</p>
+        </div>
+
+        <div class="def-box">
+          <p class="def-label">Subscription</p>
+          <p>The plan under which you access the Service, as described on our pricing page, including the Open Core (free), and Platform (enterprise) tiers.</p>
+        </div>
+
+        <div class="def-box">
+          <p class="def-label">Authorised Users</p>
+          <p>Employees, contractors, or agents of the Customer who are permitted to access the Service under the Customer's Account in accordance with these Terms.</p>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="doc-section reveal" id="terms-3">
+        <div class="sec-header">
+          <span class="sec-num">§ 03</span>
+          <h2 class="sec-h2">Your account</h2>
+        </div>
+        <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to:</p>
+        <ul>
+          <li>Provide accurate, current, and complete information when creating your account</li>
+          <li>Maintain the security of your password and not share credentials between users</li>
+          <li>Notify us immediately at <strong>security@volnux.dev</strong> if you suspect unauthorised access to your account</li>
+          <li>Ensure that all Authorised Users comply with these Terms</li>
+          <li>Accept responsibility for all actions taken through your account</li>
+        </ul>
+        <p>We reserve the right to terminate accounts that provide false registration information or that are used in violation of these Terms.</p>
+      </div>
+
+      <!-- 4 -->
+      <div class="doc-section reveal" id="terms-4">
+        <div class="sec-header">
+          <span class="sec-num">§ 04</span>
+          <h2 class="sec-h2">Acceptable use</h2>
+        </div>
+        <p>You may use the Service only for lawful purposes and in accordance with these Terms. You agree not to use the Service to:</p>
+        <ul>
+          <li>Violate any applicable local, national, or international law or regulation</li>
+          <li>Transmit any material that is unlawful, harmful, threatening, abusive, defamatory, or otherwise objectionable</li>
+          <li>Attempt to gain unauthorised access to the Service or any connected systems, networks, or data</li>
+          <li>Introduce malware, viruses, or other malicious code into the Service or execution mesh</li>
+          <li>Reverse-engineer, decompile, or attempt to extract the source code of any proprietary portion of the Service</li>
+          <li>Use the Service to build a competing product or to benchmark against competitors without our written consent</li>
+          <li>Circumvent or interfere with rate limits, access controls, or security measures</li>
+          <li>Use the EventHub registry to publish components that infringe third-party intellectual property rights</li>
+          <li>Resell or sublicense the Service without our prior written consent</li>
+        </ul>
+
+        <p>Volnux reserves the right to suspend or terminate access to the Service immediately, without prior notice, for material violations of this acceptable use policy.</p>
+      </div>
+
+      <!-- 5 -->
+      <div class="doc-section reveal" id="terms-5">
+        <div class="sec-header">
+          <span class="sec-num">§ 05</span>
+          <h2 class="sec-h2">Intellectual property</h2>
+        </div>
+        <h3>Your content</h3>
+        <p>You retain full ownership of all Customer Content — your Pointy-lang workflows, EventBase components, configurations, and data. By submitting Customer Content to the Service you grant Volnux a limited, non-exclusive, worldwide, royalty-free licence to store, process, transmit, and display your Customer Content solely as necessary to provide the Service to you. This licence terminates when you delete the content or close your account.</p>
+        <p>Volnux does not acquire any ownership rights in your Customer Content. Your Customer Content is not used to train machine learning models.</p>
+
+        <h3>Our platform</h3>
+        <p>The Volnux Platform, Pointy-lang language specification, EventHub registry software, Mesh Runtime, and all associated documentation are the intellectual property of Volnux and are protected by copyright, trademark, and other applicable laws.</p>
+        <p>The open source components of the Volnux Platform are licensed under the terms of their respective open source licences (MIT for the core runtime). Proprietary components of the enterprise tier are not open source and may not be copied, modified, or redistributed without our written consent.</p>
+
+        <h3>Feedback</h3>
+        <p>If you submit ideas, suggestions, or feedback about the Service ("Feedback"), you grant Volnux an irrevocable, perpetual, worldwide, royalty-free licence to use the Feedback for any purpose. We are not obligated to implement any Feedback.</p>
+      </div>
+
+      <!-- 6 -->
+      <div class="doc-section reveal" id="terms-6">
+        <div class="sec-header">
+          <span class="sec-num">§ 06</span>
+          <h2 class="sec-h2">Subscriptions and payment</h2>
+        </div>
+        <h3>Plans and pricing</h3>
+        <p>The Service is available under the following plans, as described on our pricing page:</p>
+        <ul>
+          <li><strong>Open Core (Free):</strong> Full Pointy-lang language support, local execution, community EventHub access, and OpenTelemetry integration. No payment required.</li>
+          <li><strong>Platform (Enterprise):</strong> Managed execution mesh, private EventHub namespaces, governance dashboard, SSO, SLA-backed support, and dedicated onboarding. Subject to a written order form and the fees therein.</li>
+        </ul>
+
+        <h3>Billing</h3>
+        <p>Enterprise subscriptions are billed in accordance with the order form agreed between you and Volnux. Unless otherwise stated, fees are due in advance on a monthly or annual basis. All fees are non-refundable except as expressly stated in these Terms or required by applicable law.</p>
+        <p>If payment fails, we will notify you and provide a grace period of 10 business days to update your payment method. If payment is not received after the grace period, we may suspend your access to paid features until payment is received.</p>
+
+        <h3>Taxes</h3>
+        <p>Fees do not include taxes, levies, or duties. You are responsible for paying all applicable taxes associated with your subscription, except for taxes based on Volnux's net income.</p>
+      </div>
+
+      <!-- 7 -->
+      <div class="doc-section reveal" id="terms-7">
+        <div class="sec-header">
+          <span class="sec-num">§ 07</span>
+          <h2 class="sec-h2">Service levels and availability</h2>
+        </div>
+        <p>We endeavour to maintain high availability for the managed cloud tier. Specific SLA commitments are set out in the order form for Platform customers.</p>
+        <ul>
+          <li><strong>Open Core:</strong> Provided on a best-effort basis with no uptime commitment.</li>
+          <li><strong>Platform (Enterprise):</strong> 99.9% monthly uptime for the managed mesh and API. Scheduled maintenance windows are excluded. Credits issued for shortfalls as described in the order form.</li>
+        </ul>
+        <p>We reserve the right to modify, suspend, or discontinue any part of the Service with reasonable notice. We will provide at least 30 days' notice before discontinuing a feature on which you materially rely, except in the case of security emergencies.</p>
+      </div>
+
+      <!-- 8 -->
+      <div class="doc-section reveal" id="terms-8">
+        <div class="sec-header">
+          <span class="sec-num">§ 08</span>
+          <h2 class="sec-h2">Confidentiality</h2>
+        </div>
+        <p>Each party may disclose confidential information to the other in connection with these Terms. Each party agrees to:</p>
+        <ul>
+          <li>Keep the other party's confidential information strictly confidential</li>
+          <li>Not disclose it to third parties without prior written consent, except to employees or contractors who need to know it to perform obligations under these Terms</li>
+          <li>Use the confidential information only for the purposes of these Terms</li>
+          <li>Apply the same degree of protection as it applies to its own confidential information, but not less than reasonable care</li>
+        </ul>
+        <p>Confidential information does not include information that: (a) is or becomes publicly known through no fault of the receiving party; (b) was lawfully known to the receiving party before disclosure; or (c) is required to be disclosed by law, provided that the receiving party gives prompt written notice to the disclosing party where legally permitted.</p>
+      </div>
+
+      <!-- 9 -->
+      <div class="doc-section reveal" id="terms-9">
+        <div class="sec-header">
+          <span class="sec-num">§ 09</span>
+          <h2 class="sec-h2">Disclaimers and limitation of liability</h2>
+        </div>
+        <div class="warn-box">
+          <span class="warn-icon">LEGAL</span>
+          <p>The Service is provided "as is" and "as available" without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+        </div>
+        <p>To the fullest extent permitted by applicable law, Volnux's total liability to you for any claim arising out of or relating to these Terms or the Service shall not exceed the greater of: (a) the amount you paid to Volnux in the 12 months preceding the claim; or (b) USD 100.</p>
+        <p>In no event will Volnux be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, revenue, data, or business, even if advised of the possibility of such damages.</p>
+        <p>Some jurisdictions do not allow the exclusion or limitation of certain warranties or liabilities, so some of the above limitations may not apply to you.</p>
+      </div>
+
+      <!-- 10 -->
+      <div class="doc-section reveal" id="terms-10">
+        <div class="sec-header">
+          <span class="sec-num">§ 10</span>
+          <h2 class="sec-h2">Term and termination</h2>
+        </div>
+        <p>These Terms commence on the date you first accept them and continue until terminated.</p>
+
+        <h3>Termination by you</h3>
+        <p>You may terminate your account at any time by following the account deletion process in your account settings. For enterprise subscriptions, please refer to the notice period in your order form (typically 30 days written notice).</p>
+
+        <h3>Termination by us</h3>
+        <p>We may terminate your access to the Service immediately without notice if: (a) you materially breach these Terms and fail to cure the breach within 10 business days of written notice; (b) you engage in fraudulent or abusive behaviour; or (c) we are required to do so by law.</p>
+        <p>We may terminate the Service on 90 days' notice if we decide to discontinue it generally.</p>
+
+        <h3>Effect of termination</h3>
+        <ul>
+          <li>Your right to access and use the Service ceases immediately on the effective date of termination</li>
+          <li>You may export your Customer Content for 30 days following termination</li>
+          <li>After 30 days, your Customer Content will be deleted from our systems subject to our data retention obligations</li>
+          <li>Sections 5 (Intellectual property), 8 (Confidentiality), 9 (Liability), and 12 (Governing law) survive termination</li>
+        </ul>
+      </div>
+
+      <!-- 11 -->
+      <div class="doc-section reveal" id="terms-11">
+        <div class="sec-header">
+          <span class="sec-num">§ 11</span>
+          <h2 class="sec-h2">EventHub publisher obligations</h2>
+        </div>
+        <p>If you publish EventBase components to the EventHub registry you additionally agree to the following:</p>
+        <ul>
+          <li>You represent that you own or have the rights to publish all code in your components and their transitive dependencies</li>
+          <li>You agree not to publish components containing malicious code, security exploits, or code designed to circumvent the Volnux runtime's execution boundaries</li>
+          <li>You agree to maintain accurate manifest documentation including version history, parameter schemas, and deprecation notices</li>
+          <li>You grant Volnux a licence to store, distribute, and display your published components to other users of the EventHub registry</li>
+          <li>You agree to respond to security vulnerability reports within 30 days and to publish patches or deprecate affected versions accordingly</li>
+          <li>You acknowledge that Volnux may remove components from the registry that violate these Terms or applicable law, with notice where practicable</li>
+        </ul>
+      </div>
+
+      <!-- 12 -->
+      <div class="doc-section reveal" id="terms-12">
+        <div class="sec-header">
+          <span class="sec-num">§ 12</span>
+          <h2 class="sec-h2">Governing law and disputes</h2>
+        </div>
+        <p>These Terms are governed by the laws of the Republic of Ghana, without regard to conflict of law principles. Any dispute arising out of or in connection with these Terms shall first be subject to good-faith negotiation between the parties. If the dispute is not resolved within 30 days of written notice, it shall be submitted to binding arbitration in Accra, Ghana, under the rules of the Ghana Arbitration Centre.</p>
+        <p>Nothing in this clause prevents either party from seeking urgent injunctive relief in any court of competent jurisdiction to prevent irreparable harm.</p>
+        <p>If you are a consumer in the European Union, you also have the right to bring a claim before the courts of your country of residence.</p>
+      </div>
+
+      <!-- 13 -->
+      <div class="doc-section reveal" id="terms-13">
+        <div class="sec-header">
+          <span class="sec-num">§ 13</span>
+          <h2 class="sec-h2">Changes to these terms</h2>
+        </div>
+        <p>We may update these Terms from time to time. We will notify you of material changes by email at least 30 days before they take effect. The updated Terms will be identified by the revision date shown at the top of this page. Continued use of the Service after the effective date constitutes acceptance.</p>
+        <p>If we make changes that materially reduce your rights, you may terminate your account before the effective date and receive a pro-rata refund of any prepaid fees for the remaining subscription term.</p>
+
+        <div class="contact-card">
+          <div class="cc-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="#c8650a" stroke-width="1.4"/><path d="M2 6l7 5 7-5" stroke="#c8650a" stroke-width="1.4"/></svg>
+          </div>
+          <div>
+            <div class="cc-label">Legal enquiries</div>
+            <div class="cc-value">legal@volnux.dev</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end terms panel -->
+
+  </main>
+</div><!-- end doc-layout -->
+
+<!-- ══ FOOTER ══ -->
+<footer class="z1">
+  <div class="footer-row">
+    <a href="index.html" class="footer-brand">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="10" fill="#2c2a22"/>
+        <path d="M10 10L10 1.5A8.5 8.5 0 0 1 17.9 13Z" fill="#00c8e0"/>
+        <path d="M10 10L17.9 13A8.5 8.5 0 0 1 2.1 13Z" fill="#6b4fff"/>
+        <path d="M10 10L2.1 13A8.5 8.5 0 0 1 10 1.5Z" fill="#00e87a"/>
+        <path d="M8 2.2C7.6 4.4 7.4 7 7.8 10A2.2 2.2 0 0 0 10 12.2A2.2 2.2 0 0 0 12.2 10C12.6 7 12.4 4.4 12 2.2C11.6 1.7 8.4 1.7 8 2.2Z" fill="#2c2a22"/>
+        <path d="M2.1 12C4 9.8 6.6 8.8 9.8 8.2A2.2 2.2 0 0 0 8.7 6.3A2.2 2.2 0 0 0 7.6 5.9C4.8 6.5 2.9 8.3 2.1 10.5C1.9 11.1 2 12.5 2.1 12Z" fill="#2c2a22"/>
+        <path d="M17.9 12C16 9.8 13.4 8.8 10.2 8.2A2.2 2.2 0 0 0 11.3 6.3A2.2 2.2 0 0 0 12.4 5.9C15.2 6.5 17.1 8.3 17.9 10.5C18.1 11.1 18 12.5 17.9 12Z" fill="#2c2a22"/>
+        <circle cx="10" cy="10" r="1.6" fill="#2c2a22"/>
+        <circle cx="10" cy="10" r="0.8" fill="#00e5ff"/>
+      </svg>
+      <span class="footer-name">vol<span>nux</span></span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="use-cases.html">Use Cases</a></li>
+      <li><a href="governance.html">Governance</a></li>
+      <li><a href="company.html">Company</a></li>
+      <li><a href="mailto:legal@volnux.dev">legal@volnux.dev</a></li>
+    </ul>
+    <p class="footer-legal">© 2025 Volnux · Privacy & Terms v1.0.0</p>
+  </div>
+</footer>
+
+<script>
+/* ── TAB SWITCHING ── */
+const TOC_DATA = {
+  privacy: [
+    { id: 'priv-1',  label: 'Who we are',             sub: false },
+    { id: 'priv-2',  label: 'What data we collect',   sub: false },
+    { id: 'priv-3',  label: 'Legal basis',            sub: false },
+    { id: 'priv-4',  label: 'How we use data',        sub: false },
+    { id: 'priv-5',  label: 'Data sharing',           sub: false },
+    { id: 'priv-6',  label: 'Your rights',            sub: false },
+    { id: 'priv-7',  label: 'Cookies',                sub: false },
+    { id: 'priv-8',  label: 'International transfers',sub: false },
+    { id: 'priv-9',  label: 'Security',               sub: false },
+    { id: 'priv-10', label: 'Changes',                sub: false },
+  ],
+  terms: [
+    { id: 'terms-1',  label: 'Acceptance of terms',   sub: false },
+    { id: 'terms-2',  label: 'Definitions',           sub: false },
+    { id: 'terms-3',  label: 'Your account',          sub: false },
+    { id: 'terms-4',  label: 'Acceptable use',        sub: false },
+    { id: 'terms-5',  label: 'Intellectual property', sub: false },
+    { id: 'terms-6',  label: 'Subscriptions',         sub: false },
+    { id: 'terms-7',  label: 'Service levels',        sub: false },
+    { id: 'terms-8',  label: 'Confidentiality',       sub: false },
+    { id: 'terms-9',  label: 'Liability',             sub: false },
+    { id: 'terms-10', label: 'Termination',           sub: false },
+    { id: 'terms-11', label: 'EventHub obligations',  sub: false },
+    { id: 'terms-12', label: 'Governing law',         sub: false },
+    { id: 'terms-13', label: 'Changes',               sub: false },
+  ]
+};
+
+let currentTab = 'privacy';
+
+function buildToc(tab) {
+  const list = document.getElementById('toc-list');
+  list.innerHTML = '';
+  TOC_DATA[tab].forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'toc-item' + (item.sub ? ' toc-sub' : '');
+    li.dataset.target = item.id;
+    li.innerHTML = `<a href="#${item.id}">${item.label}</a>`;
+    li.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    list.appendChild(li);
+  });
+}
+
+function switchTab(tab, btnEl) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
+  document.querySelectorAll('.doc-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  buildToc(tab);
+  window.scrollTo({ top: document.querySelector('.doc-tabs').offsetTop - 10, behavior: 'smooth' });
+}
+
+buildToc('privacy');
+
+/* ── SCROLL SPY ── */
+const sectionObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.toc-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.target === id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+document.querySelectorAll('.doc-section[id]').forEach(s => sectionObs.observe(s));
+
+/* ── REVEAL ON SCROLL ── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.06 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+</body>
+</html>

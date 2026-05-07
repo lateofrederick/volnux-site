@@ -65,7 +65,7 @@ import { productUrls } from '@/config/product-urls'
       </div>
 
       <div class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row dark:border-slate-800/50">
-        <p class="text-xs text-slate-600 dark:text-slate-600">&copy; 2026 Volnux. All rights reserved.</p>
+        <p class="text-xs text-slate-600 dark:text-slate-600">&copy; 2026 Volnux. All rights reserved. &nbsp;·&nbsp; <RouterLink to="/privacy" class="transition-colors hover:text-indigo-600 dark:hover:text-indigo-400">Privacy policy</RouterLink></p>
         <p class="text-xs text-slate-600 dark:text-slate-600">Built with <span class="text-indigo-600 dark:text-indigo-400">Pointy-lang</span>. Governed by design.</p>
       </div>
     </div>

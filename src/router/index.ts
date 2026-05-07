@@ -51,6 +51,12 @@ const routes: RouteRecordRaw[] = [
   { path: '/about', name: 'about', component: AboutView, meta: { title: 'About — Volnux' } },
   { path: '/governance', name: 'governance', component: GovernanceView, meta: { title: 'Governance — Volnux' } },
   { path: '/use-cases', name: 'use-cases', component: UseCasesView, meta: { title: 'Use Cases — Volnux' } },
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('@/views/LegalView.vue'),
+    meta: { title: 'Privacy Policy & Terms of Service — Volnux' },
+  },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
