@@ -24,7 +24,7 @@ const API_RST_DIR = join(SOURCE_ROOT, 'docs', 'source', 'api')
 const EXAMPLES_DIR = join(SOURCE_ROOT, 'examples')
 
 /** Do not publish these TUTORIAL.md chapters in the site nav. */
-const SKIP_TUTORIAL_SLUGS = new Set(['contributing', 'reporting-issues', 'license', 'requirements'])
+const SKIP_TUTORIAL_SLUGS = new Set(['contributing', 'reporting-issues', 'license', 'requirements', 'introduction'])
 
 function slugifyHeading(line) {
   return line
@@ -121,29 +121,36 @@ function main() {
 
   const tutorialSections = []
 
-  if (existsSync(TUTORIAL)) {
-    let body = readFileSync(TUTORIAL, 'utf8')
-    body = stripTutorialPreamble(body)
-    body = rewriteTutorialImages(body)
-    let chunks = splitMarkdownByTutorialH1(body)
-    // Drop a standalone `# Usage` section — the real guide continues under `# Pipeline`
-    for (let i = 0; i < chunks.length; i++) {
-      if (chunks[i]?.trim() === '# Usage' && chunks[i + 1]?.trimStart().startsWith('# Pipeline')) {
-        chunks.splice(i, 1)
-        break
-      }
-    }
+  const draftFile = join(SITE_ROOT, 'VOLNUX_DOCS_DRAFT.md')
+  if (existsSync(draftFile)) {
+    const draftContent = readFileSync(draftFile, 'utf8')
+    const fname = `tutorial--introduction.md`
+    writeFileSync(join(MD_DIR, fname), draftContent + '\n', 'utf8')
+    tutorialSections.push({
+      id: 'tutorial-introduction',
+      title: 'Introduction',
+      path: `markdown/${fname}`,
+    })
+  }
 
-    for (const chunk of chunks) {
-      const firstLine = chunk.split('\n')[0] || ''
-      const slug = slugifyHeading(firstLine)
-      if (SKIP_TUTORIAL_SLUGS.has(slug)) continue
-      const fname = `tutorial--${slug}.md`
+  const GUIDE_DIR = join(SOURCE_ROOT, 'docs', 'guide')
+  if (existsSync(GUIDE_DIR)) {
+    const files = readdirSync(GUIDE_DIR).filter((f) => f.endsWith('.md'))
+    for (const f of files.sort()) {
+      const md = readFileSync(join(GUIDE_DIR, f), 'utf8')
+      const rewrittenMd = rewriteTutorialImages(md)
+      
+      const firstLine = rewrittenMd.split('\n').find(line => line.startsWith('#')) || ''
+      let slug = slugifyHeading(firstLine)
+      if (!slug || slug === 'section') slug = f.replace(/\.md$/, '').replace(/^\d+-/, '')
+      const title = firstLine.replace(/^#\s+/, '').trim() || f.replace(/^\d+-/, '').replace(/\.md$/, '')
+      
+      const fname = `guide--${slug}.md`
       const path = `markdown/${fname}`
-      writeFileSync(join(MD_DIR, fname), chunk + '\n', 'utf8')
+      writeFileSync(join(MD_DIR, fname), rewrittenMd + '\n', 'utf8')
       tutorialSections.push({
-        id: `tutorial-${slug}`,
-        title: firstLine.replace(/^#\s+/, '').trim(),
+        id: `guide-${slug}`,
+        title,
         path,
       })
     }
@@ -153,21 +160,30 @@ function main() {
       sections: tutorialSections,
     })
   } else {
-    console.warn(`[docs:sync] TUTORIAL.md not found at ${TUTORIAL}`)
+    console.warn(`[docs:sync] Guide directory not found at ${GUIDE_DIR}`)
+    if (tutorialSections.length > 0) {
+      groups.push({
+        id: 'tutorial',
+        title: 'Getting Started',
+        sections: tutorialSections,
+      })
+    }
   }
 
+  const API_MD_DIR = join(SOURCE_ROOT, 'docs', 'api')
   const apiSections = []
-  if (existsSync(API_RST_DIR)) {
-    const files = readdirSync(API_RST_DIR).filter((f) => f.endsWith('.rst') && f !== 'index.rst')
+  if (existsSync(API_MD_DIR)) {
+    const files = readdirSync(API_MD_DIR).filter((f) => f.endsWith('.md'))
     for (const f of files.sort()) {
-      const rst = readFileSync(join(API_RST_DIR, f), 'utf8')
-      const titleLine = rst.split('\n')[0] || f
-      const longTitle = titleLine.replace(/=+$/, '').trim() || f.replace(/\.rst$/, '')
-      const title = shortApiNavTitle(longTitle, f)
-      const slug = f.replace(/\.rst$/, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase()
+      const md = readFileSync(join(API_MD_DIR, f), 'utf8')
+      const firstLine = md.split('\n').find(line => line.startsWith('#')) || ''
+      let slug = slugifyHeading(firstLine)
+      if (!slug || slug === 'section') slug = f.replace(/\.md$/, '').replace(/^\d+-/, '')
+      const title = firstLine.replace(/^#\s+/, '').trim() || f.replace(/^\d+-/, '').replace(/\.md$/, '')
+      
       const fname = `api--${slug}.md`
       const path = `markdown/${fname}`
-      writeFileSync(join(MD_DIR, fname), wrapRstAsMarkdown(title, f, rst), 'utf8')
+      writeFileSync(join(MD_DIR, fname), md + '\n', 'utf8')
       apiSections.push({
         id: `api-${slug}`,
         title,
@@ -176,11 +192,11 @@ function main() {
     }
     groups.push({
       id: 'api',
-      title: 'API reference (Sphinx sources)',
+      title: 'API Reference',
       sections: apiSections,
     })
   } else {
-    console.warn(`[docs:sync] API RST dir not found: ${API_RST_DIR}`)
+    console.warn(`[docs:sync] API directory not found at ${API_MD_DIR}`)
   }
 
   if (existsSync(EXAMPLES_DIR)) {
