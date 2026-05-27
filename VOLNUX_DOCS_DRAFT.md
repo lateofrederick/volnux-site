@@ -124,4 +124,3 @@ Volnux ships with a **Soft Signaling** framework (a lightweight pub/sub system) 
 ---
 
 Ready to dive deeper? Check out the Pipeline Guide to master the Pointy-Lang syntax, or explore the API References for advanced configurations.
-

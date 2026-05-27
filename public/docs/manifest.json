@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-05-04T10:11:29.180Z",
+  "generated": "2026-05-20T17:32:16.096Z",
   "sourceRoot": "/Users/lateo/Documents/dev/open_source/event_pipeline",
   "groups": [
     {
@@ -13,100 +13,65 @@
           "path": "markdown/tutorial--introduction.md"
         },
         {
-          "id": "tutorial-pipeline",
+          "id": "guide-pipeline",
           "title": "Pipeline",
-          "path": "markdown/tutorial--pipeline.md"
+          "path": "markdown/guide--pipeline.md"
         },
         {
-          "id": "tutorial-scheduling",
+          "id": "guide-events",
+          "title": "Events",
+          "path": "markdown/guide--events.md"
+        },
+        {
+          "id": "guide-scheduling",
           "title": "Scheduling",
-          "path": "markdown/tutorial--scheduling.md"
+          "path": "markdown/guide--scheduling.md"
         },
         {
-          "id": "tutorial-defining-events",
-          "title": "Defining Events",
-          "path": "markdown/tutorial--defining-events.md"
-        },
-        {
-          "id": "tutorial-signals",
+          "id": "guide-signals",
           "title": "Signals",
-          "path": "markdown/tutorial--signals.md"
+          "path": "markdown/guide--signals.md"
         },
         {
-          "id": "tutorial-telemetry",
-          "title": "Telemetry",
-          "path": "markdown/tutorial--telemetry.md"
+          "id": "guide-telemetry-observability",
+          "title": "Telemetry & Observability",
+          "path": "markdown/guide--telemetry-observability.md"
+        },
+        {
+          "id": "guide-graph-generation-visualization",
+          "title": "Graph Generation & Visualization",
+          "path": "markdown/guide--graph-generation-visualization.md"
         }
       ]
     },
     {
       "id": "api",
-      "title": "API reference (Sphinx sources)",
+      "title": "API Reference",
       "sections": [
         {
-          "id": "api-backend",
-          "title": "Backend",
-          "path": "markdown/api--backend.md"
+          "id": "api-pipeline-orchestration-api",
+          "title": "Pipeline & Orchestration API",
+          "path": "markdown/api--pipeline-orchestration-api.md"
         },
         {
-          "id": "api-events",
-          "title": "Events",
-          "path": "markdown/api--events.md"
+          "id": "api-events-execution-api",
+          "title": "Events & Execution API",
+          "path": "markdown/api--events-execution-api.md"
         },
         {
-          "id": "api-executors",
-          "title": "Executors",
-          "path": "markdown/api--executors.md"
+          "id": "api-fields-data-api",
+          "title": "Fields & Data API",
+          "path": "markdown/api--fields-data-api.md"
         },
         {
-          "id": "api-fields",
-          "title": "Fields and Signals",
-          "path": "markdown/api--fields.md"
+          "id": "api-signals-telemetry-metrics-api",
+          "title": "Signals, Telemetry & Metrics API",
+          "path": "markdown/api--signals-telemetry-metrics-api.md"
         },
         {
-          "id": "api-managers",
-          "title": "Managers",
-          "path": "markdown/api--managers.md"
-        },
-        {
-          "id": "api-metrics",
-          "title": "Metrics",
-          "path": "markdown/api--metrics.md"
-        },
-        {
-          "id": "api-mixins",
-          "title": "Mixins",
-          "path": "markdown/api--mixins.md"
-        },
-        {
-          "id": "api-parser",
-          "title": "Parser",
-          "path": "markdown/api--parser.md"
-        },
-        {
-          "id": "api-pipeline",
-          "title": "Pipeline",
-          "path": "markdown/api--pipeline.md"
-        },
-        {
-          "id": "api-result",
-          "title": "Results",
-          "path": "markdown/api--result.md"
-        },
-        {
-          "id": "api-scheduling",
-          "title": "Scheduling",
-          "path": "markdown/api--scheduling.md"
-        },
-        {
-          "id": "api-signals",
-          "title": "Signals",
-          "path": "markdown/api--signals.md"
-        },
-        {
-          "id": "api-telemetry",
-          "title": "Telemetry",
-          "path": "markdown/api--telemetry.md"
+          "id": "api-advanced-api",
+          "title": "Advanced API",
+          "path": "markdown/api--advanced-api.md"
         }
       ]
     },
