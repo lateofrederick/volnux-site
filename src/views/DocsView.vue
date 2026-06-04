@@ -153,29 +153,23 @@ function wrapDocCodeBlocks(root: HTMLElement) {
   root.querySelectorAll('pre').forEach((pre) => {
     if (pre.closest('.docs-code-wrap')) return
 
-    const lang = detectLanguage(pre)
+    // Trim trailing newlines from code element to make the block nicely compact
+    const code = pre.querySelector('code')
+    if (code) {
+      code.innerHTML = code.innerHTML.replace(/\n+$/, '')
+    }
+
     const wrap = document.createElement('div')
     wrap.className = 'docs-code-wrap'
-
-    // Header bar
-    const header = document.createElement('div')
-    header.className = 'docs-code-header'
-
-    const langLabel = document.createElement('span')
-    langLabel.className = 'docs-code-lang'
-    langLabel.innerHTML = `<span class="docs-code-lang-dot"></span>${lang || 'code'}`
 
     const copyBtn = document.createElement('button')
     copyBtn.type = 'button'
     copyBtn.className = 'docs-code-copy'
     copyBtn.setAttribute('aria-label', 'Copy code')
-    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><span>Copy</span>`
-
-    header.appendChild(langLabel)
-    header.appendChild(copyBtn)
+    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><span>Copy</span>`
 
     pre.parentNode?.insertBefore(wrap, pre)
-    wrap.appendChild(header)
+    wrap.appendChild(copyBtn)
     wrap.appendChild(pre)
   })
 }
