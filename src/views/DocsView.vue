@@ -142,12 +142,12 @@ function patchFenceHljsClass(html: string) {
     .replaceAll('<pre><code>', '<pre><code class="hljs">')
 }
 
-function detectLanguage(pre: HTMLPreElement): string {
-  const code = pre.querySelector('code')
-  if (!code) return ''
-  const cls = Array.from(code.classList).find((c) => c.startsWith('language-'))
-  return cls ? cls.replace('language-', '') : ''
-}
+// function detectLanguage(pre: HTMLPreElement): string {
+//   const code = pre.querySelector('code')
+//   if (!code) return ''
+//   const cls = Array.from(code.classList).find((c) => c.startsWith('language-'))
+//   return cls ? cls.replace('language-', '') : ''
+// }
 
 function wrapDocCodeBlocks(root: HTMLElement) {
   root.querySelectorAll('pre').forEach((pre) => {
