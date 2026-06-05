@@ -187,6 +187,14 @@
   transition: background 0.3s;
 }
 
+#app:has(#docs-shell) {
+  overflow-x: clip !important;
+}
+
+#app:has(#docs-shell) > div {
+  overflow: visible;
+}
+
 .docs-grid {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
@@ -194,6 +202,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  align-items: start;
 }
 
 .docs-grid.has-toc {
@@ -1010,9 +1019,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
-    width: 300px;
     max-height: 100vh;
+    width: 300px;
     z-index: 46;
     background: var(--docs-mobile-sidebar-bg);
     border-right: 1px solid var(--docs-border);
