@@ -128,7 +128,7 @@ function main() {
     writeFileSync(join(MD_DIR, fname), draftContent + '\n', 'utf8')
     tutorialSections.push({
       id: 'tutorial-introduction',
-      title: 'Quickstart',
+      title: 'Quick Start',
       path: `markdown/${fname}`,
     })
   }
