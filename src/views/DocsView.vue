@@ -401,57 +401,57 @@ watch(loadingContent, async (newVal, oldVal) => {
       </div>
     </div>
 
-    <!-- Main Grid -->
-    <div v-else-if="manifest" class="docs-grid" :class="{ 'has-toc': hasToc }">
-      <!-- Sidebar -->
-      <aside class="docs-sidebar" :class="{ 'mobile-open': mobileMenuOpen }">
-        <!-- Search -->
-        <div class="docs-search">
-          <svg class="docs-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search docs..."
-            aria-label="Search documentation"
-          />
-          <span class="docs-search-shortcut">⌘K</span>
-        </div>
+  <!-- Main Grid -->
+  <div v-else-if="manifest" class="docs-grid" :class="{ 'has-toc': hasToc }">
+    <!-- Sidebar -->
+    <aside class="docs-sidebar" :class="{ 'mobile-open': mobileMenuOpen }">
+      <!-- Search -->
+      <div class="docs-search">
+        <svg class="docs-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search docs..."
+          aria-label="Search documentation"
+        />
+        <span class="docs-search-shortcut">⌘K</span>
+      </div>
 
-        <!-- Nav Groups -->
-        <nav aria-label="Documentation navigation">
-          <div v-for="group in filteredGroups" :key="group.id" class="docs-nav-group">
-            <div class="docs-nav-group-header" @click="toggleGroup(group.id)">
-              <span class="docs-nav-group-icon">{{ groupIcons[group.id] || '📄' }}</span>
-              <span class="docs-nav-group-title">{{ group.title }}</span>
-              <svg class="docs-nav-group-chevron" :class="{ collapsed: collapsedGroups.has(group.id) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </div>
-
-            <div
-              class="docs-nav-group-items"
-              :class="{ collapsed: collapsedGroups.has(group.id) }"
-              :style="{ maxHeight: collapsedGroups.has(group.id) ? '0' : (group.sections.length * 42 + 16) + 'px' }"
-            >
-              <a
-                v-for="sec in group.sections"
-                :key="sec.id"
-                :href="`#${sec.id}`"
-                class="docs-nav-item"
-                :class="{ active: activeSectionId === sec.id }"
-                @click.prevent="selectSection(sec.id)"
-              >
-                {{ sec.title }}
-              </a>
-            </div>
+      <!-- Nav Groups -->
+      <nav aria-label="Documentation navigation">
+        <div v-for="group in filteredGroups" :key="group.id" class="docs-nav-group">
+          <div class="docs-nav-group-header" @click="toggleGroup(group.id)">
+            <span class="docs-nav-group-icon">{{ groupIcons[group.id] || '📄' }}</span>
+            <span class="docs-nav-group-title">{{ group.title }}</span>
+            <svg class="docs-nav-group-chevron" :class="{ collapsed: collapsedGroups.has(group.id) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </div>
-        </nav>
-      </aside>
 
-      <!-- Content -->
-      <article class="docs-content" :class="{ 'docs-api-page': isApiReferencePage }">
+          <div
+            class="docs-nav-group-items"
+            :class="{ collapsed: collapsedGroups.has(group.id) }"
+            :style="{ maxHeight: collapsedGroups.has(group.id) ? '0' : (group.sections.length * 42 + 16) + 'px' }"
+          >
+            <a
+              v-for="sec in group.sections"
+              :key="sec.id"
+              :href="`#${sec.id}`"
+              class="docs-nav-item"
+              :class="{ active: activeSectionId === sec.id }"
+              @click.prevent="selectSection(sec.id)"
+            >
+              {{ sec.title }}
+            </a>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <article class="docs-content" :class="{ 'docs-api-page': isApiReferencePage }">
         <!-- Hero Banner (intro page only) -->
         <div v-if="isIntroPage && !loadingContent" class="docs-hero">
           <div class="docs-hero-badge">
@@ -548,26 +548,26 @@ watch(loadingContent, async (newVal, oldVal) => {
         </div>
       </article>
 
-      <!-- On This Page (ToC Rail) -->
-      <aside v-if="hasToc" class="docs-toc">
-        <div class="docs-toc-title">On this page</div>
-        <a
-          v-for="item in tocItems"
-          :key="item.id"
-          class="docs-toc-item"
-          :class="[
-            { active: activeTocId === item.id },
-            item.depth === 3 ? 'depth-3' : ''
-          ]"
-          :href="`#${item.id}`"
-          @click.prevent="scrollToTocItem(item.id)"
-        >
-          {{ item.text }}
-        </a>
-      </aside>
-    </div>
+    <!-- On This Page (ToC Rail) -->
+    <aside v-if="hasToc" class="docs-toc">
+      <div class="docs-toc-title">On this page</div>
+      <a
+        v-for="item in tocItems"
+        :key="item.id"
+        class="docs-toc-item"
+        :class="[
+          { active: activeTocId === item.id },
+          item.depth === 3 ? 'depth-3' : ''
+        ]"
+        :href="`#${item.id}`"
+        @click.prevent="scrollToTocItem(item.id)"
+      >
+        {{ item.text }}
+      </a>
+    </aside>
+  </div>
 
-    <!-- Mobile sidebar toggle -->
+  <!-- Mobile sidebar toggle -->
     <button class="docs-mobile-toggle" aria-label="Toggle documentation menu" @click="toggleMobileMenu">
       <svg v-if="!mobileMenuOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 6h16M4 12h16M4 18h16" />
