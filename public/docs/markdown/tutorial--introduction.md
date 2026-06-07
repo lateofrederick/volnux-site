@@ -105,7 +105,7 @@ Replace the generated example with three events, the generated `events.py` comes
 
 ```python
 import typing
-from volnux import Event, event
+from volnux.decorators import event
 
 
 @event(name="LoadData")
