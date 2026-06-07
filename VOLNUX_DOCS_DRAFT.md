@@ -10,7 +10,7 @@ _The high-performance orchestration framework that replaces spaghetti code with 
 
 If you've ever built a system that needs to fetch data, process it, handle retries, and execute parallel tasks based on conditional logic, you know how quickly the code turns into an unmaintainable mess of `if/else` statements and deeply nested `try/catch` blocks.
 
-**Volnux fixes this.** 
+**Volnux fixes this.**
 
 It provides a clean separation between **what** your code does (the execution) and **when/how** it runs (the orchestration). By combining standard Python with **Pointy-Lang**—our custom domain-specific language for modeling workflows—Volnux lets you build resilient, event-driven systems that are easy to read, visualize, and scale.
 
@@ -19,12 +19,12 @@ It provides a clean separation between **what** your code does (the execution) a
 Understanding Volnux comes down to three simple concepts:
 
 1. **Events**: The workers. An Event is a single unit of work (e.g., "FetchUser", "ProcessPayment"). It takes inputs, performs a task, and returns a success or failure status.
-2. **Pointy-Lang**: The map. A lightweight DSL (usually a `.pty` file) that wires your Events together using arrows (`->` for sequential, `||` for parallel). 
+2. **Pointy-Lang**: The map. A lightweight DSL (usually a `.pty` file) that wires your Events together using arrows (`->` for sequential, `||` for parallel).
 3. **Pipelines**: The engine. The Pipeline reads your Pointy-Lang map, provisions the data, and orchestrates the execution of your Events across threads or processes.
 
-## Quick Start: Zero to Pipeline
+## Quickstart: Zero to Pipeline
 
-Let's build a pipeline that fetches data, processes two tasks in parallel, and saves the result. 
+Let's build a pipeline that fetches data, processes two tasks in parallel, and saves the result.
 
 ### 1. Installation
 
@@ -99,12 +99,12 @@ from volnux.base import RetryPolicy
 class FlakyAPIEvent(EventBase):
     # Retry up to 5 times, with an exponential backoff, only on Timeouts.
     retry_policy = RetryPolicy(
-        max_attempts=5, 
-        backoff_factor=0.5, 
-        max_backoff=5.0, 
+        max_attempts=5,
+        backoff_factor=0.5,
+        max_backoff=5.0,
         retry_on_exceptions=[TimeoutError]
     )
-    
+
     def process(self, *args, **kwargs):
         # Your flaky logic here
         return True, "Success!"

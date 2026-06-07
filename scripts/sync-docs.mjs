@@ -128,7 +128,7 @@ function main() {
     writeFileSync(join(MD_DIR, fname), draftContent + '\n', 'utf8')
     tutorialSections.push({
       id: 'tutorial-introduction',
-      title: 'Quick Start',
+      title: 'Quickstart',
       path: `markdown/${fname}`,
     })
   }
@@ -139,12 +139,12 @@ function main() {
     for (const f of files.sort()) {
       const md = readFileSync(join(GUIDE_DIR, f), 'utf8')
       const rewrittenMd = rewriteTutorialImages(md)
-      
+
       const firstLine = rewrittenMd.split('\n').find(line => line.startsWith('#')) || ''
       let slug = slugifyHeading(firstLine)
       if (!slug || slug === 'section') slug = f.replace(/\.md$/, '').replace(/^\d+-/, '')
       const title = firstLine.replace(/^#\s+/, '').trim() || f.replace(/^\d+-/, '').replace(/\.md$/, '')
-      
+
       const fname = `guide--${slug}.md`
       const path = `markdown/${fname}`
       writeFileSync(join(MD_DIR, fname), rewrittenMd + '\n', 'utf8')
@@ -180,7 +180,7 @@ function main() {
       let slug = slugifyHeading(firstLine)
       if (!slug || slug === 'section') slug = f.replace(/\.md$/, '').replace(/^\d+-/, '')
       const title = firstLine.replace(/^#\s+/, '').trim() || f.replace(/^\d+-/, '').replace(/\.md$/, '')
-      
+
       const fname = `api--${slug}.md`
       const path = `markdown/${fname}`
       writeFileSync(join(MD_DIR, fname), md + '\n', 'utf8')
