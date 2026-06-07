@@ -94,7 +94,7 @@ pypi:PostgresExtract@v2.4.1[node="warehouse"]
       ],
     },
     {
-      heading: 'Quick start',
+      heading: 'Quickstart',
       content: [
         { type: 'h3', text: 'Installation' },
         {
