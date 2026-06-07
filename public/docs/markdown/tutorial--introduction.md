@@ -60,40 +60,6 @@ Move into the project directory:
 cd my_project
 ```
 
-### Project Structure
-
-A generated Volnux project contains the files and folders needed to organize and run workflows.
-
-#### `config.py`
-
-The main project configuration file.
-
-This is where project-level settings live, including the list of workflows available to the project. When you create workflows using the CLI, Volnux attempts to register them here automatically.
-
-#### `init.py`
-
-The project initialization file.
-
-This file is used by Volnux when setting up the workflow system for the project.
-
-#### `workflows/`
-
-The directory where workflow definitions are stored.
-
-Each workflow gets its own folder under `workflows/`, keeping workflow-specific configuration, pipeline logic, event definitions, and Pointy-Lang files together.
-
-#### `commands/`
-
-A place for project-specific commands or future command extensions.
-
-#### `logs/`
-
-A default location for runtime logs.
-
-#### `tests/`
-
-A place to add tests for workflow behavior, event logic, and project-specific automation.
-
 ### Create Your First Workflow
 
 From inside the project directory, create a workflow:
@@ -115,198 +81,189 @@ workflows/data_processing/
 
 The generated workflow gives you a starting point for defining how your tasks should run.
 
-### Understanding a Volnux Workflow
+### Define the Workflow Logic
 
-A Volnux workflow is usually made up of four main parts:
+At this point, Volnux has created the workflow files for you. Now update the generated files so the workflow has real events, a pipeline, a workflow configuration, and a Pointy-Lang definition.
 
-1. **Workflow configuration**
-2. **Pipeline definition**
-3. **Events or task handlers**
-4. **Pointy-Lang workflow structure**
+For this quickstart, the workflow will perform three simple steps:
 
-Together, these files describe what your workflow does, what tasks are involved, and how those tasks are connected.
+1. Load some data.
+2. Process the data.
+3. Save the result.
 
-### Workflow Files
-
-#### `workflow.py`
-
-This file contains the workflow configuration.
-
-It defines information such as:
-
-- the workflow name
-- the workflow version
-- the parser mode
-- workflow execution settings
-- whether the workflow is executable
-
-You usually edit this file whuen you need to adjust how Volnux discovers, validates, or executes the workflow.
-
-#### `pipeline.py`
-
-This file contains the pipeline definition.
-
-The pipeline connects your workflow configuration to the actual execution model. It is where you define pipeline-level behaviour, inputs, and how the workflow structure should be interpreted.
-
-A simple workflow may describe a task sequence like this:
+The task flow will look like this:
 
 ```text
 LoadData -> ProcessData -> SaveData
 ```
 
-This means:
+#### Define Events
 
-1. `LoadData` runs first.
-2. `ProcessData` runs after `LoadData`.
-3. `SaveData` runs after `ProcessData`.
+Open:
 
-#### `events.py`
+```text
+workflows/data_processing/events.py
+```
 
-This file contains the events or task handlers used by the workflow.
+Replace the generated example with three events:
 
-Events represent the actual units of work in the workflow. For example, a data processing workflow might include events suc as:
+```python
+import typing
 
-- `ExtractData`
-- `TransformData`
-- `LoadData`
+from volnux import Event
 
-Each event should contain the logic needed to perform the step.
 
-#### `.pty` File
+class LoadData(Event):
+    def process(
+        self, *args: typing.Any, **kwargs: typing.Any
+    ) -> typing.Tuple[bool, typing.Any]:
+        data = {
+            "items": ["apple", "banana", "orange"]
+        }
 
-The `.pty` file contains the Pointy-Lang workflow definition.
+        print("Loaded data:", data)
 
-Pointy-Lang is Volnux's declarative syntax for describing how workflow tasks are connected.
+        return True, data
 
-For example:
+
+class ProcessData(Event):
+    def process(
+        self, *args: typing.Any, **kwargs: typing.Any
+    ) -> typing.Tuple[bool, typing.Any]:
+        data = kwargs.get("data") or {}
+
+        items = data.get("items", [])
+        processed_items = [item.upper() for item in items]
+
+        result = {
+            "processed_items": processed_items
+        }
+
+        print("Processed data:", result)
+
+        return True, result
+
+
+class SaveData(Event):
+    def process(
+        self, *args: typing.Any, **kwargs: typing.Any
+    ) -> typing.Tuple[bool, typing.Any]:
+        data = kwargs.get("data") or {}
+
+        print("Saving data:", data)
+        print("Workflow completed successfully.")
+
+        return True, data
+```
+
+Each event represents one unit of work in the workflow.
+
+The `process()` method is where the event logic lives. It returns two values:
+
+```python
+return True, data
+```
+
+The first value indicates whether the event succeeded. The second value is the result produced by the event.
+
+#### Define the Pipeline
+
+Open:
+
+```text
+workflows/data_processing/pipeline.py
+```
+
+Update the pipeline so it references the events and describes the task order:
+
+```python
+from volnux import Pipeline
+
+from .events import LoadData, ProcessData, SaveData
+
+
+class DataProcessingPipeline(Pipeline):
+    class Meta:
+        pointy = "LoadData |-> ProcessData |-> SaveData"
+```
+
+The pipeline tells Volnux which events are part of the workflow and how they should be connected.
+
+The `pointy` value defines the execution order:
 
 ```text
 LoadData |-> ProcessData |-> SaveData
 ```
 
-This describes a linear workflow where each task runs after the previous one completes.
+This means:
 
-You can use Pointy-Lang to model more advanced workflow structures as your project grows, including branching, conditional paths, and parallel execution patterns.
+1. Run `LoadData`.
+2. If it succeeds, run `ProcessData`.
+3. If that succeeds, run `SaveData`.
 
-### Choose a Workflow Parser Mode
 
-When creating a workflow, you can choose how Volnux should parse and interpret the workflow structure.
+#### Define the Workflow Configuration
 
-The default mode is `cfg`:
-
-```bash
-volnux workflow init data_processing --mode cfg
-```
-
-You can also create a workflow using `dag` mode:
-
-```bash
-volnux workflow init data_processing --mode dag
-```
-
-Available modes:
+Open:
 
 ```text
-cfg
-dag
+workflows/data_processing/workflow.py
 ```
 
-Use the mode that best matches how you want your workflow graph to be interpreted.
+Make sure the workflow configuration points to your pipeline:
 
-### Choose an Event Template
+```python
+from volnux.engine.workflows import WorkflowConfig
 
-Volnux can scaffold event logic in two styles:
+from .pipeline import DataProcessingPipeline
 
-- class-based events
-- function-based events
 
-Class-based events are used by default:
+class DataProcessingWorkflow(WorkflowConfig):
+    name = "data_processing"
+    version = "0.1.0"
+    mode = "cfg"
+    pipeline = DataProcessingPipeline
 
-```bash
-volnux workflow init data_processing --event-template class
+    def ready(self):
+        pass
 ```
 
-To generate function-based events instead:
+The workflow configuration is what Volnux uses to discover and run your workflow.
 
-```bash
-volnux workflow init data_processing --event-template function
-```
+It defines:
 
-Use class-based events when you want more structure and extensibility.
+- the workflow name
+- the workflow version
+- the parser mode
+- the pipeline class to execute
 
-Use function-based events when you want a smaller, simpler starting point.
+#### Define the Pointy-Lang File
 
-### Create a Batch Workflow
-
-Some workflows need to process data in batches rather than as a single execution.
-
-To scaffold a workflow with batch support, use:
-
-```bash
-volnux workflow init data_processing --create-batch-pipeline
-```
-
-This adds a `batch_pipeline.py` file to the workflow:
+Open:
 
 ```text
-workflows/data_processing/
-├── __init__.py
-├── workflow.py
-├── pipeline.py
-├── batch_pipeline.py
-├── events.py
-└── dataprocessing.pty
+workflows/data_processing/dataprocessing.pty
 ```
 
-You can then run the workflow in batch mode:
-
-```bash
-volnux workflow run data_processing --type batch
-```
-
-### List Available Workflows
-
-To see which workflows are available in the current project, run:
-
-```bash
-volnux workflow list
-```
-
-Example output:
+Add the same workflow structure using Pointy-Lang:
 
 ```text
-Availabe Workflows:
-
-  ✓ data_processing
-
-Total: 1 workflow(s)
+LoadData |-> ProcessData |-> SaveData
 ```
 
-A check mark indicates that the workflow is available and executable.
+The `.pty` file is useful when you want to keep the task graph outside of the Python pipeline class.
 
-### Validate Workflows
+For this quickstart, the flow is intentionally simple: each event runs after the previous event succeeds.
 
-Before running a workflow, validate it to catch configuration or definition issues early.
+#### Validate the Workflow
 
-To validate every workflow in the project:
-
-```bash
-volnux workflow validate
-```
-
-To validate a specific workflow:
+Before running the workflow, validate it:
 
 ```bash
 volnux workflow validate data_processing
 ```
 
-Validation can help identify issues such as:
-
-- missing configuration
-- invalid task references
-- incorrect workflow definitions
-- problems in the Pointy-Lang structure
-- workflows that are not executable
+If the workflow is configured correctly, it should be ready to run.
 
 ### Run a Workflow
 
@@ -318,119 +275,8 @@ volnux workflow run data_processing
 
 By default, this runs the workflow as a single execution.
 
-You can also specify the execution type explicitly:
-
-```bash
-volnux workflow run data_processing --type single
-```
-
-### Pass Parameters to a Workflow
-
-Runtime parameters can be passed using the `--params` option.
-
-Parameters must be provided as a JSON string:
-
-```bash
-volnux workflow run data_processing --params '{"input_path": "data/input.csv", "output_path": "data/output.csv"}'
-```
-
-These parameters can be used by your workflow to control runtime behaviour, such as:
-
-- input locations
-- output destinations
-- batch sizes
-- filters
-- limits
-- environment-specific settings
-
-### Run a Batch Workflow
-
-If your workflow was created with batch support, run it with:
-
-```bash
-volnux workflow run data_processing --type batch
-```
-
-You can also pass parameters to a batch workflow:
-
-```bash
-volnux workflow run data_processing --type batch --params '{"batch_size": 100}'
-```
-
-### Create a Project in a Custom Location
-
-By default, `volnux init` creates the project in the current directory.
-
-To create the project somewhere else, use `--path`:
-
-```bash
-volnux init my_project --path /path/to/projects
-```
-
-This creates the project at:
-
-```text
-/path/to/projects/my_project
-```
-
-### Overwrite an Existing Project
-
-If a project already exists, Volnux will not overwrite it by default.
-
-To overwrite an existing project directory, use `--force`:
-
-```bash
-volnux init my_project --force
-```
-
-Use this carefully, especially if the existing project contains custom workflow logic.
-
-### Recommended Development Flow
-
-A typical Volnux workflow development process looks like this:
-
-1. Create a project.
-
-   ```bash
-   volnux init my_project
-   ```
-
-2. Enter the project.
-
-   ```bash
-   cd my_project
-   ```
-
-3. Create a workflow.
-
-   ```bash
-   volnux workflow init data_processing
-   ```
-
-4. Edit the generated workflow files.
-
-   ```text
-   workflows/data_processing/workflow.py
-   workflows/data_processing/pipeline.py
-   workflows/data_processing/events.py
-   workflows/data_processing/dataprocessing.pty
-   ```
-
-5. Validate the workflow.
-
-   ```bash
-   volnux workflow validate data_processing
-   ```
-
-6. Run the workflow.
-
-   ```bash
-   volnux workflow run data_processing
-   ```
 
 ### Next Steps
-
-After setting up your first workflow, replace the generated scaffold with your own application logic.
 
 You will usually spend most of your time editing:
 
@@ -438,12 +284,5 @@ You will usually spend most of your time editing:
 - `pipeline.py` for pipeline inputs and structure
 - the `.pty` file for task relationships
 - `workflow.py` for workflow-level configuration
-
-Once your workflow is defined, use the CLI to validate and run it locally:
-
-```bash
-volnux workflow validate
-volnux workflow run data_processing
-```
 
 Volnux gives you a structured way to move from a simple local workflow to more advanced event-driven automation as your project grows.
