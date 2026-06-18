@@ -13,14 +13,19 @@
           "path": "markdown/tutorial--introduction.md"
         },
         {
-          "id": "guide-pipeline",
-          "title": "Pipeline",
-          "path": "markdown/guide--pipeline.md"
-        },
-        {
           "id": "guide-events",
           "title": "Events",
           "path": "markdown/guide--events.md"
+        },
+        {
+          "id": "guide-pointy",
+          "title": "Pointy Lang",
+          "path": "markdown/guide--pointy.md"
+        },
+        {
+          "id": "guide-pipeline",
+          "title": "Pipeline",
+          "path": "markdown/guide--pipeline.md"
         },
         {
           "id": "guide-scheduling",
