@@ -10,6 +10,41 @@ import { transformSphinxApiMarkdown } from '@/utils/sphinxApiToMarkdown'
 
 import 'highlight.js/styles/atom-one-dark.css'
 
+hljs.registerLanguage('pointy', (hljsAPI) => ({
+  name: 'Pointy Lang',
+  aliases: ['pty', 'pointy'],
+  contains: [
+    hljsAPI.HASH_COMMENT_MODE,
+    {
+      className: 'keyword',
+      begin: /@[a-zA-Z0-9_]+/
+    },
+    {
+      className: 'variable',
+      begin: /\$[a-zA-Z0-9_.]+/
+    },
+    {
+      className: 'operator',
+      begin: /->|\|->|\|\||\*|::/
+    },
+    {
+      className: 'string',
+      begin: /"[^"]*"/
+    },
+    {
+      className: 'number',
+      begin: /\b\d+(\.\d+)?\b/
+    },
+    {
+      className: 'title.class',
+      begin: /\b[A-Z][a-zA-Z0-9_]*\b/
+    },
+    {
+      className: 'built_in',
+      begin: /<[A-Z]+/
+    }
+  ]
+}))
 const route = useRoute()
 const router = useRouter()
 
