@@ -601,8 +601,6 @@
   margin-top: 2.5rem;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--docs-border-subtle);
 }
 
 .docs-md h3 {
