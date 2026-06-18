@@ -1,109 +1,203 @@
-# Events
+Events are the fundamental units of work in a Volnux pipeline. They represent a single, discrete action or step within your workflow such as extracting data from a database, waiting for human approval, transforming a dataset, or making an HTTP request.
 
-An **Event** is a single unit of work in your pipeline. Events are designed to be entirely decoupled from the orchestration layer—they take inputs, execute business logic, and return a result. The Pipeline handles the routing of that result.
+If you are familiar with other orchestration tools, you can think of a Volnux **Event** as similar to a "Task" in Prefect or an "Operator" in Airflow. Events encapsulate your business logic and define how data flows, changes, and pauses at a specific point in a pipeline.
 
-## Defining Events
 
-The standard way to define an event is by inheriting from the `EventBase` class and overriding the `process` method.
+## Defining an Event
+
+There are two primary ways to define an event in Volnux: using the `@event` decorator for simplicity, or subclassing `EventBase` for advanced customization, state management, and external communication.
+
+### The `@event` Decorator
+
+The easiest way to create an event is by applying the `@event` decorator to any Python function.
 
 ```python
-from volnux import EventBase
+import typing
+from volnux.decorators import event
 
-class ProcessPayment(EventBase):
-    def process(self, amount: float, **kwargs):
-        # Your business logic here
-        return True, "Payment processed successfully"
+@event(name="ProcessOrder")
+def process_order(self, order_data: dict) -> typing.Tuple[bool, typing.Any]:
+    processed_amount = order_data.get("amount", 0) * 1.2
+    result = {"order_id": order_data["id"], "total": processed_amount}
+
+    # Return a tuple indicating success (bool) and the result (Any)
+    return True, result
 ```
 
-The `process` method should always return a tuple: `(success_boolean, result_data)`. If the first element is `True`, the event is considered a success (Descriptor `1`). If `False`, it's a failure (Descriptor `0`). If you return an integer as the first element instead of a boolean, that integer will act as a custom Descriptor (`3-9`) for routing.
+### Subclassing `EventBase`
 
-### Function-Based Events
+For complex events that require advanced initialization, custom cleanup, human-in-the-loop (HITL) communication, or dynamic control flow, subclass `EventBase` directly.
 
-If you don't need a full class, you can use the `@event` decorator to turn any function into a pipeline event.
+```python
+import typing
+from volnux.event.base import EventBase
+
+class ProcessOrderEvent(EventBase):
+    async def process(self, *args, **kwargs) -> typing.Tuple[bool, typing.Any]:
+        order_data = kwargs.get("order_data", {})
+
+        processed_amount = order_data.get("amount", 0) * 1.2
+        result = {"order_id": order_data.get("id"), "total": processed_amount}
+
+        return True, result
+
+    async def cleanup(self, *args, **kwargs) -> None:
+        # Optional: release resources or connections
+        print("Cleaning up ProcessOrderEvent")
+```
+
+
+
+## The Event Lifecycle
+
+Volnux events are robust and checkpoint-driven, moving through distinct phases during execution. If an event is preempted, paused, or suspended, it can resume from its exact phase:
+
+1. **`INITIALIZED`**: Basic setup, retry initialization, context linking.
+2. **`PRE_PROCESS`**: Evaluates bypass conditions (e.g., `can_bypass_current_event`).
+3. **`COMMUNICATING`**: External communications run here (e.g., waiting for external signals or human inputs).
+4. **`PROCESSING`**: Executes the core `process()` method (and handles retries).
+5. **`POST_PROCESS`**: Result evaluation, StopCondition checking, and signal emitting.
+6. **`COMPLETED`**: Resource cleanup and finalization.
+
+
+
+## External Communication & Human-In-The-Loop (HITL)
+
+Volnux natively supports pausing execution to wait for external systems or human approvals without consuming active worker resources. You can implement the `communicate()` hook to pause execution and fetch inputs before `process()` runs.
+
+### Requesting Human Input
+```python
+async def communicate(self, order: dict, **kwargs):
+    if order["amount"] > 100_000:
+        await self.request_human_input(
+            title="High-value order approval",
+            description=f"Order {order['id']} exceeds threshold.",
+            payload={"order": order},
+            options=["approve", "reject"],
+            timeout_hours=4,
+        )
+
+        # When execution resumes, read the human response:
+        response = self.previous_result.filter(type="human_response").first()
+        return {"approval_decision": response.content["decision"]}
+```
+
+### Waiting for Conditions (Sensors)
+Similar to an Airflow Sensor, you can suspend an event until an arbitrary condition is met:
+
+```python
+async def communicate(self, batch_id: str, **kwargs):
+    await self.wait_for_condition(
+        condition_fn=lambda: s3_object_exists("data-lake", f"batches/{batch_id}.csv"),
+        title="Waiting for batch file",
+        timeout_hours=4,
+        poll_interval_seconds=60.0,
+    )
+```
+
+You can also use `wait_for_event()` to pause the event until a specific asynchronous event arrives on the event bus (e.g., `ml.training.completed`).
+
+
+
+## Event Return Values and Control Flow
+
+Every `process()` method must return a standard tuple containing two elements:
+
+```python
+return True, {"status": "success"}
+```
+
+1. **Success Flag (`bool`)**: `True` if the processing logic succeeded. `False` triggers error-handling or retries.
+2. **Result (`Any`)**: Serialised data produced by the event.
+
+> [!IMPORTANT]
+> The result data must be serializable. Volnux heavily relies on checkpointing results. Avoid returning non-serializable objects like file handles.
+
+### Dynamic Control Flow (`goto`)
+If your event logic dictates that the pipeline should dynamically branch to another task descriptor, you can use the `goto()` method inside `process()`. This raises a `SwitchTask` signal internally, altering the flow.
+
+```python
+self.goto(descriptor=2, result_success=True, result={"branch": "fast_track"})
+```
+
+### Stop Conditions
+You can configure events to intentionally halt the workflow entirely based on their outcomes using `StopCondition` (`NEVER`, `ON_SUCCESS`, `ON_ERROR`, `ON_ANY`).
+
+
+
+## Retries and Error Handling
+
+Real-world pipelines encounter transient failures. Volnux provides robust retry policies complete with exponential backoffs.
 
 ```python
 from volnux.decorators import event
+from volnux.mixins.event import RetryPolicy
 
-@event()
-def fetch_user(user_id: str, **kwargs):
-    return True, {"id": user_id, "name": "Alice"}
-```
-
-## Configuring Executors
-
-By default, Volnux executes events using a system-optimized thread pool. However, you can explicitly configure exactly how each event should run (e.g., using threads for I/O bounds, or processes for CPU bounds) using `ExecutorInitializerConfig`.
-
-```python
-from volnux import EventBase, ExecutorInitializerConfig
-from concurrent.futures import ProcessPoolExecutor
-
-# Define executor constraints
-config = ExecutorInitializerConfig(
-    max_workers=4,
-    max_tasks_per_child=50,  # Recycle processes to prevent memory leaks
-    thread_name_prefix="payment_worker_"
-)
-
-class HeavyComputationEvent(EventBase):
-    executor = ProcessPoolExecutor
-    executor_config = config
-    
-    def process(self, *args, **kwargs):
-        return True, "Computed"
-```
-
-You can pass the same configurations directly to the `@event` decorator:
-
-```python
 @event(
-    executor=ProcessPoolExecutor,
-    max_workers=4,
-    max_tasks_per_child=10
-)
-def compute_heavy_task(*args, **kwargs):
-    pass
-```
-
-## Event Evaluation States
-
-When an event spins up multiple internal tasks (e.g., when receiving an array of data from a previous pipeline step), you can control how the overall success of the event is evaluated using `EventExecutionEvaluationState`.
-
-```python
-from volnux import EventBase, EventExecutionEvaluationState
-
-class BulkProcess(EventBase):
-    # Only succeed if ALL tasks in this event succeed (Default)
-    execution_evaluation_state = EventExecutionEvaluationState.SUCCESS_ON_ALL_EVENTS_SUCCESS
-    
-    # Other options:
-    # - FAILURE_FOR_PARTIAL_ERROR: Fail if ANY task fails.
-    # - SUCCESS_FOR_PARTIAL_SUCCESS: Succeed if AT LEAST ONE task succeeds.
-    # - FAILURE_FOR_ALL_EVENTS_FAILURE: Fail only if ALL tasks fail.
-    
-    def process(self, *args, **kwargs):
-        pass
-```
-
-## Retry Policies
-
-Transient network failures or flaky APIs shouldn't crash your pipeline. Volnux provides a robust `RetryPolicy` to automatically retry failing events.
-
-```python
-from volnux.base import RetryPolicy
-import requests
-
-class FlakyAPIEvent(EventBase):
-    retry_policy = RetryPolicy(
-        max_attempts=5,        # Try up to 5 times
-        backoff_factor=0.5,    # Increase wait time exponentially
-        max_backoff=5.0,       # Never wait longer than 5 seconds between retries
-        retry_on_exceptions=[requests.exceptions.Timeout, ConnectionError]
+    name="FetchExternalData",
+    retry_policy=RetryPolicy(
+        max_attempts=5,
+        backoff_factor=2.0,
+        retry_on_exceptions=[ConnectionError, TimeoutError]
     )
-    
-    def process(self, url: str, **kwargs):
-        response = requests.get(url)
-        return True, response.json()
+)
+def fetch_data(self) -> typing.Tuple[bool, typing.Any]:
+    # Logic that might fail
+    return True, {"status": "success"}
 ```
 
-If the event raises an exception that is not in the `retry_on_exceptions` list, it fails immediately. Otherwise, it backs off and retries until `max_attempts` is reached. You can also listen to the `event_execution_retry` SoftSignal to log retries in real-time.
 
+
+## Commands and Remote Control
+
+Volnux events are inherently responsive. Because they run alongside a background `EventCommandMixin` listener, you can remote-control them while they are executing:
+- **PAUSE / RESUME**: Suspends execution seamlessly via internal async gates.
+- **CANCEL**: Safely aborts execution.
+- **UPDATE_PRIORITY**: Preempts the task, checkpoints it, and re-queues it dynamically.
+
+
+
+## Categorization and Metadata
+
+Volnux provides semantic classification for events to help organize large data platforms. Common categories from `EventCategory` include `EXTRACT`, `TRANSFORM`, `LOAD`, `HTTP`, `MESSAGING`, `VALIDATE`, `AI`, and `AGENT`.
+
+```python
+from volnux.event.base import EventBase, EventCategory
+
+class ExtractUserData(EventBase):
+    categories = frozenset({EventCategory.EXTRACT, EventCategory.DATABASE})
+    version = "1.2.0"
+    deprecated = False
+
+    async def process(self, *args, **kwargs) -> typing.Tuple[bool, typing.Any]:
+        return True, {"users": []}
+```
+
+Events also natively support versioning (`version`, `changelog`, `deprecated` flags).
+
+
+
+## Tracking Assets
+
+If an event produces a meaningful dataset or artifact, use the `@asset` decorator to natively track it.
+
+```python
+from volnux.decorators import asset
+from volnux.asset import AssetKey
+
+@asset(
+    key=AssetKey("cleaned_users_data"),
+    description="User data with nulls removed"
+)
+class CleanUsersEvent(EventBase):
+    async def process(self, **kwargs) -> typing.Tuple[bool, typing.Any]:
+        return True, [{"id": 1, "name": "Alice"}]
+```
+
+When the event successfully completes, Volnux automatically records an `AssetMaterialisation` in the catalog, tracking lineage and freshness policies.
+
+
+
+## Next Steps
+
+Now that you understand the powerful lifecycle, communication hooks, and tracking built into Volnux Events, you can learn how to orchestrate them together into full **Pipelines** and construct task dependencies using **Pointy-Lang** (`.pty` files).
