@@ -1,103 +1,50 @@
 {
-  "version": 1,
-  "generated": "2026-05-20T17:32:16.096Z",
-  "sourceRoot": "/Users/lateo/Documents/dev/open_source/event_pipeline",
+  "version": 2,
+  "generated": "2026-06-21T17:35:00.000Z",
   "groups": [
     {
-      "id": "tutorial",
-      "title": "Getting Started",
+      "id": "documentation",
+      "title": "Documentation",
       "sections": [
         {
-          "id": "tutorial-introduction",
-          "title": "Quickstart",
-          "path": "markdown/tutorial--introduction.md"
+          "id": "chapter-1-introduction",
+          "title": "Introduction",
+          "path": "markdown/1-introduction.md"
         },
         {
-          "id": "guide-events",
-          "title": "Events",
-          "path": "markdown/guide--events.md"
+          "id": "chapter-2-installation",
+          "title": "Installation",
+          "path": "markdown/2-installation.md"
         },
         {
-          "id": "guide-pointy",
-          "title": "Pointy Lang",
-          "path": "markdown/guide--pointy.md"
+          "id": "chapter-3-getting-started",
+          "title": "Getting Started",
+          "path": "markdown/3-getting-started.md"
         },
         {
-          "id": "guide-pipeline",
-          "title": "Pipeline",
-          "path": "markdown/guide--pipeline.md"
+          "id": "chapter-4-core-concepts",
+          "title": "Core Concepts",
+          "path": "markdown/4-core-concepts.md"
         },
         {
-          "id": "guide-scheduling",
-          "title": "Scheduling",
-          "path": "markdown/guide--scheduling.md"
+          "id": "chapter-5-pointy-lang-the-workflow-dsl",
+          "title": "Pointy-Lang — The Workflow DSL",
+          "path": "markdown/5-pointy-lang-the-workflow-dsl.md"
         },
         {
-          "id": "guide-signals",
-          "title": "Signals",
-          "path": "markdown/guide--signals.md"
+          "id": "chapter-6-the-event-lifecycle",
+          "title": "The Event Lifecycle",
+          "path": "markdown/6-the-event-lifecycle.md"
         },
         {
-          "id": "guide-telemetry-observability",
-          "title": "Telemetry & Observability",
-          "path": "markdown/guide--telemetry-observability.md"
+          "id": "chapter-7-human-in-the-loop",
+          "title": "Human-in-the-Loop (HITL)",
+          "path": "markdown/7-human-in-the-loop.md"
         },
         {
-          "id": "guide-graph-generation-visualization",
-          "title": "Graph Generation & Visualization",
-          "path": "markdown/guide--graph-generation-visualization.md"
-        }
-      ]
-    },
-    {
-      "id": "api",
-      "title": "API Reference",
-      "sections": [
-        {
-          "id": "api-pipeline-orchestration-api",
-          "title": "Pipeline & Orchestration API",
-          "path": "markdown/api--pipeline-orchestration-api.md"
-        },
-        {
-          "id": "api-events-execution-api",
-          "title": "Events & Execution API",
-          "path": "markdown/api--events-execution-api.md"
-        },
-        {
-          "id": "api-fields-data-api",
-          "title": "Fields & Data API",
-          "path": "markdown/api--fields-data-api.md"
-        },
-        {
-          "id": "api-signals-telemetry-metrics-api",
-          "title": "Signals, Telemetry & Metrics API",
-          "path": "markdown/api--signals-telemetry-metrics-api.md"
-        },
-        {
-          "id": "api-advanced-api",
-          "title": "Advanced API",
-          "path": "markdown/api--advanced-api.md"
-        }
-      ]
-    },
-    {
-      "id": "examples",
-      "title": "Example tutorials",
-      "sections": [
-        {
-          "id": "example-simple",
-          "title": "Simple",
-          "path": "markdown/example--simple.md"
-        },
-        {
-          "id": "example-sentiment-analysis",
-          "title": "Sentiment analysis",
-          "path": "markdown/example--sentiment-analysis.md"
-        },
-        {
-          "id": "example-user-posts-etl",
-          "title": "User posts ETL",
-          "path": "markdown/example--user-posts-etl.md"
+          "id": "chapter-8-triggers",
+          "title": "Triggers",
+          "path": "markdown/8-triggers.md"
         }
       ]
     }
