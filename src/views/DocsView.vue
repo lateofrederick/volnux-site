@@ -1,58 +1,25 @@
 <script setup lang="ts">
-import DOMPurify from 'dompurify'
-import hljs from 'highlight.js'
-import MarkdownIt from 'markdown-it'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, markRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import type { DocsManifest, DocsManifestSection } from '@/types/docs-manifest'
-import { transformSphinxApiMarkdown } from '@/utils/sphinxApiToMarkdown'
+// import { transformSphinxApiMarkdown } from '@/utils/sphinxApiToMarkdown' // Moved to sync script
 
 import 'highlight.js/styles/atom-one-dark.css'
+import mermaid from 'mermaid'
 
-hljs.registerLanguage('pointy', (hljsAPI) => ({
-  name: 'Pointy Lang',
-  aliases: ['pty', 'pointy'],
-  contains: [
-    hljsAPI.HASH_COMMENT_MODE,
-    {
-      className: 'keyword',
-      begin: /@[a-zA-Z0-9_]+/
-    },
-    {
-      className: 'variable',
-      begin: /\$[a-zA-Z0-9_.]+/
-    },
-    {
-      className: 'operator',
-      begin: /->|\|->|\|\||\*|::/
-    },
-    {
-      className: 'string',
-      begin: /"[^"]*"/
-    },
-    {
-      className: 'number',
-      begin: /\b\d+(\.\d+)?\b/
-    },
-    {
-      className: 'title.class',
-      begin: /\b[A-Z][a-zA-Z0-9_]*\b/
-    },
-    {
-      className: 'built_in',
-      begin: /<[A-Z]+/
-    }
-  ]
-}))
+mermaid.initialize({ startOnLoad: false, theme: 'dark' })
+
+const markdownComponents = import.meta.glob('../../public/docs/markdown/*.md')
+
+
 const route = useRoute()
 const router = useRouter()
 
-/* ── State ── */
 const manifest = ref<DocsManifest | null>(null)
 const loadError = ref<string | null>(null)
 const contentError = ref<string | null>(null)
-const renderedHtml = ref('')
+const activeComponent = ref<any>(null)
 const activeSectionId = ref('')
 const loadingContent = ref(false)
 const docsBodyRef = ref<HTMLElement | null>(null)
@@ -69,27 +36,6 @@ const groupIcons: Record<string, string> = {
   api: '📚',
   examples: '🧪',
 }
-
-/* ── Markdown setup ── */
-const md = new MarkdownIt({
-  html: false,
-  linkify: true,
-  typographer: true,
-  breaks: true,
-})
-md.set({
-  highlight(str, lang) {
-    const name = (lang || '').trim()
-    if (name && hljs.getLanguage(name)) {
-      try {
-        return hljs.highlight(str, { language: name, ignoreIllegals: true }).value
-      } catch {
-        /* fall through */
-      }
-    }
-    return md.utils.escapeHtml(str)
-  },
-})
 
 /* ── Computed ── */
 const flatSections = computed(() => {
@@ -147,36 +93,6 @@ function docBase() {
   return b.endsWith('/') ? b.slice(0, -1) : b
 }
 
-function enrichExternalLinks(html: string) {
-  return html.replaceAll('<a href="http', '<a target="_blank" rel="noopener noreferrer" href="http')
-}
-
-function sanitizeHtml(html: string) {
-  return DOMPurify.sanitize(enrichExternalLinks(html), {
-    USE_PROFILES: { html: true },
-  })
-}
-
-function stripDuplicateLeadingH1(markdown: string, sectionTitle: string): string {
-  const want = sectionTitle.trim().toLowerCase().replace(/\s+/g, ' ')
-  if (!want) return markdown
-  const lines = markdown.split('\n')
-  const first = (lines[0] ?? '').trim()
-  const m = first.match(/^#\s+(.+)$/)
-  if (!m) return markdown
-  const got = m[1].trim().toLowerCase().replace(/\s+/g, ' ')
-  if (got !== want) return markdown
-  lines.shift()
-  while (lines.length > 0 && lines[0].trim() === '') lines.shift()
-  return lines.join('\n')
-}
-
-function patchFenceHljsClass(html: string) {
-  return html
-    .replaceAll(/<pre><code class="language-([^"]+)">/g, '<pre><code class="hljs language-$1">')
-    .replaceAll('<pre><code>', '<pre><code class="hljs">')
-}
-
 // function detectLanguage(pre: HTMLPreElement): string {
 //   const code = pre.querySelector('code')
 //   if (!code) return ''
@@ -223,6 +139,32 @@ function extractToc(root: HTMLElement) {
     items.push({ id, text, depth: h.tagName === 'H3' ? 3 : 2 })
   })
   tocItems.value = items
+}
+
+function renderMermaid(root: HTMLElement) {
+  const mermaidBlocks = root.querySelectorAll('.mermaid-raw')
+  mermaidBlocks.forEach(async (rawBlock) => {
+    if (rawBlock.nextElementSibling?.classList.contains('mermaid-render')) return
+
+    const content = rawBlock.textContent || ''
+    
+    const container = document.createElement('div')
+    container.className = 'mermaid-render'
+    container.style.display = 'flex'
+    container.style.justifyContent = 'center'
+    container.style.margin = '2rem 0'
+    
+    rawBlock.parentNode?.insertBefore(container, rawBlock.nextSibling)
+    
+    try {
+      const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`
+      const { svg } = await mermaid.render(id, content)
+      container.innerHTML = svg
+    } catch (e) {
+      console.error('Mermaid render error', e)
+      container.innerHTML = `<pre style="color:var(--docs-error-text)">Mermaid Error: ${e}</pre>`
+    }
+  })
 }
 
 function onDocsMarkdownClick(e: MouseEvent) {
@@ -314,17 +256,16 @@ async function fetchManifest() {
 async function loadSection(section: DocsManifestSection) {
   contentError.value = null
   loadingContent.value = true
-  renderedHtml.value = ''
+  activeComponent.value = null
   tocItems.value = []
   try {
-    const res = await fetch(`${docBase()}/docs/${section.path}`)
-    if (!res.ok) throw new Error(`${section.path}: ${res.status}`)
-    const text = await res.text()
-    let body = stripDuplicateLeadingH1(text, section.title)
-    if (section.id.startsWith('api-')) {
-      body = transformSphinxApiMarkdown(body)
+    const componentPath = `../../public/docs/${section.path}`
+    const importFn = markdownComponents[componentPath]
+    if (!importFn) {
+      throw new Error(`Component not found: ${componentPath}`)
     }
-    renderedHtml.value = sanitizeHtml(patchFenceHljsClass(md.render(body)))
+    const module = (await importFn()) as any
+    activeComponent.value = markRaw(module.default)
     await nextTick()
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   } catch (e) {
@@ -396,27 +337,27 @@ watch(
   },
 )
 
-watch(renderedHtml, async () => {
-  if (!renderedHtml.value) return
-  // Double nextTick: first tick updates v-html, second ensures ref is assigned
+watch(activeComponent, async () => {
+  if (!activeComponent.value) return
   await nextTick()
   await nextTick()
   const root = docsBodyRef.value
   if (root) {
     wrapDocCodeBlocks(root)
     extractToc(root)
+    renderMermaid(root)
   }
 })
 
-// Also watch loadingContent -> false as a fallback to ensure DOM manipulation runs
 watch(loadingContent, async (newVal, oldVal) => {
-  if (oldVal && !newVal && renderedHtml.value) {
+  if (oldVal && !newVal && activeComponent.value) {
     await nextTick()
     await nextTick()
     const root = docsBodyRef.value
     if (root) {
       wrapDocCodeBlocks(root)
       extractToc(root)
+      renderMermaid(root)
     }
   }
 })
@@ -553,9 +494,10 @@ watch(loadingContent, async (newVal, oldVal) => {
           v-else
           ref="docsBodyRef"
           class="docs-md"
-          v-html="renderedHtml"
           @click="onDocsMarkdownClick"
-        />
+        >
+          <component :is="activeComponent" v-if="activeComponent" />
+        </div>
 
         <!-- Previous / Next Navigation -->
         <div v-if="!loadingContent && (prevSection || nextSection)" class="docs-nav-footer">
