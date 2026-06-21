@@ -26,6 +26,20 @@ const EXAMPLES_DIR = join(SOURCE_ROOT, 'examples')
 /** Do not publish these TUTORIAL.md chapters in the site nav. */
 const SKIP_TUTORIAL_SLUGS = new Set(['contributing', 'reporting-issues', 'license', 'requirements', 'introduction'])
 
+function stripDuplicateLeadingH1(markdown, sectionTitle) {
+  const want = (sectionTitle || '').trim().toLowerCase().replace(/\s+/g, ' ')
+  if (!want) return markdown
+  const lines = markdown.split('\n')
+  const first = (lines[0] || '').trim()
+  const m = first.match(/^#\s+(.+)$/)
+  if (!m) return markdown
+  const got = m[1].trim().toLowerCase().replace(/\s+/g, ' ')
+  if (got !== want) return markdown
+  lines.shift()
+  while (lines.length > 0 && lines[0].trim() === '') lines.shift()
+  return lines.join('\n')
+}
+
 function slugifyHeading(line) {
   return line
     .replace(/^#\s+/, '')
@@ -147,7 +161,8 @@ function main() {
 
       const fname = `guide--${slug}.md`
       const path = `markdown/${fname}`
-      writeFileSync(join(MD_DIR, fname), rewrittenMd + '\n', 'utf8')
+      const finalMd = stripDuplicateLeadingH1(rewrittenMd, title)
+      writeFileSync(join(MD_DIR, fname), finalMd + '\n', 'utf8')
       tutorialSections.push({
         id: `guide-${slug}`,
         title,
@@ -183,7 +198,9 @@ function main() {
 
       const fname = `api--${slug}.md`
       const path = `markdown/${fname}`
-      writeFileSync(join(MD_DIR, fname), md + '\n', 'utf8')
+      // Sphinx transformations will be done upstream or handled here later if needed.
+      const finalMd = stripDuplicateLeadingH1(md, title)
+      writeFileSync(join(MD_DIR, fname), finalMd + '\n', 'utf8')
       apiSections.push({
         id: `api-${slug}`,
         title,
