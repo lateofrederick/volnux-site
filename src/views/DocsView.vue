@@ -6,9 +6,7 @@ import type { DocsManifest, DocsManifestSection } from '@/types/docs-manifest'
 // import { transformSphinxApiMarkdown } from '@/utils/sphinxApiToMarkdown' // Moved to sync script
 
 import 'highlight.js/styles/atom-one-dark.css'
-import mermaid from 'mermaid'
-
-mermaid.initialize({ startOnLoad: false, theme: 'dark' })
+import pako from 'pako'
 
 const markdownComponents = import.meta.glob('../../public/docs/markdown/*.md')
 
@@ -33,8 +31,11 @@ const activeTocId = ref('')
 /* ── Group icons ── */
 const groupIcons: Record<string, string> = {
   tutorial: '📘',
-  api: '📚',
-  examples: '🧪',
+  core: '⚙️',
+  advanced: '🚀',
+  operations: '🛠️',
+  ecosystem: '🌍',
+  references: '📚',
 }
 
 /* ── Computed ── */
@@ -141,28 +142,50 @@ function extractToc(root: HTMLElement) {
   tocItems.value = items
 }
 
-function renderMermaid(root: HTMLElement) {
-  const mermaidBlocks = root.querySelectorAll('.mermaid-raw')
-  mermaidBlocks.forEach(async (rawBlock) => {
-    if (rawBlock.nextElementSibling?.classList.contains('mermaid-render')) return
+function strToBase64url(str: string): string {
+  const data = new TextEncoder().encode(str)
+  const compressed = pako.deflate(data, { level: 9 })
+  let binary = ''
+  for (let i = 0; i < compressed.length; i++) {
+    binary += String.fromCharCode(compressed[i])
+  }
+  const base64 = btoa(binary)
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
 
-    const content = rawBlock.textContent || ''
+function renderD2(root: HTMLElement) {
+  const d2Blocks = root.querySelectorAll('.d2-raw, code.language-d2')
+  d2Blocks.forEach((rawBlock) => {
+    const isCode = rawBlock.tagName.toLowerCase() === 'code'
+    const pre = isCode ? rawBlock.parentElement : null
+    const wrap = pre ? pre.closest('.docs-code-wrap') : null
+    const targetToHide = (wrap || pre || rawBlock) as HTMLElement
+    const targetToInsertAfter = wrap || pre || rawBlock
+
+    if (targetToInsertAfter.nextElementSibling?.classList.contains('d2-render')) return
+
+    // Hide the original block
+    targetToHide.style.display = 'none'
+
+    // Extract text
+    let content = rawBlock.textContent || ''
+    content = content.trim()
     
     const container = document.createElement('div')
-    container.className = 'mermaid-render'
+    container.className = 'd2-render'
     container.style.display = 'flex'
     container.style.justifyContent = 'center'
     container.style.margin = '2rem 0'
     
-    rawBlock.parentNode?.insertBefore(container, rawBlock.nextSibling)
+    targetToInsertAfter.parentNode?.insertBefore(container, targetToInsertAfter.nextSibling)
     
     try {
-      const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`
-      const { svg } = await mermaid.render(id, content)
-      container.innerHTML = svg
+      const encoded = strToBase64url(content)
+      const url = `https://kroki.io/d2/svg/${encoded}?theme=200`
+      container.innerHTML = `<img src="${url}" alt="Architecture Diagram" style="max-width: 100%; height: auto;" />`
     } catch (e) {
-      console.error('Mermaid render error', e)
-      container.innerHTML = `<pre style="color:var(--docs-error-text)">Mermaid Error: ${e}</pre>`
+      console.error('D2 render error', e)
+      container.innerHTML = `<pre style="color:var(--docs-error-text)">D2 Error: ${e}</pre>`
     }
   })
 }
@@ -345,7 +368,7 @@ watch(activeComponent, async () => {
   if (root) {
     wrapDocCodeBlocks(root)
     extractToc(root)
-    renderMermaid(root)
+    renderD2(root)
   }
 })
 
@@ -357,7 +380,7 @@ watch(loadingContent, async (newVal, oldVal) => {
     if (root) {
       wrapDocCodeBlocks(root)
       extractToc(root)
-      renderMermaid(root)
+      renderD2(root)
     }
   }
 })

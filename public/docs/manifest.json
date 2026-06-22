@@ -3,8 +3,8 @@
   "generated": "2026-06-21T17:35:00.000Z",
   "groups": [
     {
-      "id": "documentation",
-      "title": "Documentation",
+      "id": "tutorial",
+      "title": "Getting Started",
       "sections": [
         {
           "id": "chapter-1-introduction",
@@ -20,7 +20,13 @@
           "id": "chapter-3-getting-started",
           "title": "Getting Started",
           "path": "markdown/3-getting-started.md"
-        },
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "title": "Core Engine",
+      "sections": [
         {
           "id": "chapter-4-core-concepts",
           "title": "Core Concepts",
@@ -37,14 +43,138 @@
           "path": "markdown/6-the-event-lifecycle.md"
         },
         {
+          "id": "chapter-8-triggers",
+          "title": "Triggers",
+          "path": "markdown/8-triggers.md"
+        },
+        {
+          "id": "chapter-10-the-result-layer",
+          "title": "The Result Layer",
+          "path": "markdown/10-the-result-layer.md"
+        },
+        {
+          "id": "chapter-11-checkpointing-and-state-management",
+          "title": "Checkpointing and State Management",
+          "path": "markdown/11-checkpointing-and-state-management.md"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "Advanced Features",
+      "sections": [
+        {
           "id": "chapter-7-human-in-the-loop",
           "title": "Human-in-the-Loop (HITL)",
           "path": "markdown/7-human-in-the-loop.md"
         },
         {
-          "id": "chapter-8-triggers",
-          "title": "Triggers",
-          "path": "markdown/8-triggers.md"
+          "id": "chapter-9-windowing-and-streaming",
+          "title": "Windowing and Streaming",
+          "path": "markdown/9-windowing-and-streaming.md"
+        },
+        {
+          "id": "chapter-12-the-command-channel",
+          "title": "The Command Channel",
+          "path": "markdown/12-the-command-channel.md"
+        },
+        {
+          "id": "chapter-13-persistence-layer",
+          "title": "Persistence Layer",
+          "path": "markdown/13-persistence-layer.md"
+        },
+        {
+          "id": "chapter-14-assets-and-data-lineage",
+          "title": "Assets and Data Lineage",
+          "path": "markdown/14-assets-and-data-lineage.md"
+        },
+        {
+          "id": "chapter-15-agentic-ai",
+          "title": "Agentic AI",
+          "path": "markdown/15-agentic-ai.md"
+        }
+      ]
+    },
+    {
+      "id": "operations",
+      "title": "Operations & Deployment",
+      "sections": [
+        {
+          "id": "chapter-16-distribution-and-remote-execution",
+          "title": "Distribution and Remote Execution",
+          "path": "markdown/16-distribution-and-remote-execution.md"
+        },
+        {
+          "id": "chapter-17-observability",
+          "title": "Observability",
+          "path": "markdown/17-observability.md"
+        },
+        {
+          "id": "chapter-18-governance",
+          "title": "Governance",
+          "path": "markdown/18-governance.md"
+        },
+        {
+          "id": "chapter-19-eventhub",
+          "title": "EventHub",
+          "path": "markdown/19-eventhub.md"
+        },
+        {
+          "id": "chapter-22-deployment",
+          "title": "Deployment",
+          "path": "markdown/22-deployment.md"
+        }
+      ]
+    },
+    {
+      "id": "ecosystem",
+      "title": "Ecosystem & Community",
+      "sections": [
+        {
+          "id": "chapter-23-migration-guides",
+          "title": "Migration Guides",
+          "path": "markdown/23-migration-guides.md"
+        },
+        {
+          "id": "chapter-24-architecture-deep-dive",
+          "title": "Architecture Deep Dive",
+          "path": "markdown/24-architecture-deep-dive.md"
+        },
+        {
+          "id": "chapter-25-troubleshooting-and-faq",
+          "title": "Troubleshooting and FAQ",
+          "path": "markdown/25-troubleshooting-and-faq.md"
+        },
+        {
+          "id": "chapter-26-contributing",
+          "title": "Contributing",
+          "path": "markdown/26-contributing.md"
+        }
+      ]
+    },
+    {
+      "id": "references",
+      "title": "References",
+      "sections": [
+        {
+          "id": "chapter-20-cli-reference",
+          "title": "CLI Reference",
+          "path": "markdown/20-cli-reference.md"
+        },
+        {
+          "id": "chapter-21-rest-api-reference",
+          "title": "REST API Reference",
+          "path": "markdown/21-rest-api-reference.md"
+        },
+        {
+          "id": "chapter-27-glossary",
+          "title": "Glossary",
+          "path": "markdown/27-glossary.md"
+        },
+        {
+          "id": "chapter-28-api-reference",
+          "title": "API Reference",
+          "path": "markdown/28-api-reference.md"
         }
       ]
     }
