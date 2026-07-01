@@ -13,26 +13,24 @@ How it works:
 * `SaveTrades` writes results while `ProcessTrades` is still processing
 * The pipeline depth (3 events) × batch size determines peak memory
 
-Memory bounds:
+## When to Use `|->` vs `->`
+Both operators are sequential, the upstream event completes before the downstream event starts. The difference is what happens with data.
 
-For 10 million records with `batch_size=50`:
-* Peak memory = batch_size × pipeline_depth
-* = 50 records × 3 events
-* = 150 records in flight
-
-Without streaming (`->`), all 10 million records would be materialised before `ProcessTrades` starts. With streaming (`|->`), peak memory is constant regardless of total data size.
-
-Backpressure:
-If `ProcessTrades` is slower than `FetchTrades`, the `ResultStream` buffer fills up. When the buffer is full, `FetchTrades` is blocked from producing more results. This backpressure propagates upstream naturally through the async/await chain. No explicit coordination. No dropped data. The pipeline self-regulates.
-
-When to use `|->` vs `->`:
-
-| | `\|->` (Streaming) | `->` (Batch) |
+| | `->` (Control Flow) | `\|->` (Data + Control Flow) |
 | :--- | :--- | :--- |
-| **Data size** | Large or unbounded | Small, fits in memory |
-| **Start time** | Downstream starts immediately | Downstream waits for upstream |
-| **Memory** | O(batch_size × depth) | O(total_data) |
-| **Use case** | Continuous processing, event streams | ETL batches, small datasets |
+| **What it does** | Passes execution control only | Passes execution control AND data |
+| **Data flow** | No data passed, `self.previous_result` is the EMPTY sentinel | A's results are available to B through `self.previous_result` |
+| **When downstream starts** | After upstream completes | After upstream completes |
+| **Memory** | N/A, no data passed | Data fetched lazily from persistence backend in chunks |
+| **Use case** | Orchestration, independent steps, approvals, notifications | Data pipelines, ETL, batch processing |
+
+`->` is for orchestration. Events connected by `->` are independent steps that happen to run in order. `ApproveOrder -> ExecuteTrade -> SendConfirmation`, each step does its own thing. No data flows through the pipe. `self.previous_result` is the EMPTY sentinel.
+
+`|->` is for data pipelines. Events connected by `|->` share data. `FetchOrders |-> ValidateOrders |-> SaveOrders`, each step receives the previous step's results through `self.previous_result` and passes its own results forward.
+
+Data access is lazy, not eager. When B runs after A completes, `self.previous_result` returns a `ResultStream` backed by the persistence backend. The stream does not contain materialized data, it fetches records in chunks when evaluated (via `.first()`, iteration, `.filter()`). This means B can process A's results without loading the entire dataset into its worker's memory. For 10 million records, B's peak memory is bounded by the chunk size, not the total data size. B holds a worker slot while it processes, but it's actively working, A has already finished, and the data is available. B just accesses it efficiently.
+
+True streaming across workflow instances. Within a single workflow execution, events run sequentially. To achieve continuous processing of unbounded data streams, trigger multiple executions of the same workflow. The WindowedTrigger accumulates events and fires the workflow when a window is complete. Multiple workflow executions can run concurrently, each processing its own window of data. This is how Volnux handles streaming, not within a single workflow, but across many executions of the same workflow, each handling a portion of the stream.
 
 Streaming with Meta Events:
 
@@ -40,7 +38,7 @@ Streaming with Meta Events:
 FetchTrades |-> MAP<ValidateTrade>[batch_size=50] |-> SaveTrades
 ```
 
-`FetchTrades` streams trades. `MAP<ValidateTrade>` divides them into batches of 50. Each batch runs `ValidateTrade` in parallel (up to `max_workers`). Results stream to `SaveTrades`. At any moment, memory holds at most 50 × `max_workers` records plus pipeline overhead.
+`FetchTrades` completes first. Its results are persisted. `MAP<ValidateTrade>` runs next, splitting the persisted results into batches of 50. Each batch gets its own `ValidateTrade` execution, which accesses its batch lazily from the stream. Results from MAP are persisted. `SaveTrades` runs last, accessing the validated results lazily. At any moment, each worker holds at most its current chunk of data plus its working state.
 
 ## The WindowedTrigger
 While `|->` handles streaming data flow between events, `WindowedTrigger` handles time-based or condition-based accumulation before the workflow starts. It collects events from multiple sources and fires the workflow when a window is complete.
