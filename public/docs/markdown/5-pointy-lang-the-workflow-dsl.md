@@ -312,7 +312,7 @@ Keep only items where the Template Event returns descriptor 1. Items where the e
     {"name": "Bob", "age": 17},
     {"name": "Charlie", "age": 30}
 ]
-LoadUsers |-> FILTER<IsAdult> |-> ProcessAdults
+LoadUsers[collection=$user] |-> FILTER<IsAdult> |-> ProcessAdults
 ```
 
 What happens:
@@ -1029,8 +1029,8 @@ Using variables in workflows:
 @executor_type = "thread"
 
 {
-    LoadData -> 
-    ProcessData -> 
+    LoadData ->
+    ProcessData ->
     SaveData
 }[
     batch_size=$batch_size,
@@ -1139,7 +1139,7 @@ def ready(self):
         location="volnux-standard-events",
         version="1.5.0",
     ))
-    
+
     # Registers the 'github::' namespace
     self.register_source(WorkflowSource(
         name="team-utils",
@@ -1147,7 +1147,7 @@ def ready(self):
         location="my-team/volnux-events",
         version="2.1.0",
     ))
-    
+
     # Registers the 'hub::' namespace
     self.register_source(WorkflowSource(
         name="corporate-events",
@@ -1165,7 +1165,7 @@ If an event cannot be resolved, the compiler reports the error at parse time:
 Error: Event 'pypi::ValidateData' cannot be resolved.
   - No source registered for namespace 'pypi::'
   - Register a PyPI source in your workflow's ready() method.
-  
+
 Error: Event 'github::FetchConfig' cannot be resolved.
   - Source 'team-utils' (github) is registered but does not export 'FetchConfig'.
   - Available events: FetchSettings, ApplyConfig, NotifyTeam
