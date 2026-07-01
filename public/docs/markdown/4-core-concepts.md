@@ -93,6 +93,81 @@ Rules:
 * The second element is your result data. It must be serializable.
 * `process()` is for computation. Don't wait for humans here — use `communicate()`.
 
+### Parameter Injection
+Events can receive configuration values directly through their `process()` method signature. Instead of manually accessing the Pipeline, declare a parameter with the same name as a Pipeline field and the runtime injects the value automatically.
+
+This works identically for function-based events and class-based events.
+
+How it works:
+* A trigger fires the workflow with `workflow_params`, a dict of configuration values.
+* The Pipeline class validates these params against its `InputDataField` declarations.
+* When an event's `process()` method declares a parameter matching a Pipeline field name, the runtime injects the validated value.
+* If the Pipeline has no field with that name and the parameter has no default, an error is raised before execution.
+
+The Pipeline:
+
+```python
+class TradingPipeline(Pipeline):
+    market = InputDataField(data_type=str, required=True, description="Market identifier")
+    symbols = InputDataField(data_type=list, default=[], description="Symbol filter")
+```
+
+The trigger:
+
+```python
+ScheduleTrigger(
+    cron="0 6 * * MON-FRI",
+    workflow_params={"market": "US", "symbols": ["AAPL", "GOOGL"]},
+)
+```
+
+Function-based event receiving injected values:
+
+```python
+@event()
+def calculate_risk(
+    self,
+    market: str,              # ← Injected from Pipeline (validated)
+    symbols: list,            # ← Injected from Pipeline (validated)
+):
+    return True, compute_risk(market, symbols)
+```
+
+Class-based event receiving injected values:
+
+```python
+class CalculateRisk(EventBase):
+    async def process(
+        self,
+        market: str,              # ← Injected from Pipeline (validated)
+        symbols: list,            # ← Injected from Pipeline (validated)
+        *args,
+        **kwargs,
+    ):
+        risk = self._compute_risk(market, symbols)
+        return True, risk
+```
+
+With defaults for optional Pipeline fields:
+
+```python
+@event()
+def process_order(
+    self,
+    tax_rate: float = 0.08,      # ← Pipeline value if field exists, otherwise 0.08
+    warehouse: str = "default",   # ← Pipeline value if field exists, otherwise "default"
+):
+    order = self.previous_result.first()
+    total = order.content["amount"] * (1 + tax_rate)
+    return True, {"total": total, "warehouse": warehouse}
+```
+
+If the Pipeline has a `tax_rate` field declared, its validated value is injected. If not, the default `0.08` is used. If there is no Pipeline field AND no default, the runtime raises an error before the event executes.
+
+Parameter injection vs previous_result:
+
+Injected parameters are configuration, the `workflow_params` that the trigger passed, validated by the Pipeline. They tell the event how to operate. `self.previous_result` carries data from upstream events, the actual records to process. They serve different purposes.
+
 ### Return Contract: (bool, result)
 Every event must return a 2-tuple:
 
@@ -168,6 +243,21 @@ workflow_params = {"market": "US", "symbols": ["AAPL", "GOOGL"]}
 ```
 
 If validation fails — wrong types, missing required fields — the workflow fails immediately with a clear error. No events executed. The governance guarantee starts at the input boundary.
+
+Pipeline fields are available to events through parameter injection. Any event in the workflow can access a Pipeline value by declaring a parameter with the same name in its `process()` method signature. The runtime injects the validated value automatically:
+
+```python
+class CalculateRisk(EventBase):
+    async def process(
+        self,
+        market: str,              # ← Injected from Pipeline
+        symbols: list,            # ← Injected from Pipeline
+    ):
+        risk = self._compute_risk(market, symbols)
+        return True, risk
+```
+
+The event doesn't need to import the Pipeline class or call any accessor method. It declares the parameter. The runtime resolves and injects it. If the parameter name doesn't match any Pipeline field and has no default, an error is raised before the event executes.
 
 ### Input Data Fields (InputDataField)
 Each field in a Pipeline is an `InputDataField`. It declares:
